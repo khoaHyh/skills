@@ -14,6 +14,7 @@ Use this contract when multiple autonomous agents collaborate in the same reposi
 ## Jujutsu Safety Model
 
 - Treat working copy `@` as a real commit.
+- Use one workspace per active agent; do not share workspace directories.
 - Refer to shared work using change IDs.
 - Use `jj op log` as recovery source of truth.
 - Treat bookmarks as publication pointers, not active-branch state.
@@ -36,48 +37,41 @@ Use this contract when multiple autonomous agents collaborate in the same reposi
   2. `jj op log` + targeted recovery
   3. `jj op restore` only with explicit approval
 
-## Parallel Workflow
+## Parallel Workspace Workflow
 
-Start isolated work from up-to-date mainline:
+Use one canonical token for workspace/worktree directories:
 
-```bash
-jj git fetch
-jj new main@origin -m "<type(scope): description>"
+```text
+<repo>-<agent>-<task>
 ```
 
-Keep one logical concern per change. Split mixed changes before sharing:
+For full naming rules, see `../SKILL.md` ("Workspace and Worktree Naming Convention").
 
-```bash
-jj split -i
-jj squash --into <target>
-```
+- One active agent per workspace path.
+- Bootstrap from up-to-date mainline with `jj workspace add ... --revision <mainline> -m "<type(scope): description>"`.
+- Create additional changes only when needed (`jj new -m ...`).
+- Verify workspace isolation before edits (`jj workspace list`, `jj workspace root`).
+- Use explicit integration changes for cross-agent work instead of rewriting peers' changes.
+- Resolve conflicts intentionally; never delete peer edits to force resolution.
+- If a workspace becomes stale, run `jj workspace update-stale`.
 
-Use explicit integration commits for cross-agent work instead of rewriting peers' changes.
-
-Resolve conflicts; do not delete peers' edits to make them disappear:
-
-```bash
-jj resolve
-```
+For command-level examples (including optional `git worktree` fallback), use `colocated-workflows.md`.
 
 ## Publication and Push Discipline
 
-Inspect before publish:
+- Inspect status/diff/log before publishing.
+- Publish only selected bookmarks with explicit remote (for example `--remote origin`).
+- Reuse stable bookmark names with `jj bookmark set` to limit unnecessary CI reruns.
+- Fetch and reconcile first if remote diverged; do not bypass safety checks with backward pushes.
+
+For command-level publish/reconcile flows, use `colocated-workflows.md`.
+
+When integration is complete, retire temporary workspaces:
 
 ```bash
-jj status
-jj diff
-jj log -r "@ | @-"
+jj workspace list
+jj workspace forget <workspace-name>
 ```
-
-Use bookmark pointers for shared work:
-
-```bash
-jj bookmark create <name> -r @-
-jj git push --bookmark <name>
-```
-
-Fetch and reconcile first if remote diverged. Do not bypass safety checks with backward pushes.
 
 ## Atomicity
 
