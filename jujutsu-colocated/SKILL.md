@@ -1,6 +1,6 @@
 ---
 name: jujutsu-colocated
-description: Safe, practical workflows for using Jujutsu (`jj`) in colocated repositories (`.git` + `.jj`) and parallel-agent environments. Use when planning, editing, splitting, recovering, coordinating, or publishing changes with `jj`, especially when avoiding destructive history/state operations.
+description: Safe, practical workflows for using Jujutsu (`jj`) in colocated repositories (`.git` + `.jj`) and parallel-agent environments. Use when planning, editing, splitting, recovering, coordinating, isolating parallel agents with workspaces, or publishing changes with `jj`, especially when avoiding destructive history/state operations.
 ---
 
 # Jujutsu Colocated Workflow
@@ -31,12 +31,41 @@ In colocated repositories, prefer read-only `git` commands and use `jj` for muta
 ## Follow Non-Negotiable Safety Rules
 
 - Treat working copy `@` as a real commit, not a staging area.
+- Use one workspace per agent for parallel work; never share a workspace path across active agents.
 - Refer to work using change IDs when coordinating; commit IDs can change after rewrites.
 - Use `jj op log` as the recovery source of truth.
 - Treat bookmarks as publication pointers, not a current-branch model.
 - Never run destructive history/state operations without explicit written approval in-thread.
 - Never edit `.env` or environment variable files.
 - Never revert or delete other agents' work without coordination.
+
+## Workspace and Worktree Naming Convention
+
+Use one canonical token for JJ workspace names and Git worktree directory names:
+
+```text
+<repo>-<agent>-<task>
+```
+
+Rules:
+
+- `repo`: short repository slug (for example `billing-api`).
+- `agent`: stable agent identifier (for example `hephaestus`, `reviewer-2`).
+- `task`: short kebab-case task slug (for example `token-refresh`).
+- Keep names lowercase and ASCII; avoid spaces and punctuation beyond `-`.
+- If the same agent repeats the same task, append a short disambiguator (for example `-v2`, `-2`, `-20260210`).
+
+Example:
+
+```text
+billing-api-hephaestus-token-refresh
+```
+
+Cross-tool policy:
+
+- JJ: pass `--name <repo>-<agent>-<task>` explicitly so workspace identity does not depend on path basename inference.
+- Git worktree: pass `-b <branch>` explicitly; do not rely on `git worktree add <path>` default branch-from-path behavior.
+- Recommended Git branch shape for agent worktrees: `wip/<agent>/<task>`.
 
 Forbidden without explicit written approval:
 
@@ -74,39 +103,67 @@ Examples:
 jj git fetch --remote origin
 ```
 
-2. Start isolated work from mainline:
+2. Create a dedicated workspace for this agent from mainline, with the first scoped change already described:
 
 ```bash
-jj new main@origin -m "<type(scope): description>"
+jj workspace add --name <repo>-<agent>-<task> --revision main@origin \
+  -m "<type(scope): description>" ../<repo>-<agent>-<task>
+cd ../<repo>-<agent>-<task>
+jj workspace list
 ```
 
-3. Keep one logical concern per change:
+3. Create additional scoped changes in that workspace only when needed:
+
+```bash
+jj new -m "<type(scope): description>"
+```
+
+4. Keep one logical concern per change:
 
 ```bash
 jj split -i
 jj squash --into <target-change>
 ```
 
-4. Inspect before share:
+5. Inspect and pick publish targets (plain English):
 
 ```bash
 jj status
 jj diff
-jj log -r "@ | @-"
+jj log -r "main@origin..@" --reversed --no-graph \
+  -T 'change_id.short() ++ " | " ++ description.first_line() ++ "\n"'
 ```
 
-5. Publish via bookmark pointer:
+6. Publish selected change(s) explicitly (single PR or stack):
 
 ```bash
-jj bookmark create <name> -r @-
-jj git push --bookmark <name> --remote origin
+# Single PR in this workspace
+jj bookmark set pr/<agent>/<task> -r <change-id>
+jj git push --bookmark pr/<agent>/<task> --remote origin
+
+# Stacked PRs in this workspace
+jj bookmark set pr/<agent>/<task>/01 -r <change-id-1>
+jj bookmark set pr/<agent>/<task>/02 -r <change-id-2>
+jj git push --bookmark pr/<agent>/<task>/01 --bookmark pr/<agent>/<task>/02 --remote origin
 ```
 
-6. Resolve conflicts intentionally (never by deleting peers' edits):
+CI guardrails:
+
+- Push only selected bookmarks. Never use broad push patterns for publish.
+- Reuse stable bookmark names with `jj bookmark set` to avoid creating extra CI-triggering branches.
+
+7. Resolve conflicts intentionally (never by deleting peers' edits):
 
 ```bash
 jj resolve --list
 jj resolve
+```
+
+8. Retire temporary workspaces after integration:
+
+```bash
+jj workspace list
+jj workspace forget <workspace-name>
 ```
 
 ## Recovery Ladder
