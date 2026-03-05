@@ -1,0 +1,60 @@
+{
+  "artifact_id": "rcb-sample-001",
+  "artifact_type": "repo-context-bundle",
+  "bundle": {
+    "checksums_uri": "checksums.sha256",
+    "chunks_uri": "chunks.ndjson",
+    "manifest_uri": "manifest.json",
+    "repo_map_uri": "repo_map.json",
+    "selection_trace_uri": "selection_trace.json",
+    "stats": {
+      "chunk_count": 1,
+      "file_count": 1,
+      "languages": {
+        "markdown": 1
+      },
+      "symbol_count": 0
+    },
+    "summary_uri": "summary.md"
+  },
+  "extensions": {},
+  "generated_at_utc": "2026-03-05T00:00:00+00:00",
+  "provenance": {
+    "config_hash": "sample",
+    "duration_ms": 42,
+    "run_id": "sample-run",
+    "skill_version": "0.1.0"
+  },
+  "retrieval": {
+    "coverage": {
+      "indexed_files": 1,
+      "skipped_files": 0
+    },
+    "ranking_signals": [
+      "path_prior",
+      "dependency_centrality",
+      "symbol_density"
+    ],
+    "strategy": "hybrid"
+  },
+  "safety": {
+    "blocked_paths": [],
+    "enforced_limits": {
+      "max_bytes": 8000000,
+      "max_files": 1500,
+      "max_single_file_bytes": 1000000,
+      "max_runtime_s": 120
+    },
+    "redactions": [],
+    "violations": []
+  },
+  "schema_version": "1.0.0",
+  "source": {
+    "clone_depth": 1,
+    "ephemeral_clone_path": "/tmp/sharingan.sample/repo",
+    "repo_url": "https://github.com/example/repo.git",
+    "requested_ref": "main",
+    "resolved_commit": "0000000000000000000000000000000000000000"
+  },
+  "status": "success"
+}
