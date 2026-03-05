@@ -1,0 +1,22 @@
+{
+  "dependency_edges": [],
+  "generated_at_utc": "2026-03-05T00:00:00+00:00",
+  "key_files": [
+    {
+      "inbound_count": 0,
+      "import_count": 0,
+      "imports": [],
+      "language": "markdown",
+      "line_count": 1,
+      "outbound_count": 0,
+      "path": "README.md",
+      "ranking_reasons": [
+        "path_prior"
+      ],
+      "score": 8.0,
+      "size_bytes": 32,
+      "symbol_count": 0
+    }
+  ],
+  "symbols": []
+}

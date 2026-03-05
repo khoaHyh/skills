@@ -1,0 +1,15 @@
+{
+  "chunk_count": 1,
+  "file_count": 1,
+  "files": [
+    {
+      "language": "markdown",
+      "line_count": 1,
+      "path": "README.md",
+      "size_bytes": 32
+    }
+  ],
+  "generated_at_utc": "2026-03-05T00:00:00+00:00",
+  "repo_root": ".",
+  "symbol_count": 0
+}
