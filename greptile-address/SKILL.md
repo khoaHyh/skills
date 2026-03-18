@@ -43,7 +43,7 @@ gh api repos/{owner}/{repo}/pulls/<PR_NUMBER>/comments
 
 6. Resolve threads that are addressed or informational using queries from `references/graphql-queries.md`.
 
-7. If files changed, create one commit and push once.
+7. If files changed, create one commit (follow conventional commit standards and choose correct vcs) and push once.
 
 8. Stop. Do not trigger a second Greptile run unless the user explicitly asks.
 
