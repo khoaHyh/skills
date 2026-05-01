@@ -1,6 +1,6 @@
 ---
 name: greptile-address
-description: Run one Greptile review-address pass on a pull request. Trigger or wait for checks once, analyze Greptile comments once, fix actionable feedback once, resolve addressed threads, and report what remains. Use when the user wants a one-shot version of greploop.
+description: Run one Greptile review-address pass on a pull request. Trigger or wait for checks once, analyze Greptile comments once, fix actionable feedback once, resolve addressed threads, and report what remains. Use when the user wants to address the latest greptile review comments on their PR.
 ---
 
 # Greptile Address
@@ -34,12 +34,12 @@ gh api repos/{owner}/{repo}/pulls/<PR_NUMBER>/reviews
 gh api repos/{owner}/{repo}/pulls/<PR_NUMBER>/comments
 ```
 
-4. Read only the latest Greptile review (`greptile-apps[bot]` or `greptile-apps-staging[bot]`) and classify open comments as:
+4. Read only the Greptile Summary (in the PR description or is it's own comment) and latest Greptile review comments (`greptile-apps[bot]` or `greptile-apps-staging[bot]`) and classify open comments as:
    - **Actionable**: needs code or test changes
    - **Informational**: no code change required
    - **Already addressed**: covered by newer commits
 
-5. Apply fixes for actionable comments once.
+5. Explore and research multiple approaches. Use external resources when necessary. Choose the appropriate fix(es) apply for actionable comments.
 
 6. Resolve threads that are addressed or informational using queries from `references/graphql-queries.md`.
 
