@@ -20,7 +20,6 @@ gh pr view --json number,headRefName -q '{number: .number, branch: .headRefName}
 ```
 
 2. Ensure checks are current once:
-   - If local commits are not pushed, push once.
    - Wait for checks once:
 
 ```bash
@@ -40,12 +39,6 @@ gh api repos/{owner}/{repo}/pulls/<PR_NUMBER>/comments
    - **Already addressed**: covered by newer commits
 
 5. Explore and research multiple approaches. Use external resources when necessary. Choose the appropriate fix(es) apply for actionable comments.
-
-6. Resolve threads that are addressed or informational using queries from `references/graphql-queries.md`.
-
-7. If files changed, create one commit (follow conventional commit standards and choose correct vcs) and push once.
-
-8. Stop. Do not trigger a second Greptile run unless the user explicitly asks.
 
 ## Reporting
 
