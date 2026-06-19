@@ -1,21 +1,44 @@
 ---
 name: computa-please
-description: Use for /computa-please, brainstorming into a persisted tech spec, grill-with-docs checkpoints, RGR TDD implementation from a spec, manual review repair prompts, local adversarial review, and Greptile/CI final gates.
+description: Use for /computa-please, discussion-before-mutation workflow routing, brainstorming/design into optional specs, debugging and bug fixes, RGR TDD implementation, review repair, local adversarial review, and Greptile/CI final gates.
 ---
 
 # computa-please
 
-`computa-please` is the user's agent orchestration workflow. It turns a request into a durable task artifact, routes through the right existing skills, protects context-window resets, and keeps Greptile as the final merge gate.
+`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and keeps Greptile as the final merge gate.
 
-It is inspired by pstack, but it is not a pstack clone. Keep this skill as a router and gatekeeper. Do not create extra principle files or broad process scaffolding unless the user asks.
+It is inspired by pstack, but it is not a pstack clone. Keep this skill as a compact OpenCode-native router and gatekeeper. Do not create extra principle files or broad process scaffolding unless the user asks.
 
 ## Start every run
 
-1. Classify the request into one playbook: Brainstorm, Spec checkpoint, Grill with docs, Pause to review or annotate, Implement from spec, Manual review repair, Local adversarial review, or Greptile final gate.
-2. For multi-step work, open a todo list with the selected playbook steps when the harness supports todos.
-3. Create or locate the task artifact directory before drafting, editing, implementing, or reviewing.
-4. Load only the skills that apply to the selected playbook.
-5. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
+1. Classify the request into one top-level mode: Discuss, Spec, Implement, Debug, Review, Recall/Pickup, or Reflect.
+2. If the request is about comparing, brainstorming, redesigning, evaluating, deciding, or workflow/meta work, default to Discuss. No artifacts or edits by default.
+3. If routing is ambiguous, choose Discuss and ask whether to promote the result into artifacts or code changes.
+4. Create or locate the task artifact directory only after routing to Spec, Implement, Debug, or Review, and only when that mode needs durable context.
+5. For multi-step implementation, debugging, review, or persisted spec work, open a todo list with the selected mode's steps when the harness supports todos.
+6. Load only the skills that apply to the selected mode.
+7. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
+
+## Principles
+
+- Worthy friction before mutation: discussion, design, architecture, and review are real work, not delays.
+- Evidence before action: inspect, reproduce, measure, or cite before editing.
+- Foundations first: fix data shape, seams, interfaces, observability, and test loops before polish.
+- More with less: prefer deletion, narrower interfaces, and deep modules over new scaffolding.
+- Small verifiable units: every implementation slice ends in a concrete check.
+- Structure over reminders: repeated corrections become tests, lints, scripts, review agents, or proposed skill edits.
+- Human judgment at real forks: ask for product, security, irreversible, public API, deploy, money, data deletion, or ownership calls; observe facts directly.
+- Main agent owns synthesis: subagents gather, challenge, or implement scoped work, but the main agent decides.
+
+## Subagent posture
+
+- Use subagents aggressively for research, design, debugging support, and review, but keep ownership centralized.
+- For research and design, use parallel `explore`, `librarian`, `oracle`, `dialectic`, or `design-an-interface` when the problem benefits from independent search or competing frames.
+- For codebase exploration, give subagents scoped questions and file pointers; keep raw dumps out of the main thread.
+- For debugging, build or identify the repro/evidence loop before fanning out hypotheses. After the symptom is bounded, delegate code path, history, docs, or hypothesis investigation.
+- For review, use a reviewer plus critic/refuter shape. Findings must include concrete failure mode, path or repro, severity, smallest safe fix, and whether a test is needed.
+- For implementation, the main agent edits by default. Delegate only isolated, inspectable work.
+- Never pass through subagent output blindly. Confirm, reject, and merge findings in the main thread.
 
 ## Artifact workflow
 
@@ -33,7 +56,9 @@ Fallback when the branch is unavailable:
 <repo-slug>__<task-slug>
 ```
 
-Create the task directory automatically. It must contain only two files:
+Use this workflow only after the selected mode needs durable context. Discuss mode does not create artifacts unless the user explicitly asks to persist the outcome.
+
+Create the task directory automatically when needed. It must contain only two files:
 
 ```text
 <task-slug>-tech-spec-YYYY-MM-DD.md
@@ -110,16 +135,31 @@ Include:
 
 Use the installed `handoff` skill when a normal conversation handoff is needed. This file is the durable task-local handoff.
 
-## Playbook router
+## Mode router
 
-### Brainstorm
+### Discuss
 
-Use when the problem or direction is still fuzzy.
+Use when the user wants to compare, brainstorm, redesign, evaluate, decide, ask whether something is worth doing, or discuss workflow/meta-work.
+
+Rules:
+
+- Do not edit files.
+- Do not create artifacts.
+- Do not create a task directory.
+- Use web, codebase, trace, or tool research when needed, but keep the output in chat.
+- End with a recommendation, options, tradeoffs, or a clear next decision.
+- Ask whether to promote the discussion into a spec or implementation only when the user has not already decided.
+
+If the user explicitly asks to persist the direction, route to Spec.
+
+### Spec
+
+Use when the user asks for a tech spec, PRD, durable plan, implementation phases, or says to persist a discussed direction.
 
 Steps:
 
 1. Explore the problem.
-2. Discuss possible directions.
+2. Discuss possible directions if the direction is not already decided.
 3. Identify constraints and unknowns.
 4. Recommend a direction.
 5. Create or update the task artifact directory.
@@ -191,7 +231,7 @@ Also load when relevant:
 - `write-effect-ts`.
 - `find-docs`.
 - `typescript-magician`.
-- `diagnose`.
+- `diagnosing-bugs`.
 - `feedback-loop`.
 
 Rules:
@@ -202,6 +242,75 @@ Rules:
 - Do not preserve compatibility unless persisted data, shipped behavior, external consumers, or the user require it.
 - Verify with real commands.
 - Append implementation status, commands, and results to `handoff.md`.
+
+### Debug
+
+Use when the user reports a bug, failing test, runtime error, production error, performance regression, flaky behavior, CI failure, or asks to diagnose/fix something broken.
+
+First load:
+
+- `diagnosing-bugs`.
+- `tdd`.
+- `quality-code`.
+
+Also load when relevant:
+
+- `dialectic`
+- `feedback-loop`.
+- `write-effect-ts`.
+- `find-docs`.
+
+Steps:
+
+1. Classify the symptom: failing test, runtime bug, CI failure, production error, performance regression, flake, regression, or unknown.
+2. Build a tight red-capable loop using `diagnosing-bugs`: failing test, curl/HTTP script, CLI fixture, browser script, trace replay, throwaway harness, fuzz loop, bisect loop, or HITL loop.
+3. Reproduce and minimize. Confirm the loop catches the user's actual symptom, not a nearby failure.
+4. Generate 3-5 ranked falsifiable hypotheses when the cause is not obvious from the evidence.
+5. Instrument one variable at a time. Tag temporary debug logs and remove them before completion.
+6. Decide whether a regression test has a correct seam. If yes, use `tdd` and make the bug red before fixing. If no seam exists, document that as a testability finding.
+7. Apply the smallest root-cause fix. Do not paper over the symptom unless explicitly marking a contained mitigation.
+8. Verify the original repro, the regression test if added, and relevant broader checks.
+9. Remove temporary instrumentation and prototypes.
+10. Record root cause, fix, verification, and remaining risk in `handoff.md` when a task artifact exists.
+
+No implementation until the root cause is understood or explicitly marked unknown with a contained mitigation.
+
+### Review
+
+Use when the user asks for report-only review, manual review repair, local adversarial review, Greptile feedback, CI remediation, PR readiness, or final gates.
+
+Rules:
+
+- Respect report-only instructions exactly.
+- Do not edit, resolve comments, trigger remote reviews, install tools, commit, push, or merge unless the user explicitly asks.
+- Findings come first, ordered by severity.
+- Each finding should include file/line, failure mode, execution path or repro scenario, smallest safe fix direction, and whether a test is needed.
+- Ignore style, naming, formatting, or speculative maintainability unless the user asks for them.
+
+Route to Manual review repair, Local adversarial review, Greptile final gate, or CI remediation as appropriate.
+
+### Recall/Pickup
+
+Use when the user asks to resume, continue from a handoff/transcript/branch/PR, catch up, or reconstruct recent work.
+
+Steps:
+
+1. Read the supplied handoff, spec, transcript, branch, PR, or live state first.
+2. Reconstruct what is done, pending, blocked, and risky.
+3. Do not redo completed research or implementation unless verification requires it.
+4. Route the remaining work to Discuss, Spec, Implement, Debug, or Review.
+5. State the resume point and what was inherited versus re-verified.
+
+### Reflect
+
+Use after a complex run, a user correction, a routing mistake, repeated workflow friction, or a successful recipe worth keeping.
+
+Rules:
+
+- Propose durable lessons and where they belong.
+- Prefer structural enforcement: tests, lints, scripts, metadata, review agents, or skill edits.
+- Do not edit skills automatically. Present proposed changes and wait for explicit approval.
+- Use evals before promoting behavior-changing routing, prompt, or skill changes when practical.
 
 ### Manual review repair
 
@@ -274,13 +383,13 @@ Do not ask before checking facts discoverable from code, git history, existing d
 
 ## Verification gate
 
-For every implementation:
+For every implementation or debug fix:
 
 1. Inspect repository status.
 2. Inspect the diff.
 3. Run relevant tests, typecheck, lint, or build.
 4. Run feature-specific verification when available.
-5. Append commands and results to `handoff.md`.
+5. Append commands and results to `handoff.md` when a task artifact exists.
 6. Do not claim done if verification is inconclusive.
 
 Before commit, push, merge, deploy, destructive data changes, or external messages, ask for explicit approval.
@@ -289,8 +398,8 @@ Before commit, push, merge, deploy, destructive data changes, or external messag
 
 Keep the final response short. Include:
 
-- Playbook used.
-- Artifact paths.
+- Mode used.
+- Artifact paths, if any.
 - What changed.
 - Verification run and result.
 - Remaining risks or next action.
