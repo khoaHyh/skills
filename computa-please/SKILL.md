@@ -1,6 +1,6 @@
 ---
 name: computa-please
-description: Use for /computa-please, discussion-before-mutation workflow routing, brainstorming/design into optional specs, debugging and bug fixes, RGR TDD implementation, review repair, local adversarial review, and Greptile/CI final gates.
+description: Use for /computa-please, discussion-before-mutation workflow routing, brainstorming/design into optional specs, debugging and bug fixes, RGR TDD implementation, review repair, and local adversarial review with cursor cli and codex cli.
 ---
 
 # computa-please
@@ -282,7 +282,7 @@ Use when the user asks for report-only review, manual review repair, local adver
 Rules:
 
 - Respect report-only instructions exactly.
-- Do not edit, resolve comments, trigger remote reviews, install tools, commit, push, or merge unless the user explicitly asks.
+- Do not edit, resolve comments, trigger remote reviews, install tools, commit, push, or merge unless the user explicitly asks. A request for local adversarial review is approval for that mode's prerequisite local commit only; still do not push.
 - Findings come first, ordered by severity.
 - Each finding should include file/line, failure mode, execution path or repro scenario, smallest safe fix direction, and whether a test is needed.
 - Ignore style, naming, formatting, or speculative maintainability unless the user asks for them.
@@ -332,46 +332,34 @@ Append the review notes and repair prompt path or content summary to `handoff.md
 
 Use before finalizing nontrivial changes. Greptile is not part of this review.
 
-Default local mode:
+Prerequisite commit:
 
-1. Spawn or invoke a reviewer to find concrete issues.
-2. Spawn or invoke a critic with a refute-by-default posture to audit the findings.
-3. Synthesize confirmed issues and false positives.
-4. Append confirmed findings to `handoff.md`.
+1. Run `vcs-detect` before any mutating VCS command. Inspect repository state, staged and unstaged diffs, untracked files, current branch, recent log, and Graphite stack state when `gt` is available.
+2. Choose the commit workflow before staging. Use plain Git on `main` or trunk, or when no branch, PR, or stack workflow is active. Use Graphite when the work is already in a Graphite branch or stack, when the review is for branch/PR work and Graphite is available or preferred, or when the user asks for Graphite.
+3. If the workflow choice is ambiguous, or unrelated or unsafe changes are present, stop and ask which workflow and files to include. Otherwise stage only the intended staged, unstaged, and untracked changes.
+4. Generate a Conventional Commit message from the diff using `<type>(<scope>): <description>`.
+5. Commit or update the current change before running reviewers. In Git, create a normal commit. In Graphite, use the appropriate `gt create` or `gt modify` flow for the current branch or stack.
+6. Reviewers must target committed changes, normally `HEAD^..HEAD` for a Git commit or the current Graphite branch/stack slice under review.
+7. If there are no staged, unstaged, or untracked changes, skip the commit and identify the committed diff under review.
+8. Do not push unless explicitly requested.
 
-Codex CLI mode, when requested:
+Parallel reviewers:
 
-1. Explain that Codex CLI review runs outside the current harness.
-2. Inspect `git status`, unstaged diff, staged diff, and recent log.
-3. Codex review should run against committed changes.
-4. If changes are unstaged, ask whether to stage intended changes and create a conventional commit.
-5. If approved, stage only intended files.
-6. Generate a conventional commit message.
-7. Commit.
-8. Run Codex CLI adversarial review against the committed diff.
-9. Append review results to `handoff.md`.
-10. Do not push unless explicitly requested.
+1. Spawn two independent CLI reviewers in parallel against the same committed diff and repository state.
+2. Cursor CLI reviewer: use the Cursor Team Kit plugin, the `thermo-nuclear-code-quality-review` skill, and Opus 4.8.
+3. Codex CLI reviewer: run Codex CLI with the same committed diff and the same review brief.
+4. Let each reviewer produce its authentic review output. When the tool accepts a brief, ask it to include actionable detail where possible, such as severity, reviewer-native category, file/line, failure mode, execution path or repro scenario, fix direction, security impact, and test need.
+5. If a reviewer fails because of local or transient tooling, retry it once. If it still fails, mark the local adversarial review incomplete and report the blocker instead of pretending the review passed.
 
-### Greptile final gate
+Aggregation and consolidation:
 
-Use after implementation, manual review, and local adversarial review.
-
-Greptile is the final merge gate, not adversarial review.
-
-Invoke:
-
-- `greptile-address`.
-
-If CI fails, invoke:
-
-- `actions-ci-address`.
-
-Rules:
-
-- Fix actionable feedback once.
-- Dismiss non-issues with concrete rationale.
-- Report what remains.
-- Do not merge unless explicitly requested.
+1. Wait for both reviewer outputs before judging findings.
+2. Normalize enough metadata to de-duplicate candidates while preserving each reviewer's original wording, severity, priority, category, and taxonomy. Add comparison fields only when useful: source reviewer, path/line, root cause, failure mode, evidence or repro path, fix direction, security impact, and test need.
+3. De-duplicate by root cause and failure mode, not wording. Merge duplicate entries, keep the strongest evidence, and preserve all source reviewers.
+4. Reject unsupported findings, style-only comments, findings outside the reviewed committed diff, and items without a concrete failure mode.
+5. Present all unique confirmed findings first, ordered by severity. Include the source reviewer list for each finding.
+6. Briefly list rejected false positives or duplicate clusters only when useful for trust or follow-up.
+7. Append both individual raw reviewer outputs and the consolidated adversarial review findings to `handoff.md` when a task artifact exists.
 
 ## Decision rules
 
