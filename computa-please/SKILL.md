@@ -345,11 +345,42 @@ Prerequisite commit:
 
 Parallel reviewers:
 
-1. Spawn two independent CLI reviewers in parallel against the same committed diff and repository state.
-2. Cursor CLI reviewer: use the Cursor Team Kit plugin, the `thermo-nuclear-code-quality-review` skill, and Opus 4.8.
-3. Codex CLI reviewer: run Codex CLI with the same committed diff and the same review brief.
-4. Let each reviewer produce its authentic review output. When the tool accepts a brief, ask it to include actionable detail where possible, such as severity, reviewer-native category, file/line, failure mode, execution path or repro scenario, fix direction, security impact, and test need.
-5. If a reviewer fails because of local or transient tooling, retry it once. If it still fails, mark the local adversarial review incomplete and report the blocker instead of pretending the review passed.
+1. Build one shared review brief before launching either reviewer. The brief must name the committed review target, normally `HEAD^..HEAD`, include changed files when known, instruct the reviewer to inspect only that target, forbid edits/commits/pushes/remote comments, and request severity, reviewer-native category, file/line, failure mode, execution path or repro scenario, fix direction, security impact, and test need.
+2. Spawn two independent CLI reviewers in parallel against the same committed diff and repository state. Do not let either reviewer's output shape the other's prompt.
+3. Cursor CLI reviewer: use the Cursor Agent documented print/headless mode with the Cursor Team Kit plugin, the `thermo-nuclear-code-quality-review` skill, and an exact Opus 4.8 model ID from `cursor-agent models` or `agent models`. Prefer `claude-opus-4-8-thinking-high` when listed. Do not invent parameterized aliases such as `claude-opus-4-8[context=1m,effort=high,fast=false]`; if no Opus 4.8 model is listed, mark the Cursor review incomplete.
+
+```bash
+cursor-agent --print --output-format text --mode=plan --trust \
+  --workspace "<repo-root>" \
+  --plugin-dir "<path-to-cursor-team-kit-plugin-dir>" \
+  --model "claude-opus-4-8-thinking-high" \
+  "<shared-review-brief>"
+```
+
+4. Codex CLI reviewer: use the OpenAI-documented non-interactive `codex exec` shape for the custom adversarial brief. Keep the sandbox read-only and put the committed diff target in the prompt. Do not use `codex review --commit` or `codex exec review --commit` when passing a custom review brief, because installed Codex versions can reject commit targets combined with prompts. If setting approval policy, place global Codex flags before `exec`; do not put `--ask-for-approval` after `exec`. Do not force brittle model aliases such as `gpt-5.5-xhigh` or `gpt-5.5-extra-high`; use the configured default model unless the user explicitly requests a documented, account-supported override.
+
+```bash
+codex --ask-for-approval never exec \
+  --ephemeral \
+  -C "<repo-root>" \
+  -s read-only \
+  "<shared-review-brief>"
+```
+
+For structured output, use the same shape with Codex's documented schema flags and pass long prompts on stdin:
+
+```bash
+codex --ask-for-approval never exec \
+  --ephemeral \
+  -C "<repo-root>" \
+  -s read-only \
+  --output-schema "<schema.json>" \
+  -o "<codex-review-output.json>" \
+  -
+```
+
+5. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because read-only mode blocks shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
+6. If a reviewer fails because of local or transient tooling, retry it once with the documented command shape above. If it still fails, mark the local adversarial review incomplete and report the blocker instead of pretending the review passed.
 
 Aggregation and consolidation:
 
