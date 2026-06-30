@@ -1,11 +1,11 @@
 ---
 name: computa-please
-description: Use for /computa-please, discussion-before-mutation workflow routing, brainstorming/design into optional specs, debugging and bug fixes, RGR TDD implementation, review repair, and local adversarial review with cursor cli and codex cli.
+description: Use for /computa-please, discussion-before-mutation workflow routing, brainstorming/design into optional specs, debugging and bug fixes, RGR TDD implementation, and local adversarial code review with Cursor CLI and Codex CLI.
 ---
 
 # computa-please
 
-`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and keeps Greptile as the final merge gate.
+`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and runs one local adversarial code-review gate when review is requested.
 
 It is inspired by pstack, but it is not a pstack clone. Keep this skill as a compact OpenCode-native router and gatekeeper. Do not create extra principle files or broad process scaffolding unless the user asks.
 
@@ -36,7 +36,7 @@ It is inspired by pstack, but it is not a pstack clone. Keep this skill as a com
 - For research and design, use parallel `explore`, `librarian`, `oracle`, `dialectic`, or `design-an-interface` when the problem benefits from independent search or competing frames.
 - For codebase exploration, give subagents scoped questions and file pointers; keep raw dumps out of the main thread.
 - For debugging, build or identify the repro/evidence loop before fanning out hypotheses. After the symptom is bounded, delegate code path, history, docs, or hypothesis investigation.
-- For review, use a reviewer plus critic/refuter shape. Findings must include concrete failure mode, path or repro, severity, smallest safe fix, and whether a test is needed.
+- For review, use the local adversarial shape: Codex CLI and Cursor CLI run in parallel against the same committed diff and shared brief.
 - For implementation, the main agent edits by default. Delegate only isolated, inspectable work.
 - Never pass through subagent output blindly. Confirm, reject, and merge findings in the main thread.
 
@@ -129,7 +129,7 @@ Include:
 - Approved Plannotator annotations.
 - Manual review notes.
 - Adversarial review findings.
-- Greptile and CI residue.
+- Review and CI residue.
 - Verification status.
 - Next action.
 
@@ -223,6 +223,7 @@ First load:
 - the tech spec.
 - `handoff.md`, if it exists.
 - `tdd`.
+- `coding-standards `
 - `quality-code`.
 - `reducing-entropy`.
 
@@ -251,6 +252,7 @@ First load:
 
 - `diagnosing-bugs`.
 - `tdd`.
+- `coding-standards`
 - `quality-code`.
 
 Also load when relevant:
@@ -277,17 +279,20 @@ No implementation until the root cause is understood or explicitly marked unknow
 
 ### Review
 
-Use when the user asks for report-only review, manual review repair, local adversarial review, Greptile feedback, CI remediation, PR readiness, or final gates.
+Use when the user asks for code review, local adversarial review, PR readiness, or a final local review gate.
 
 Rules:
 
+- Review mode has one runbook: Local adversarial review.
+- Spec, design, document, or plan review stays in the current Discuss or Spec phase as a normal conversation or checkpoint. Do not create a separate review runbook for it.
+- Manual review notes stay in the current stage: discuss them, or route to Implement/Debug when the user asks for changes. Do not create a separate repair playbook.
 - Respect report-only instructions exactly.
 - Do not edit, resolve comments, trigger remote reviews, install tools, commit, push, or merge unless the user explicitly asks. A request for local adversarial review is approval for that mode's prerequisite local commit only; still do not push.
 - Findings come first, ordered by severity.
 - Each finding should include file/line, failure mode, execution path or repro scenario, smallest safe fix direction, and whether a test is needed.
 - Ignore style, naming, formatting, or speculative maintainability unless the user asks for them.
 
-Route to Manual review repair, Local adversarial review, Greptile final gate, or CI remediation as appropriate.
+Run Local adversarial review. If the user explicitly asks for Greptile feedback or CI remediation, use the dedicated skill for that outside this Review mode.
 
 ### Recall/Pickup
 
@@ -312,25 +317,9 @@ Rules:
 - Do not edit skills automatically. Present proposed changes and wait for explicit approval.
 - Use evals before promoting behavior-changing routing, prompt, or skill changes when practical.
 
-### Manual review repair
-
-Use after the user manually reviews the code or provides review notes.
-
-Output a fresh repair prompt suitable for a new session or tree recovery. The prompt must include:
-
-- Tech spec path.
-- Current branch or worktree context.
-- Exact requested changes.
-- Constraints from `handoff.md`.
-- Skills to load.
-- Verification commands to run.
-- A warning not to broaden scope.
-
-Append the review notes and repair prompt path or content summary to `handoff.md`.
-
 ### Local adversarial review
 
-Use before finalizing nontrivial changes. Greptile is not part of this review.
+Use before finalizing nontrivial code changes, or whenever Review mode is selected. This is the only formal Review runbook. Greptile is not part of this review.
 
 Prerequisite commit:
 
@@ -345,9 +334,10 @@ Prerequisite commit:
 
 Parallel reviewers:
 
-1. Build one shared review brief before launching either reviewer. The brief must name the committed review target, normally `HEAD^..HEAD`, include changed files when known, instruct the reviewer to inspect only that target, forbid edits/commits/pushes/remote comments, and request severity, reviewer-native category, file/line, failure mode, execution path or repro scenario, fix direction, security impact, and test need.
-2. Spawn two independent CLI reviewers in parallel against the same committed diff and repository state. Do not let either reviewer's output shape the other's prompt.
-3. Cursor CLI reviewer: use the Cursor Agent documented print/headless mode with the Cursor Team Kit plugin, the `thermo-nuclear-code-quality-review` skill, and an exact Opus 4.8 model ID from `cursor-agent models` or `agent models`. Prefer `claude-opus-4-8-thinking-high` when listed. Do not invent parameterized aliases such as `claude-opus-4-8[context=1m,effort=high,fast=false]`; if no Opus 4.8 model is listed, mark the Cursor review incomplete.
+1. Build one shared review brief before launching either reviewer. The brief is the only PR-specific layer on top of any skills loaded; keep it concise and include only what the skill cannot infer, such as the committed review target, changed files, user intent, non-goals, risky areas, constraints, and verification already run. Do not restate the generic review rubric.
+2. The shared brief must inspect only the committed target, forbid edits/commits/pushes/remote comments, reviewer-native category, file/line, failure mode, execution path or repro scenario, fix direction, security impact, and test need.
+3. Spawn two independent CLI reviewers in parallel against the same committed diff and repository state. Do not let either reviewer's output shape the other's prompt.
+4. Cursor CLI reviewer: use the Cursor Agent documented print/headless mode with the Cursor Team Kit plugin, only the `thermo-nuclear-code-quality-review` skill, the shared brief, and an exact Opus 4.8 model ID from `cursor-agent models` or `agent models`. Prefer `claude-opus-4-8-thinking-high` when listed. Do not invent parameterized aliases such as `claude-opus-4-8[context=1m,effort=high,fast=false]`; if no Opus 4.8 model is listed, mark the Cursor review incomplete.
 
 ```bash
 cursor-agent --print --output-format text --mode=plan --trust \
@@ -357,7 +347,7 @@ cursor-agent --print --output-format text --mode=plan --trust \
   "<shared-review-brief>"
 ```
 
-4. Codex CLI reviewer: use the OpenAI-documented non-interactive `codex exec` shape for the custom adversarial brief. Keep the sandbox read-only and put the committed diff target in the prompt. Do not use `codex review --commit` or `codex exec review --commit` when passing a custom review brief, because installed Codex versions can reject commit targets combined with prompts. If setting approval policy, place global Codex flags before `exec`; do not put `--ask-for-approval` after `exec`. Do not force brittle model aliases such as `gpt-5.5-xhigh` or `gpt-5.5-extra-high`; use the configured default model unless the user explicitly requests a documented, account-supported override.
+5. Codex CLI reviewer: use the OpenAI-documented non-interactive `codex exec` shape. The prompt must use `code-review` as the primary review skill and apply the shared brief. Keep the sandbox read-only and put the committed diff target in the prompt. Do not use `codex review --commit` or `codex exec review --commit` when passing a custom review brief, because installed Codex versions can reject commit targets combined with prompts. If setting approval policy, place global Codex flags before `exec`; do not put `--ask-for-approval` after `exec`. Do not force brittle model aliases such as `gpt-5.5-xhigh` or `gpt-5.5-extra-high`; use the configured default model unless the user explicitly requests a documented, account-supported override.
 
 ```bash
 codex --ask-for-approval never exec \
@@ -379,8 +369,8 @@ codex --ask-for-approval never exec \
   -
 ```
 
-5. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because read-only mode blocks shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
-6. If a reviewer fails because of local or transient tooling, retry it once with the documented command shape above. If it still fails, mark the local adversarial review incomplete and report the blocker instead of pretending the review passed.
+6. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because read-only mode blocks shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
+7. If a reviewer fails because of local or transient tooling, retry it once with the documented command shape above. If it still fails, mark the local adversarial review incomplete and report the blocker instead of pretending the review passed.
 
 Aggregation and consolidation:
 
