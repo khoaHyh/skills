@@ -1,6 +1,6 @@
 ---
 name: computa-please
-description: Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, debugging, recall/pickup, reflection, and local adversarial review with Cursor/Codex.
+description: "Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, debugging, recall/pickup, reflection, and local adversarial review with Cursor/Codex."
 ---
 
 # computa-please
