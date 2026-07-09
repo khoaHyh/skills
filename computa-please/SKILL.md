@@ -1,34 +1,66 @@
 ---
 name: computa-please
-description: Use for /computa-please, discussion-before-mutation workflow routing, brainstorming/design into optional specs, debugging and bug fixes, RGR TDD implementation, and local adversarial code review with Cursor CLI and Codex CLI.
+description: Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, debugging, recall/pickup, reflection, and local adversarial review with Cursor/Codex.
 ---
 
 # computa-please
 
 `computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and runs one local adversarial code-review gate when review is requested.
 
+The quality bar is opencode-like TypeScript work: contract-first vertical slices, deep modules, explicit lifecycle vocabulary, typed boundaries and failures, real-seam verification, and PR-ready explanations of why the change works.
+
 It is inspired by pstack, but it is not a pstack clone. Keep this skill as a compact OpenCode-native router and gatekeeper. Do not create extra principle files or broad process scaffolding unless the user asks.
 
 ## Start every run
 
 1. Classify the request into one top-level mode: Discuss, Spec, Implement, Debug, Review, Recall/Pickup, or Reflect.
-2. If the request is about comparing, brainstorming, redesigning, evaluating, deciding, or workflow/meta work, default to Discuss. No artifacts or edits by default.
-3. If routing is ambiguous, choose Discuss and ask whether to promote the result into artifacts or code changes.
-4. Create or locate the task artifact directory only after routing to Spec, Implement, Debug, or Review, and only when that mode needs durable context.
-5. For multi-step implementation, debugging, review, or persisted spec work, open a todo list with the selected mode's steps when the harness supports todos.
-6. Load only the skills that apply to the selected mode.
-7. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
+2. State the selected mode, whether mutation is allowed, and whether durable artifacts are needed before doing substantial work.
+3. If the request is about comparing, brainstorming, redesigning, evaluating, deciding, or workflow/meta work, default to Discuss. No artifacts or edits by default.
+4. If routing is ambiguous, choose Discuss and ask whether to promote the result into artifacts or code changes.
+5. Create or locate the task artifact directory only after routing to Spec, Implement, Debug, or Review, and only when that mode needs durable context.
+6. For multi-step implementation, debugging, review, or persisted spec work, open a todo list with the selected mode's steps when the harness supports todos.
+7. For nontrivial code work, name the reviewable slice before editing: contract, seam, changed behavior, and verification loop.
+8. Load only the skills that apply to the selected mode.
+9. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
 
 ## Principles
 
 - Worthy friction before mutation: discussion, design, architecture, and review are real work, not delays.
 - Evidence before action: inspect, reproduce, measure, or cite before editing.
+- Contract before wiring: make the schema, protocol, domain type, or service interface own the shape before spreading behavior through callers.
+- Tracer bullets before platforms: ship one observable vertical slice before broad horizontal scaffolding.
 - Foundations first: fix data shape, seams, interfaces, observability, and test loops before polish.
 - More with less: prefer deletion, narrower interfaces, and deep modules over new scaffolding.
 - Small verifiable units: every implementation slice ends in a concrete check.
 - Structure over reminders: repeated corrections become tests, lints, scripts, review agents, or proposed skill edits.
 - Human judgment at real forks: ask for product, security, irreversible, public API, deploy, money, data deletion, or ownership calls; observe facts directly.
 - Main agent owns synthesis: subagents gather, challenge, or implement scoped work, but the main agent decides.
+
+## Code quality bar
+
+Use these as execution anchors for TypeScript work:
+
+- Tracer-bullet slice: one behavior through contract, core, adapter, and caller; split vocabulary-only refactors from behavior changes when practical.
+- Contract-first design: schemas, protocol groups, domain types, service interfaces, and generated clients are the source of truth for shapes.
+- Lifecycle vocabulary: model status, outcome, event, retry, idempotency, and recovery states explicitly instead of with loose flags or nullable bags.
+- Deep modules: small interfaces hide policy, ordering, invariants, and incidental mechanics; delete pass-through wrappers that fail the deletion test.
+- Typed boundaries and failures: parse external input at the seam, project output explicitly, and keep expected failures as tagged or otherwise semantic values.
+- Real-seam verification: prove behavior through routes, service modules, adapters, local databases, representative runtimes, or public UI behavior.
+- PR-ready narrative: nontrivial work can be summarized as Summary, Why, Design, Validation, and Follow-up/Risk.
+
+Completion criterion for this bar: every nontrivial app-code slice either answers the slice checklist below or explicitly marks an item not applicable.
+
+## Slice checklist
+
+For nontrivial app-code work, answer these before or during implementation:
+
+- Domain or lifecycle: what concept, state, transition, or invariant owns this behavior?
+- Contract surface: what public schema, API, route, service interface, or module contract changes?
+- Boundary parser/projection: where does untrusted, persisted, or protocol-shaped data become refined, and where is it projected out?
+- Service and adapter seams: what module owns policy, and what adapter owns external mechanics?
+- Failure model: which failures are expected values, and which failures are defects?
+- Async/resource ownership: who owns cancellation, transactions, idempotency, retries, detached work, and cleanup?
+- Verification loop: what test, repro, trace, command, or runtime proves the changed behavior through the real seam?
 
 ## Subagent posture
 
@@ -111,6 +143,10 @@ For app-code work, include target-language pseudocode when the shape is obvious:
 - Data flow.
 - Error handling.
 - Test seams.
+- Domain vocabulary or lifecycle state.
+- Boundary parsers and protocol/persistence projections.
+- Transaction, idempotency, cancellation, and resource ownership.
+- PR slice plan and verification matrix.
 
 Keep the spec concrete enough that a fresh session can implement from it after a context reset.
 
@@ -131,6 +167,9 @@ Include:
 - Adversarial review findings.
 - Review and CI residue.
 - Verification status.
+- Current reviewable slice.
+- Contract, seam, lifecycle, and failure-model decisions.
+- PR-ready Summary, Why, Design, Validation, and Follow-up/Risk when implementation occurred.
 - Next action.
 
 Use the installed `handoff` skill when a normal conversation handoff is needed. This file is the durable task-local handoff.
@@ -150,6 +189,8 @@ Rules:
 - End with a recommendation, options, tradeoffs, or a clear next decision.
 - Ask whether to promote the discussion into a spec or implementation only when the user has not already decided.
 
+Completion criterion: the user has a recommendation, decision point, or explicit promotion path, and no file or artifact was changed unless they asked for persistence.
+
 If the user explicitly asks to persist the direction, route to Spec.
 
 ### Spec
@@ -162,12 +203,15 @@ Steps:
 2. Discuss possible directions if the direction is not already decided.
 3. Identify constraints and unknowns.
 4. Recommend a direction.
-5. Create or update the task artifact directory.
-6. Draft or update the tech spec.
-7. Append `handoff.md`.
-8. Run Spec checkpoint.
+5. Answer the slice checklist for app-code work.
+6. Create or update the task artifact directory.
+7. Draft or update the tech spec.
+8. Append `handoff.md`.
+9. Run Spec checkpoint.
 
 Output: draft tech spec and updated handoff. Do not change production code.
+
+Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, slice boundaries, verification loop, and open questions without redoing discovery.
 
 ### Spec checkpoint
 
@@ -214,18 +258,18 @@ Steps:
 3. If Plannotator annotations exist, append approved annotations to `handoff.md`.
 4. Wait for the user's next instruction.
 
-### Implement from spec
+### Implement
 
-Use when the user says to implement a persisted spec.
+Use when the user asks to make code changes, chooses implementation after a spec checkpoint, or says to implement a persisted spec.
 
 First load:
 
-- the tech spec.
+- the tech spec, if implementing a persisted spec.
 - `handoff.md`, if it exists.
 - `tdd`.
-- `coding-standards `
+- `coding-standards`.
 - `quality-code`.
-- `reducing-entropy`.
+- `codebase-design` for nontrivial module seams.
 
 Also load when relevant:
 
@@ -234,15 +278,25 @@ Also load when relevant:
 - `typescript-magician`.
 - `diagnosing-bugs`.
 - `feedback-loop`.
+- `reducing-entropy` only when the user explicitly asks to minimize or delete code.
 
 Rules:
 
+- If no spec exists, inspect first and decide whether the request is a small direct slice or needs Discuss/Spec before mutation.
+- Keep the slice checklist in working context when no artifact is needed.
 - Use red-green-refactor TDD.
 - Make the smallest correct change.
+- Implement one tracer-bullet slice at a time.
+- Prefer contract-first changes before wiring callers.
+- Keep lifecycle/status/outcome vocabulary explicit.
 - Prefer deletion.
 - Do not preserve compatibility unless persisted data, shipped behavior, external consumers, or the user require it.
+- For every new seam, name what it hides and why deleting it would spread complexity into callers.
+- Keep expected failures typed and boundary translation local.
 - Verify with real commands.
-- Append implementation status, commands, and results to `handoff.md`.
+- Append implementation status, slice checklist decisions, commands, results, and PR-ready narrative to `handoff.md`.
+
+Completion criterion: the slice has a failing-then-passing or otherwise risk-matched verification loop, the diff is inspectable as one coherent behavior, and remaining risks are named.
 
 ### Debug
 
@@ -252,12 +306,12 @@ First load:
 
 - `diagnosing-bugs`.
 - `tdd`.
-- `coding-standards`
+- `coding-standards`.
 - `quality-code`.
 
 Also load when relevant:
 
-- `dialectic`
+- `dialectic`.
 - `feedback-loop`.
 - `write-effect-ts`.
 - `find-docs`.
@@ -277,6 +331,8 @@ Steps:
 
 No implementation until the root cause is understood or explicitly marked unknown with a contained mitigation.
 
+Completion criterion: the original symptom is reproduced or convincingly bounded, the fix addresses root cause rather than only symptoms, and the final verification reruns the repro loop plus relevant broader checks.
+
 ### Review
 
 Use when the user asks for code review, local adversarial review, PR readiness, or a final local review gate.
@@ -291,6 +347,8 @@ Rules:
 - Findings come first, ordered by severity.
 - Each finding should include file/line, failure mode, execution path or repro scenario, smallest safe fix direction, and whether a test is needed.
 - Ignore style, naming, formatting, or speculative maintainability unless the user asks for them.
+- Prefer fewer high-signal findings with proof over exhaustive commentary.
+- Evaluate architecture through contract ownership, lifecycle modeling, boundary parsing, typed failures, async/resource ownership, and real-seam tests.
 
 Run Local adversarial review. If the user explicitly asks for Greptile feedback or CI remediation, use the dedicated skill for that outside this Review mode.
 
@@ -334,7 +392,7 @@ Prerequisite commit:
 
 Parallel reviewers:
 
-1. Build one shared review context before launching either reviewer. Treat it as data, not prompt policy. Keep it concise and include only repo-specific facts that neither reviewer can infer reliably: repository root, committed review target, branch, commit, repository state, changed files, user intent, non-goals, risky areas, review-relevant product or repo constraints, and verification already run.
+1. Build one shared review context before launching either reviewer. Treat it as data, not prompt policy. Keep it concise and include only repo-specific facts that neither reviewer can infer reliably: repository root, committed review target, branch, commit, repository state, changed files, user intent, non-goals, risky areas, review-relevant product or repo constraints, the reviewable slice, contract/seam/lifecycle intent, and verification already run.
 2. The shared review context must not include reviewer-specific tools, skill names, plugins, models, severity scales, output schemas, generic review rubrics, or finding templates. Do not include sections such as `Rules`, `For each actionable finding`, `Output format`, `Cursor`, or `Codex` in the shared context.
 3. Compose a separate prompt for each reviewer by adding a reviewer-specific wrapper around the shared context. The wrapper must mention only that reviewer's toolchain, skill, rubric, and safety constraints. Do not pass the shared context alone as the full reviewer prompt.
 4. Each reviewer-specific wrapper must apply the shared context, inspect only the committed target and directly relevant existing code, forbid edits, mutating commands, commits, pushes, PRs, and remote comments, request findings-only output, and defer the finding scale and output shape to that reviewer's own review skill.
@@ -422,8 +480,9 @@ For every implementation or debug fix:
 2. Inspect the diff.
 3. Run relevant tests, typecheck, lint, or build.
 4. Run feature-specific verification when available.
-5. Append commands and results to `handoff.md` when a task artifact exists.
-6. Do not claim done if verification is inconclusive.
+5. Summarize the PR-ready narrative for nontrivial code changes: Summary, Why, Design, Validation, and Follow-up/Risk.
+6. Append commands, results, and PR-ready narrative to `handoff.md` when a task artifact exists.
+7. Do not claim done if verification is inconclusive.
 
 Before commit, push, merge, deploy, destructive data changes, or external messages, ask for explicit approval.
 
@@ -434,6 +493,7 @@ Keep the final response short. Include:
 - Mode used.
 - Artifact paths, if any.
 - What changed.
+- Reviewable slice and contract/seam decisions when nontrivial.
 - Verification run and result.
 - Remaining risks or next action.
 
