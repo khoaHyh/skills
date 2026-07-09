@@ -1,11 +1,11 @@
 ---
 name: computa-please
-description: "Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, debugging, recall/pickup, reflection, and local adversarial review with Cursor/Codex."
+description: "Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, debugging, recall/pickup, reflection, and local adversarial review with Cursor, Codex, and OpenCode."
 ---
 
 # computa-please
 
-`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and runs one local adversarial code-review gate when review is requested.
+`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and runs one local adversarial code-review gate across Cursor, Codex, and OpenCode when review is requested.
 
 The quality bar is opencode-like TypeScript work: contract-first vertical slices, deep modules, explicit lifecycle vocabulary, typed boundaries and failures, real-seam verification, and PR-ready explanations of why the change works.
 
@@ -68,7 +68,7 @@ For nontrivial app-code work, answer these before or during implementation:
 - For research and design, use parallel `explore`, `librarian`, `oracle`, `dialectic`, or `design-an-interface` when the problem benefits from independent search or competing frames.
 - For codebase exploration, give subagents scoped questions and file pointers; keep raw dumps out of the main thread.
 - For debugging, build or identify the repro/evidence loop before fanning out hypotheses. After the symptom is bounded, delegate code path, history, docs, or hypothesis investigation.
-- For review, use the local adversarial shape: Codex CLI and Cursor CLI run in parallel against the same committed diff, shared review context, and separate reviewer-specific prompts.
+- For review, use the local adversarial shape: Cursor CLI, Codex CLI, and two OpenCode subagents run in parallel against the same committed diff, shared review context, and separate reviewer-specific prompts.
 - For implementation, the main agent edits by default. Delegate only isolated, inspectable work.
 - Never pass through subagent output blindly. Confirm, reject, and merge findings in the main thread.
 
@@ -392,12 +392,13 @@ Prerequisite commit:
 
 Parallel reviewers:
 
-1. Build one shared review context before launching either reviewer. Treat it as data, not prompt policy. Keep it concise and include only repo-specific facts that neither reviewer can infer reliably: repository root, committed review target, branch, commit, repository state, changed files, user intent, non-goals, risky areas, review-relevant product or repo constraints, the reviewable slice, contract/seam/lifecycle intent, and verification already run.
+1. Build one shared review context before launching the reviewers. Treat it as data, not prompt policy. Keep it concise and include only repo-specific facts that the reviewers cannot infer reliably: repository root, review fixed point or base ref, committed review target, branch, commit, repository state, changed files, user intent, non-goals, risky areas, review-relevant product or repo constraints, the reviewable slice, contract/seam/lifecycle intent, and verification already run. Keep the fixed point as a single resolvable ref such as `HEAD^`; keep a range such as `HEAD^..HEAD` in the separate committed-target field.
 2. The shared review context must not include reviewer-specific tools, skill names, plugins, models, severity scales, output schemas, generic review rubrics, or finding templates. Do not include sections such as `Rules`, `For each actionable finding`, `Output format`, `Cursor`, or `Codex` in the shared context.
 3. Compose a separate prompt for each reviewer by adding a reviewer-specific wrapper around the shared context. The wrapper must mention only that reviewer's toolchain, skill, rubric, and safety constraints. Do not pass the shared context alone as the full reviewer prompt.
 4. Each reviewer-specific wrapper must apply the shared context, inspect only the committed target and directly relevant existing code, forbid edits, mutating commands, commits, pushes, PRs, and remote comments, request findings-only output, and defer the finding scale and output shape to that reviewer's own review skill.
-5. Spawn two independent CLI reviewers in parallel against the same committed diff and repository state. Do not let either reviewer's output shape the other's prompt.
-6. Cursor CLI reviewer: use the Cursor Agent documented print/headless mode with the Cursor Team Kit plugin, only the `thermo-nuclear-code-quality-review` skill, a Cursor-only prompt, and an exact Opus 4.8 model ID from `cursor-agent models` or `agent models`. Prefer `claude-opus-4-8-thinking-high` when listed. Locate the plugin before giving up: first check `~/.cursor/plugins/cache/cursor-public/cursor-team-kit/*`, then other local Cursor/agent plugin directories. The plugin directory is the hash directory that contains `skills/thermo-nuclear-code-quality-review/SKILL.md`, not the skill directory itself. Do not invent parameterized aliases such as `claude-opus-4-8[context=1m,effort=high,fast=false]`; if no Opus 4.8 model is listed or no Cursor Team Kit plugin directory containing the thermo-nuclear skill can be found after those searches, mark the Cursor review incomplete.
+5. The gate has four independent reviewers against the same committed diff and repository state: one Cursor CLI reviewer, one Codex CLI reviewer, one OpenCode `thermo-nuclear-code-quality-review` reviewer, and one OpenCode `code-review` reviewer. Do not let any reviewer's output shape another's prompt.
+6. The two OpenCode reviewers must be separate fresh Task calls with no `task_id`, using a review-capable subagent type that has no effective model or variant override. Prefer built-in `general` only when it is model-unpinned. Do not add or pass a model or variant: OpenCode then inherits both from the invoking parent agent. For example, a parent running `openai/gpt-5.6-sol` with the `xhigh` variant yields two OpenCode reviewers on that same model and variant. If no model-unpinned review-capable subagent is available, mark both OpenCode reviews incomplete instead of silently using another model.
+7. Cursor CLI reviewer: use the Cursor Agent documented print/headless mode with the Cursor Team Kit plugin, only the `thermo-nuclear-code-quality-review` skill, a Cursor-only prompt, default Agent execution mode, and the Auto model. Pass `--model auto` and omit `--mode`, because Cursor documents Agent as the default when no mode is specified. `--auto-review` controls approvals, not model selection, and is not a substitute for `--model auto`. Locate the plugin before giving up: first check `~/.cursor/plugins/cache/cursor-public/cursor-team-kit/*`, then other local Cursor/agent plugin directories. The plugin directory is the hash directory that contains `skills/thermo-nuclear-code-quality-review/SKILL.md`, not the skill directory itself. If no Cursor Team Kit plugin directory containing the thermo-nuclear skill can be found after those searches, mark the Cursor review incomplete.
 
 Cursor-only prompt shape:
 
@@ -411,58 +412,72 @@ Shared review context:
 ```
 
 ```bash
-cursor-agent --print --output-format text --mode=plan --trust \
+cursor-agent --print --output-format text --trust \
   --workspace "<repo-root>" \
   --plugin-dir "<path-to-cursor-team-kit-plugin-dir>" \
-  --model "claude-opus-4-8-thinking-high" \
+  --model auto \
   "<cursor-review-prompt>"
 ```
 
-7. Codex CLI reviewer: use the OpenAI-documented non-interactive `codex exec` shape. The prompt must use `code-review` as the primary review skill, apply the shared context, and contain no Cursor-specific instructions. Keep the sandbox read-only and put the committed diff target in the prompt. Do not use `codex review --commit` or `codex exec review --commit` when passing a custom review prompt, because installed Codex versions can reject commit targets combined with prompts. If setting approval policy, place global Codex flags before `exec`; do not put `--ask-for-approval` after `exec`. Do not force brittle model aliases such as `gpt-5.5-xhigh` or `gpt-5.5-extra-high`; use the configured default model unless the user explicitly requests a documented, account-supported override.
+8. Codex CLI reviewer: use the OpenAI-documented non-interactive `codex exec` shape below, which pins the required model and reasoning effort. The prompt must use `code-review` as the primary review skill, apply the shared context, and contain no Cursor-specific instructions. Keep the sandbox read-only and put the committed diff target in the prompt. Do not use `codex review --commit` or `codex exec review --commit` when passing a custom review prompt, because installed Codex versions can reject commit targets combined with prompts. Place global Codex flags before `exec`; do not put `--ask-for-approval`, `--model`, or the reasoning override after `exec`.
 
 Codex-only prompt shape:
 
 ```text
 Use the `code-review` skill for a local adversarial review.
 
-Apply the shared review context below. Inspect only the committed review target and directly relevant existing code needed to understand it. Do not edit files, run mutating commands, commit, push, create PRs, or comment remotely. Findings only. Follow the review rubric and output expectations from `code-review`.
+Use the review fixed point from the shared context as the skill's fixed point. Apply the shared review context below. Inspect only the committed review target and directly relevant existing code needed to understand it. Do not edit files, run mutating commands, commit, push, create PRs, or comment remotely. Findings only. Follow the review rubric and output expectations from `code-review`.
 
 Shared review context:
 <shared-review-context>
 ```
 
 ```bash
-codex --ask-for-approval never exec \
+codex --ask-for-approval never \
+  --model "gpt-5.6-sol" \
+  -c 'model_reasoning_effort="xhigh"' \
+  exec \
   --ephemeral \
   -C "<repo-root>" \
   -s read-only \
   "<codex-review-prompt>"
 ```
 
-For structured output, use the same shape with Codex's documented schema flags and pass the Codex-only prompt on stdin:
+9. OpenCode thermo-nuclear reviewer prompt shape:
 
-```bash
-codex --ask-for-approval never exec \
-  --ephemeral \
-  -C "<repo-root>" \
-  -s read-only \
-  --output-schema "<schema.json>" \
-  -o "<codex-review-output.json>" \
-  -
+```text
+Load and use `thermo-nuclear-code-quality-review` for a local adversarial review.
+
+Apply the shared review context below. Inspect only the committed review target and directly relevant existing code needed to understand it. Do not edit files, run mutating commands, commit, push, create PRs, or comment remotely. Findings only. Follow the review scale and output expectations from `thermo-nuclear-code-quality-review`.
+
+Shared review context:
+<shared-review-context>
 ```
 
-8. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because read-only mode blocks shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
-9. If a reviewer fails because of local or transient tooling, retry it once with the documented command shape above. If it still fails, mark the local adversarial review incomplete and report the blocker instead of pretending the review passed.
+10. OpenCode code-review reviewer prompt shape:
+
+```text
+Load and use `code-review` for a local adversarial review.
+
+Use the review fixed point from the shared context as the skill's fixed point. Apply the skill's Standards and Spec axes directly in this already-isolated reviewer session; do not launch nested subagents. Preserve the skill's separate `Standards` and `Spec` reports and summary. Apply the shared review context below. Inspect only the committed review target and directly relevant existing code needed to understand it. Do not edit files, run mutating commands, commit, push, create PRs, or comment remotely. Findings only. Follow the remaining review rubric and output expectations from `code-review`.
+
+Shared review context:
+<shared-review-context>
+```
+
+11. Launch the two Task calls and both CLI calls through the harness's parallel tool facility so all four receive their prompts before any reviewer returns.
+12. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because its permissions block shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
+13. If a reviewer fails because of local or transient tooling, retry only that reviewer once with the documented shape above. If it still fails, record a blocker as that reviewer's terminal outcome and mark the local adversarial review incomplete instead of pretending the review passed.
 
 Aggregation and consolidation:
 
-1. Wait for both reviewer outputs before judging findings.
+1. Wait for all four reviewers to reach a terminal outcome: review output or recorded blocker. Consolidate successful outputs and report any blocker as an incomplete gate.
 2. Normalize enough metadata to de-duplicate candidates while preserving each reviewer's original wording, severity, priority, category, and taxonomy. Add comparison fields only when useful: source reviewer, path/line, root cause, failure mode, evidence or repro path, fix direction, security impact, and test need.
 3. De-duplicate by root cause and failure mode, not wording. Merge duplicate entries, keep the strongest evidence, and preserve all source reviewers.
 4. Reject unsupported findings, style-only comments, findings outside the reviewed committed diff, and items without a concrete failure mode.
 5. Present all unique confirmed findings first, ordered by severity. Include the source reviewer list for each finding.
 6. Briefly list rejected false positives or duplicate clusters only when useful for trust or follow-up.
-7. Append both individual raw reviewer outputs and the consolidated adversarial review findings to `handoff.md` when a task artifact exists.
+7. Append all four terminal outcomes, including raw reviewer output or a recorded blocker, and the consolidated adversarial review findings to `handoff.md` when a task artifact exists.
 
 ## Decision rules
 
