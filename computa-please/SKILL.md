@@ -116,39 +116,13 @@ branch=$(git branch --show-current 2>/dev/null || true)
 
 Never place secrets, tokens, customer data, or raw private transcript dumps in either artifact.
 
-## Tech spec template
+## Tech spec artifact
 
-Every tech spec includes:
+Use the installed `tech-spec` skill whenever Spec mode creates or materially updates the tech spec artifact. Pass it the available conversation and codebase context plus the selected artifact path; Spec mode's durable-artifact requirement is the instruction to save the result at that path.
 
-- Context.
-- Problem.
-- Goals.
-- Non-goals.
-- Constraints.
-- Current-state findings.
-- Proposed direction.
-- Alternatives considered.
-- Decision.
-- Implementation phases.
-- Verification plan.
-- Open questions.
+The `tech-spec` skill is the source of truth for branch selection, required structure, typed contracts, call stacks, file mapping, and the RGR TDD plan. Apply this skill's slice checklist as an additional completion check rather than maintaining a second tech spec template here.
 
-For app-code work, include target-language pseudocode when the shape is obvious:
-
-- Types.
-- Public and internal APIs.
-- Call stack.
-- Seams.
-- Adapters.
-- Data flow.
-- Error handling.
-- Test seams.
-- Domain vocabulary or lifecycle state.
-- Boundary parsers and protocol/persistence projections.
-- Transaction, idempotency, cancellation, and resource ownership.
-- PR slice plan and verification matrix.
-
-Keep the spec concrete enough that a fresh session can implement from it after a context reset.
+Completion criterion: the artifact satisfies `tech-spec`, every applicable slice-checklist item is represented or marked not applicable, and a fresh session can implement from it without redoing discovery.
 
 ## Handoff format
 
@@ -199,15 +173,11 @@ Use when the user asks for a tech spec, PRD, durable plan, implementation phases
 
 Steps:
 
-1. Explore the problem.
-2. Discuss possible directions if the direction is not already decided.
-3. Identify constraints and unknowns.
-4. Recommend a direction.
-5. Answer the slice checklist for app-code work.
-6. Create or update the task artifact directory.
-7. Draft or update the tech spec.
-8. Append `handoff.md`.
-9. Run Spec checkpoint.
+1. Create or locate the task artifact directory and select the existing or new tech spec path.
+2. Load and run `tech-spec` with the available context and selected artifact path, following its branch selection through an implementation-ready artifact.
+3. Check every slice-checklist item for app-code work and update the artifact for any missing applicable item.
+4. Append `handoff.md`.
+5. Run Spec checkpoint.
 
 Output: draft tech spec and updated handoff. Do not change production code.
 
@@ -245,7 +215,7 @@ Optional supporting skills:
 - `dialectic` when there is a real unresolved tension.
 - `documentation` when the output is docs-heavy.
 
-Update the tech spec and append `handoff.md` with decisions, rejected approaches, and terminology changes.
+Re-run `tech-spec` with the new decisions and the existing artifact path, then append `handoff.md` with decisions, rejected approaches, and terminology changes.
 
 ### Pause to review or annotate
 
