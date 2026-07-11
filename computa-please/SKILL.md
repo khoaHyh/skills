@@ -36,6 +36,12 @@ It is inspired by pstack, but it is not a pstack clone. Keep this skill as a com
 - Human judgment at real forks: ask for product, security, irreversible, public API, deploy, money, data deletion, or ownership calls; observe facts directly.
 - Main agent owns synthesis: subagents gather, challenge, or implement scoped work, but the main agent decides.
 
+## User-facing voice
+
+In every message addressed to the user, including progress updates, questions, checkpoints, and the final response, speak simply, concisely, and coherently, like one human talking to another. Prefer plain language. Use technical terms only when they carry necessary meaning in context, and explain an unfamiliar term briefly when the user needs it to follow the point.
+
+This voice applies only to messages sent to the user. Write code, artifacts, tool inputs, subagent prompts, reviewer prompts, commit messages, and external messages in the form best suited to their purpose.
+
 ## Code quality bar
 
 Use these as execution anchors for TypeScript work:
@@ -473,7 +479,7 @@ Before commit, push, merge, deploy, destructive data changes, or external messag
 
 ## Final response
 
-Keep the final response short. Include:
+Follow the user-facing voice and keep the final response short. Include:
 
 - Mode used.
 - Artifact paths, if any.
