@@ -435,13 +435,13 @@ Shared review context:
 ```text
 Load and use `code-review` for a local adversarial review.
 
-Use the review fixed point from the shared context as the skill's fixed point. Apply the skill's Standards and Spec axes directly in this already-isolated reviewer session; do not launch nested subagents. Preserve the skill's separate `Standards` and `Spec` reports and summary. Apply the shared review context below. Inspect only the committed review target and directly relevant existing code needed to understand it. Do not edit files, run mutating commands, commit, push, create PRs, or comment remotely. Findings only. Follow the remaining review rubric and output expectations from `code-review`.
+Use the review fixed point from the shared context as the skill's fixed point. Follow the skill's Standards and Spec workflow, including its nested Standards and Spec reviewers when required. Preserve the skill's separate `Standards` and `Spec` reports and summary. Apply the shared review context below. Inspect only the committed review target and directly relevant existing code needed to understand it. Do not edit files, run mutating commands, commit, push, create PRs, or comment remotely. Findings only. Follow the remaining review rubric and output expectations from `code-review`.
 
 Shared review context:
 <shared-review-context>
 ```
 
-11. Launch the two Task calls and both CLI calls through the harness's parallel tool facility so all four receive their prompts before any reviewer returns. Set the harness timeout for every Cursor and Codex CLI Bash call, including retries, to exactly 360000 milliseconds (six minutes); the command itself does not configure this timeout.
+11. Launch the two Task calls and both CLI calls through the harness's parallel tool facility so all four receive their prompts before any reviewer returns. Set the harness timeout for every Cursor and Codex CLI Bash call, including retries, to exactly 480000 milliseconds (eight minutes); the command itself does not configure this timeout.
 12. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because its permissions block shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
 13. If a reviewer fails because of local or transient tooling, retry only that reviewer once with the documented shape above. If it still fails, record a blocker as that reviewer's terminal outcome and mark the local adversarial review incomplete instead of pretending the review passed.
 
