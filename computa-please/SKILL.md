@@ -244,7 +244,6 @@ First load:
 - `handoff.md`, if it exists.
 - `tdd`.
 - `coding-standards`.
-- `quality-code`.
 - `codebase-design` for nontrivial module seams.
 
 Also load when relevant:
@@ -283,7 +282,6 @@ First load:
 - `diagnosing-bugs`.
 - `tdd`.
 - `coding-standards`.
-- `quality-code`.
 
 Also load when relevant:
 
@@ -441,7 +439,7 @@ Shared review context:
 <shared-review-context>
 ```
 
-11. Launch the two Task calls and both CLI calls through the harness's parallel tool facility so all four receive their prompts before any reviewer returns. Set the harness timeout for every Cursor and Codex CLI Bash call, including retries, to exactly 480000 milliseconds (eight minutes); the command itself does not configure this timeout.
+11. Launch the two Task calls and both CLI calls through the harness's parallel tool facility so all four receive their prompts before any reviewer returns. Set the harness timeout for every Cursor and Codex CLI Bash call, including retries, to exactly 600000 milliseconds (ten minutes); the command itself does not configure this timeout.
 12. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because its permissions block shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
 13. If a reviewer fails because of local or transient tooling, retry only that reviewer once with the documented shape above. If it still fails, record a blocker as that reviewer's terminal outcome and mark the local adversarial review incomplete instead of pretending the review passed.
 
