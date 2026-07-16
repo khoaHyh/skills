@@ -1,11 +1,11 @@
 ---
 name: computa-please
-description: "Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, debugging, recall/pickup, reflection, and local adversarial review with Cursor, Codex, and OpenCode."
+description: "Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, bounded finish loops, debugging, recall/pickup, reflection, and local adversarial review with Cursor, Codex, and OpenCode."
 ---
 
 # computa-please
 
-`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and runs one local adversarial code-review gate across Cursor, Codex, and OpenCode when review is requested.
+`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, runs accepted work to a machine-checkable PR gate when explicitly requested, and runs one local adversarial code-review gate across Cursor, Codex, and OpenCode when review is requested.
 
 The quality bar is opencode-like TypeScript work: contract-first vertical slices, deep modules, explicit lifecycle vocabulary, typed boundaries and failures, real-seam verification, and PR-ready explanations of why the change works.
 
@@ -13,12 +13,12 @@ It is inspired by pstack, but it is not a pstack clone. Keep this skill as a com
 
 ## Start every run
 
-1. Classify the request into one top-level mode: Discuss, Spec, Implement, Debug, Review, Recall/Pickup, or Reflect.
+1. Classify the request into one top-level mode: Discuss, Spec, Implement, Finish Loop, Debug, Review, Recall/Pickup, or Reflect.
 2. State the selected mode, whether mutation is allowed, and whether durable artifacts are needed before doing substantial work.
 3. If the request is about comparing, brainstorming, redesigning, evaluating, deciding, or workflow/meta work, default to Discuss. No artifacts or edits by default.
 4. If routing is ambiguous, choose Discuss and ask whether to promote the result into artifacts or code changes.
-5. Create or locate the task artifact directory only after routing to Spec, Implement, Debug, or Review, and only when that mode needs durable context.
-6. For multi-step implementation, debugging, review, or persisted spec work, open a todo list with the selected mode's steps when the harness supports todos.
+5. Create or locate the task artifact directory only after routing to Spec, Implement, Finish Loop, Debug, or Review, and only when that mode needs durable context.
+6. For multi-step implementation, finish-loop, debugging, review, or persisted spec work, open a todo list with the selected mode's steps when the harness supports todos.
 7. For nontrivial code work, name the reviewable slice before editing: contract, seam, changed behavior, and verification loop.
 8. Load only the skills that apply to the selected mode.
 9. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
@@ -32,6 +32,7 @@ It is inspired by pstack, but it is not a pstack clone. Keep this skill as a com
 - Foundations first: fix data shape, seams, interfaces, observability, and test loops before polish.
 - More with less: prefer deletion, narrower interfaces, and deep modules over new scaffolding.
 - Small verifiable units: every implementation slice ends in a concrete check.
+- Bounded loops: automate only against observable state, persist each transition, and stop on completion, a real decision fork, or repeated no-progress.
 - Structure over reminders: repeated corrections become tests, lints, scripts, review agents, or proposed skill edits.
 - Human judgment at real forks: ask for product, security, irreversible, public API, deploy, money, data deletion, or ownership calls; observe facts directly.
 - Main agent owns synthesis: subagents gather, challenge, or implement scoped work, but the main agent decides.
@@ -152,6 +153,8 @@ Include:
 - PR-ready Summary, Why, Design, Validation, and Follow-up/Risk when implementation occurred.
 - Next action.
 
+For an active Finish Loop, also record the run identifier, accepted spec path, PR and base, current and final commit SHA, VCS workflow, CI status and checked SHA, Greptile eligibility, request-attempt state, matching review identifier, and remaining actionable finding count. This ledger prevents duplicate external actions after context recovery.
+
 Use the installed `handoff` skill when a normal conversation handoff is needed. This file is the durable task-local handoff.
 
 ## Mode router
@@ -202,10 +205,11 @@ Are you satisfied with this tech spec?
 Options:
 
 - `Proceed to grill-with-docs`.
-- `Skip grill and implement`.
+- `Start Finish Loop`.
+- `Skip grill and implement locally`.
 - `Pause to review/annotate`.
 
-Recommend `Proceed to grill-with-docs` for nontrivial work. Recommend `Skip grill and implement` only for small, obvious, low-risk work.
+Recommend `Proceed to grill-with-docs` for nontrivial work. Recommend `Skip grill and implement locally` only for small, obvious, low-risk work. `Start Finish Loop` is explicit approval to run the accepted spec through the bounded PR workflow.
 
 ### Grill with docs
 
@@ -221,7 +225,7 @@ Optional supporting skills:
 - `dialectic` when there is a real unresolved tension.
 - `documentation` when the output is docs-heavy.
 
-Re-run `tech-spec` with the new decisions and the existing artifact path, then append `handoff.md` with decisions, rejected approaches, and terminology changes.
+Re-run `tech-spec` with the new decisions and the existing artifact path, then append `handoff.md` with decisions, rejected approaches, and terminology changes. Run Spec checkpoint again so the post-grill artifact is explicitly accepted before implementation or a Finish Loop begins.
 
 ### Pause to review or annotate
 
@@ -272,6 +276,16 @@ Rules:
 - Append implementation status, slice checklist decisions, commands, results, and PR-ready narrative to `handoff.md`.
 
 Completion criterion: the slice has a failing-then-passing or otherwise risk-matched verification loop, the diff is inspectable as one coherent behavior, and remaining risks are named.
+
+### Finish Loop
+
+Use only when the user explicitly asks to start a loop, take an accepted tech spec to an open PR, or babysit an existing PR to the final human gate. A post-grill spec is accepted only through the Spec checkpoint; completing the grill does not imply approval.
+
+An active Finish Loop authorizes scoped implementation, verification, commits, synchronization and conflict remediation for the current Graphite diff when tracked, pushes, PR creation or updates, ready-for-review state changes, CI remediation, one eligible Greptile request, and resolution of addressed review threads. It does not authorize sibling Graphite diffs, scope expansion, deploys, destructive changes, or unrelated-file changes; route those to the user as real decision forks.
+
+Load the accepted tech spec and `handoff.md`, then load the skills required by [the Finish Loop runbook](references/finish-loop.md) and execute its state machine. Persist every state transition before taking the next external action. A recovered run resumes from observed repository, PR, CI, and ledger state rather than replaying completed actions.
+
+The loop ends with the open PR at its final pushed commit, conflict-free and ready for review, required CI green for that commit, and all actionable findings from the single eligible Greptile review addressed. Hand that state to the user and stop.
 
 ### Debug
 
@@ -335,7 +349,7 @@ Steps:
 1. Read the supplied handoff, spec, transcript, branch, PR, or live state first.
 2. Reconstruct what is done, pending, blocked, and risky.
 3. Do not redo completed research or implementation unless verification requires it.
-4. Route the remaining work to Discuss, Spec, Implement, Debug, or Review.
+4. Route the remaining work to Discuss, Spec, Implement, Finish Loop, Debug, or Review. Resume Finish Loop only when its ledger records the original explicit authorization.
 5. State the resume point and what was inherited versus re-verified.
 
 ### Reflect
@@ -351,7 +365,7 @@ Rules:
 
 ### Local adversarial review
 
-Use before finalizing nontrivial code changes, or whenever Review mode is selected. This is the only formal Review runbook. Greptile is not part of this review.
+Use when Review mode is explicitly selected. This is the only formal Review runbook. Greptile is not part of this review.
 
 Prerequisite commit:
 
@@ -473,7 +487,7 @@ For every implementation or debug fix:
 6. Append commands, results, and PR-ready narrative to `handoff.md` when a task artifact exists.
 7. Do not claim done if verification is inconclusive.
 
-Before commit, push, merge, deploy, destructive data changes, or external messages, ask for explicit approval.
+Outside an active Finish Loop, ask for explicit approval before commit, push, merge, deploy, destructive data changes, or external messages. Inside a Finish Loop, its declared scope supplies approval only for the operations listed in that mode; stop at any operation or decision outside that boundary.
 
 ## Final response
 
