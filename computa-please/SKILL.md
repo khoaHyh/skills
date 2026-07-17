@@ -384,8 +384,8 @@ Parallel reviewers:
 
 1. Build one shared review context before launching the reviewers. Treat it as data, not prompt policy. Keep it concise and include only repo-specific facts that the reviewers cannot infer reliably: repository root, review fixed point or base ref, committed review target, branch, commit, repository state, changed files, user intent, non-goals, risky areas, review-relevant product or repo constraints, the reviewable slice, contract/seam/lifecycle intent, and verification already run. Keep the fixed point as a single resolvable ref such as `HEAD^`; keep a range such as `HEAD^..HEAD` in the separate committed-target field.
 2. The shared review context must not include reviewer-specific tools, skill names, plugins, models, severity scales, output schemas, generic review rubrics, or finding templates. Do not include sections such as `Rules`, `For each actionable finding`, `Output format`, `Cursor`, or `Codex` in the shared context.
-3. Compose a separate prompt or invocation for each reviewer. Prompt-driven reviewers get a reviewer-specific wrapper around the shared context; the Codex reviewer uses the bundled `autoreview` helper and its own validated review contract.
-4. Each prompt-driven wrapper must apply the shared context, inspect only the committed target and directly relevant existing code, forbid edits, mutating commands, commits, pushes, PRs, and remote comments, request findings-only output, and defer the finding scale and output shape to that reviewer's own review skill. The Codex invocation must target the same repository and committed change as the shared context.
+3. Compose a separate prompt for each reviewer by adding a reviewer-specific wrapper around the shared context. The wrapper must mention only that reviewer's toolchain, skill, rubric, and safety constraints. Do not pass the shared context alone as the full reviewer prompt.
+4. Each reviewer-specific wrapper must apply the shared context, inspect only the committed target and directly relevant existing code, forbid edits, mutating commands, commits, pushes, PRs, and remote comments, request findings-only output, and defer the finding scale and output shape to that reviewer's own review skill.
 5. The gate has four independent reviewers against the same committed diff and repository state: one Cursor CLI reviewer, one Codex CLI reviewer, one OpenCode `thermo-nuclear-code-quality-review` reviewer, and one OpenCode `code-review` reviewer. Do not let any reviewer's output shape another's prompt.
 6. The two OpenCode reviewers must be separate fresh Task calls with no `task_id`, using a review-capable subagent type that has no effective model or variant override. Prefer built-in `general` only when it is model-unpinned. Do not add or pass a model or variant: OpenCode then inherits both from the invoking parent agent. For example, a parent running `openai/gpt-5.6-sol` with the `xhigh` variant yields two OpenCode reviewers on that same model and variant. If no model-unpinned review-capable subagent is available, mark both OpenCode reviews incomplete instead of silently using another model.
 7. Cursor CLI reviewer: use the Cursor Agent documented print/headless mode with the Cursor Team Kit plugin, only the `thermo-nuclear-code-quality-review` skill, a Cursor-only prompt, default Agent execution mode, and the Auto model. Pass `--model auto` and omit `--mode`, because Cursor documents Agent as the default when no mode is specified. `--auto-review` controls approvals, not model selection, and is not a substitute for `--model auto`. Locate the plugin before giving up: first check `~/.cursor/plugins/cache/cursor-public/cursor-team-kit/*`, then other local Cursor/agent plugin directories. The plugin directory is the hash directory that contains `skills/thermo-nuclear-code-quality-review/SKILL.md`, not the skill directory itself. If no Cursor Team Kit plugin directory containing the thermo-nuclear skill can be found after those searches, mark the Cursor review incomplete.
@@ -409,17 +409,29 @@ cursor-agent --print --output-format text --trust \
   "<cursor-review-prompt>"
 ```
 
-8. Codex CLI reviewer: load and follow the installed OpenClaw `autoreview` skill. Set the Bash call's workdir to the repository root and run its bundled helper directly against the same committed target recorded in the shared context. Use `--mode commit --commit HEAD` when the target is `HEAD^..HEAD`; for a multi-commit branch or Graphite slice, use `--mode branch --base "<fixed-point>"` instead. Let the helper own bundle construction, isolation, the Codex prompt, and structured-output validation; do not pass the old custom `code-review` prompt or invoke nested reviewers. Use the packet's default `high` reasoning rather than `xhigh`, and enable compact streamed engine output so advancing activity remains visible. If the complete packet or executable helper is unavailable, mark the Codex review incomplete.
+8. Codex CLI reviewer: use the OpenAI-documented non-interactive `codex exec` shape below. Pin the fixed point and target to their resolved commit SHAs before launch so branch movement cannot change the reviewed diff. The prompt must load `autoreview` in direct reviewer mode, apply the shared context, and contain no other review skill or reviewer-specific instructions. Direct reviewer mode makes this Codex session the leaf reviewer; it must not invoke the bundled helper or another reviewer. Keep the sandbox read-only and use `high` reasoning. If the installed `autoreview` skill does not expose direct reviewer mode, mark the Codex review incomplete.
+
+Codex-only prompt shape:
+
+```text
+Load and use `autoreview` in direct reviewer mode for a local adversarial review.
+
+Perform the review in this Codex session. Review exactly <fixed-point-sha>..<target-sha>. Apply the shared review context below. Inspect only that committed target and directly relevant tracked code needed to understand it. Use read-only inspection commands. Do not edit files, run mutating commands, commit, push, create PRs, or comment remotely. Findings only. Follow the priority, category, evidence, and output requirements from `autoreview` direct reviewer mode. Do not invoke the bundled autoreview helper, `codex review`, reviewer panels, or nested reviewers.
+
+Shared review context:
+<shared-review-context>
+```
 
 ```bash
-AUTOREVIEW="${AGENTS_HOME:-$HOME/.agents}/skills/autoreview/scripts/autoreview"
-"$AUTOREVIEW" \
-  --mode commit \
-  --commit HEAD \
-  --engine codex \
-  --model gpt-5.6-sol \
-  --thinking high \
-  --stream-engine-output
+codex --ask-for-approval never \
+  --model "gpt-5.6-sol" \
+  -c 'model_reasoning_effort="high"' \
+  exec \
+  --ephemeral \
+  --ignore-rules \
+  -C "<repo-root>" \
+  -s read-only \
+  "<codex-review-prompt>"
 ```
 
 9. OpenCode thermo-nuclear reviewer prompt shape:
@@ -444,9 +456,9 @@ Shared review context:
 <shared-review-context>
 ```
 
-11. Launch the two Task calls and both CLI calls through the harness's parallel tool facility so all four start before any reviewer returns. Set every Cursor CLI Bash timeout, including its retry, to exactly 600000 milliseconds (ten minutes). Set every Codex autoreview Bash timeout, including its retry, to exactly 1800000 milliseconds (thirty minutes); advancing autoreview heartbeat or streamed activity is healthy progress within that window.
+11. Launch the two Task calls and both CLI calls through the harness's parallel tool facility so all four receive their prompts before any reviewer returns. Set every Cursor CLI Bash timeout, including its retry, to exactly 600000 milliseconds (ten minutes). Set every Codex CLI Bash timeout, including its retry, to exactly 1800000 milliseconds (thirty minutes).
 12. Let each reviewer produce its authentic review output. If Cursor cannot inspect the diff because its permissions block shell execution, keep its output but note that limitation during consolidation instead of treating it as a full diff review.
-13. If a reviewer fails because of local or transient tooling, retry only that reviewer once with the documented shape above. For Codex, validated autoreview output containing findings is a successful review outcome even though the helper exits nonzero; retry only engine, isolation, bundle, or output-validation failures. If a tooling retry still fails, record a blocker as that reviewer's terminal outcome and mark the local adversarial review incomplete instead of pretending the review passed.
+13. If a reviewer fails because of local or transient tooling, retry only that reviewer once with the documented shape above. If it still fails, record a blocker as that reviewer's terminal outcome and mark the local adversarial review incomplete instead of pretending the review passed.
 
 Aggregation and consolidation:
 
