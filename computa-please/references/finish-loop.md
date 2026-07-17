@@ -11,7 +11,7 @@ Load only the skills needed by the observed path:
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
-- `greptile-address` only after the one allowed review exists.
+- `greptile-address` for its completed-snapshot predicate during discovery, then for remediation only after the one allowed completed review exists.
 
 ## Run Ledger
 
@@ -68,39 +68,43 @@ Completion: the intended behavior is implemented, local checks pass, and the dif
 
 Completion: the open PR points at the recorded SHA, is ready for review, and targets the intended parent or base.
 
-### 5. Initial CI Green
+### 5. Start Greptile and Monitor CI
 
-1. Wait for required checks on the recorded SHA.
-2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, commit, publish, record the new SHA, and wait again.
+Immediately after publication and before waiting for CI, fetch Greptile artifacts on the PR and apply the `greptile-address` completed-snapshot predicate. A bot-authored issue comment, check, reaction, standalone inline comment, or status/skip notice is not an existing review. In particular, `PR author is in the excluded authors list` is an ineligibility notice, not a review snapshot. Then fix the run's Greptile disposition:
+
+- If any completed Greptile review exists, select the latest snapshot and record its review ID and reviewed SHA without posting a request.
+- If no completed review exists and the PR reports 300 changed lines or fewer, record `ineligible-size`.
+- If no completed review exists and the PR reports more than 300 changed lines, record `request-attempted: true` and the time immediately before posting one `@greptileai` review request.
+
+Then monitor required checks while any requested Greptile review runs in parallel:
+
+1. Never post another Greptile request during this agent run, including after CI fixes, a low confidence score, timeout, ambiguous delivery, context recovery, or a new pushed SHA.
+2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, commit, publish, record the new SHA, and wait again without changing the recorded Greptile disposition.
 3. Treat external outages and unavailable required infrastructure as blockers.
 4. Stop for no-progress when two consecutive cycles produce no new evidence, diagnosis, code change, or check-state change. Report the repeated failure and attempted remedies.
 
-Completion: every required check is green for the current recorded SHA.
+Completion: every required check is green for the current recorded SHA, and the Greptile disposition is one recorded completed review, `ineligible-size`, or one attempted request. A requested review need not have arrived yet.
 
-### 6. Greptile Gate
+### 6. Consume Greptile
 
-Before applying the size threshold, fetch existing Greptile reviews on the PR.
+Use the Greptile disposition fixed before the initial CI wait:
 
-- If any existing Greptile review exists, select the latest snapshot, record its review ID and reviewed SHA, and consume it without posting a request. Address every finding that still applies to the current diff; classify findings already covered by newer commits accordingly.
-- If no review exists and the PR reports 300 changed lines or fewer, record `ineligible-size` and skip to Final CI.
-- If no review exists and the PR reports more than 300 changed lines, record `request-attempted: true` and the time immediately before posting one `@greptileai` review request.
-
-After selecting an existing review or attempting the one allowed request:
-
-1. Never post another Greptile request during this agent run, including after fixes, a low confidence score, timeout, ambiguous delivery, context recovery, or a new pushed SHA.
-2. For an existing review, invoke `greptile-address` once with its review ID. For a requested review, wait for the bot review attributable to the recorded request and invoke `greptile-address` once with the PR, request time, and reviewed SHA.
-3. For a newly requested review, if no attributable review arrives or attribution is ambiguous, stop with a blocker rather than consuming an older review or retrying the request.
-4. Treat the score as metadata, not an exit condition. The gate is whether every actionable finding in that one review snapshot is fixed or rejected with evidence; an unresolved finding is a blocker to report to the user.
-5. Resolve addressed Greptile threads, run local verification, commit, publish, and record the new SHA when remediation changed files.
-6. Ignore later automatic or manually requested Greptile reviews for this run. Never transition back to this state.
+1. For `ineligible-size`, skip to Final CI.
+2. For an existing completed review, invoke `greptile-address` once with its recorded review ID.
+3. For an attempted request, use a review that is attributable to the recorded request if it has arrived; otherwise wait for it, then invoke `greptile-address` once with the PR, request time, and reviewed SHA.
+4. For a newly requested review, if no attributable review arrives or attribution is ambiguous, stop with a blocker rather than consuming an older review or retrying the request.
+5. Address every finding that still applies to the current diff and classify findings already covered by newer commits accordingly.
+6. Treat the score as metadata, not an exit condition. The gate is whether every actionable finding in that one review snapshot is fixed or rejected with evidence; an unresolved finding is a blocker to report to the user.
+7. Resolve addressed Greptile threads, run local verification, commit, publish, and record the new SHA when remediation changed files.
+8. Ignore later automatic or manually requested Greptile reviews for this run. Never transition back to this state.
 
 Completion: Greptile was skipped because no review existed and the diff was ineligible by size, or one existing or newly requested review snapshot was consumed and has zero unaccounted actionable findings.
 
 ### 7. Final CI
 
-Wait for every required check on the final recorded SHA. Remediate attributable failures through the Initial CI loop without returning to the Greptile Gate. Reconfirm that the PR is conflict-free and points at that SHA.
+Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the Greptile disposition or returning to Consume Greptile. Reconfirm that the PR is conflict-free and points at that SHA.
 
-Completion: required CI is green for the final SHA, the PR is conflict-free and ready for review, and the Greptile Gate remains complete.
+Completion: required CI is green for the final SHA, the PR is conflict-free and ready for review, and Consume Greptile remains complete.
 
 ### 8. Human Gate
 
