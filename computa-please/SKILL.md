@@ -30,7 +30,6 @@ It is inspired by pstack, but it is not a pstack clone. Keep this skill as a com
 - Contract before wiring: make the schema, protocol, domain type, or service interface own the shape before spreading behavior through callers.
 - Tracer bullets before platforms: ship one observable vertical slice before broad horizontal scaffolding.
 - Foundations first: fix data shape, seams, interfaces, observability, and test loops before polish.
-- More with less: prefer deletion, narrower interfaces, and deep modules over new scaffolding.
 - Small verifiable units: every implementation slice ends in a concrete check.
 - Bounded loops: automate only against observable state, persist each transition, and stop on completion, a real decision fork, or repeated no-progress.
 - Structure over reminders: repeated corrections become tests, lints, scripts, review agents, or proposed skill edits.
@@ -169,6 +168,7 @@ Rules:
 - Do not create artifacts.
 - Do not create a task directory.
 - Use web, codebase, trace, or tool research when needed, but keep the output in chat.
+- When deciding how to sequence an addition, refactor, or rewrite, load and apply `principle-subtract-before-you-add` before recommending a direction.
 - End with a recommendation, options, tradeoffs, or a clear next decision.
 - Ask whether to promote the discussion into a spec or implementation only when the user has not already decided.
 
@@ -183,14 +183,15 @@ Use when the user asks for a tech spec, PRD, durable plan, implementation phases
 Steps:
 
 1. Create or locate the task artifact directory and select the existing or new tech spec path.
-2. Load and run `tech-spec` with the available context and selected artifact path, following its branch selection through an implementation-ready artifact.
-3. Check every slice-checklist item for app-code work and update the artifact for any missing applicable item.
-4. Append `handoff.md`.
-5. Run Spec checkpoint.
+2. When the spec sequences an addition, refactor, or rewrite, load and apply `principle-subtract-before-you-add` before fixing the implementation order.
+3. Load and run `tech-spec` with the available context and selected artifact path, following its branch selection through an implementation-ready artifact.
+4. Check every slice-checklist item for app-code work and update the artifact for any missing applicable item.
+5. Append `handoff.md`.
+6. Run Spec checkpoint.
 
 Output: draft tech spec and updated handoff. Do not change production code.
 
-Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, slice boundaries, verification loop, and open questions without redoing discovery.
+Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, slice boundaries, verification loop, and open questions without redoing discovery; when subtraction applies, it sequences safe removal before construction.
 
 ### Spec checkpoint
 
@@ -246,6 +247,7 @@ First load:
 
 - the tech spec, if implementing a persisted spec.
 - `handoff.md`, if it exists.
+- `principle-subtract-before-you-add` when the change adds, refactors, or rewrites behavior.
 - `tdd`.
 - `coding-standards`.
 - `codebase-design` for nontrivial module seams.
@@ -257,7 +259,6 @@ Also load when relevant:
 - `typescript-magician`.
 - `diagnosing-bugs`.
 - `feedback-loop`.
-- `reducing-entropy` only when the user explicitly asks to minimize or delete code.
 
 Rules:
 
@@ -268,14 +269,14 @@ Rules:
 - Implement one tracer-bullet slice at a time.
 - Prefer contract-first changes before wiring callers.
 - Keep lifecycle/status/outcome vocabulary explicit.
-- Prefer deletion.
+- For applicable work, complete the `principle-subtract-before-you-add` subtraction pass before constructing the first slice.
 - Do not preserve compatibility unless persisted data, shipped behavior, external consumers, or the user require it.
 - For every new seam, name what it hides and why deleting it would spread complexity into callers.
 - Keep expected failures typed and boundary translation local.
 - Verify with real commands.
 - Append implementation status, slice checklist decisions, commands, results, and PR-ready narrative to `handoff.md`.
 
-Completion criterion: the slice has a failing-then-passing or otherwise risk-matched verification loop, the diff is inspectable as one coherent behavior, and remaining risks are named.
+Completion criterion: the slice has a failing-then-passing or otherwise risk-matched verification loop, the diff is inspectable as one coherent behavior, remaining risks are named, and applicable subtraction is visible in the diff or explicitly ruled out from observed usage.
 
 ### Finish Loop
 
@@ -312,10 +313,11 @@ Steps:
 4. Generate 3-5 ranked falsifiable hypotheses when the cause is not obvious from the evidence.
 5. Instrument one variable at a time. Tag temporary debug logs and remove them before completion.
 6. Decide whether a regression test has a correct seam. If yes, use `tdd` and make the bug red before fixing. If no seam exists, document that as a testability finding.
-7. Apply the smallest root-cause fix. Do not paper over the symptom unless explicitly marking a contained mitigation.
-8. Verify the original repro, the regression test if added, and relevant broader checks.
-9. Remove temporary instrumentation and prototypes.
-10. Record root cause, fix, verification, and remaining risk in `handoff.md` when a task artifact exists.
+7. When the root-cause fix adds, refactors, or rewrites behavior, load and apply `principle-subtract-before-you-add` before implementation.
+8. Apply the smallest root-cause fix. Do not paper over the symptom unless explicitly marking a contained mitigation.
+9. Verify the original repro, the regression test if added, and relevant broader checks.
+10. Remove temporary instrumentation and prototypes.
+11. Record root cause, fix, verification, and remaining risk in `handoff.md` when a task artifact exists.
 
 No implementation until the root cause is understood or explicitly marked unknown with a contained mitigation.
 
