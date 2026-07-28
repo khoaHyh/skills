@@ -10,4 +10,4 @@ My collection of markdown files and scripts that I give to agents to hopefully d
 - **greptile-address**: Consume one existing Greptile review snapshot, address its actionable comments, resolve addressed threads, and never request another review.
 - **local-adversarial-review-gauntlet**: Run four isolated local reviewers across Cursor, Codex, and OpenCode against one committed diff, then consolidate supported findings.
 - **write-effect-ts**: Write idiomatic Effect TypeScript by matching repo style, following effect-solutions patterns, and verifying current APIs with Context7 before implementing.
-- **computa-please**: Personal orchestration workflow for brainstorming into a persisted tech spec, grill-with-docs checkpoints, RGR TDD implementation, bounded Finish Loops to a human PR gate, local adversarial review, and one-pass Greptile/CI final gates.
+- **computa-please**: Personal router and gatekeeper for discussion, persisted specs, RGR TDD implementation, bounded Finish Loops, debugging, recall, reflection, and review workflows.
