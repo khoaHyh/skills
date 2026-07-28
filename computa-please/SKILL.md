@@ -59,7 +59,7 @@ Completion: the slice is coherent through contract, core, adapter, and caller; e
 ## Subagent posture
 
 - Use subagents aggressively for research, design, debugging support, and review, but keep ownership centralized.
-- For research and design, use parallel `explore`, `librarian`, `oracle`, `dialectic`, or `design-an-interface` when the problem benefits from independent search or competing frames.
+- For research and design, use parallel `explore`, `librarian`, or `oracle` subagents when independent search helps. Use `field-lab` when the user selects a structured inquiry or dialectic, and `design-an-interface` when competing module shapes need comparison.
 - For codebase exploration, give subagents scoped questions and file pointers; keep raw dumps out of the main thread.
 - For debugging, build or identify the repro/evidence loop before fanning out hypotheses. After the symptom is bounded, delegate code path, history, docs, or hypothesis investigation.
 - For review, let `local-adversarial-review-gauntlet` own reviewer selection, isolation, execution, and consolidation.
@@ -211,7 +211,7 @@ Invoke:
 Optional supporting skills:
 
 - `design-an-interface` when API or interface shape matters.
-- `dialectic` when there is a real unresolved tension.
+- `field-lab` when the user selects its dialectic workflow for a real unresolved tension.
 - `documentation` when the output is docs-heavy.
 
 Re-run `tech-spec` with the new decisions and the existing artifact path, then append `handoff.md` with decisions, rejected approaches, and terminology changes. Run Spec checkpoint again so the post-grill artifact is explicitly accepted before implementation or a Finish Loop begins.
@@ -288,7 +288,6 @@ First load:
 
 Also load when relevant:
 
-- `dialectic`.
 - `feedback-loop`.
 - `write-effect-ts`.
 - `find-docs`.
