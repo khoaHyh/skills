@@ -8,6 +8,7 @@ Load only the skills needed by the observed path:
 
 - `vcs-detect` before VCS commands.
 - `tdd`, `coding-standards`, and `codebase-design` for accepted-spec implementation.
+- `local-adversarial-review-gauntlet` for the only local code review gate.
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
@@ -21,6 +22,7 @@ Before the first mutation or external action, append a run entry to `handoff.md`
 - Accepted spec path or existing PR goal.
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
 - Initial and current commit SHA.
+- Local adversarial review target, four terminal outcomes, and remaining actionable finding count.
 - CI state and the SHA it describes.
 - PR additions plus deletions.
 - Greptile eligibility, request-attempted flag and time, matching review identifier, and remaining actionable count.
@@ -52,23 +54,32 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 ### 3. Implemented
 
 1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For an existing PR, diagnose only the observed residue.
-2. Use parallel subagents for independent exploration or verification when their work is isolated and their output can be checked.
+2. Use parallel subagents for independent exploration or deterministic verification when their work is isolated and their output can be checked. Ask for observed facts or check results, not findings or readiness judgments; those belong to Local Review.
 3. Before each commit, inspect the diff and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff.
 4. Append implementation decisions and verification evidence to the ledger.
 
 Completion: the intended behavior is implemented, local checks pass, and the diff remains within the accepted slice.
 
-### 4. Published
+### 4. Local Review
 
 1. Stage only intended files and create or update the scoped commit using the chosen VCS workflow.
-2. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
-3. Create or update the PR description with Summary, Why, Design, Validation, and Follow-up/Risk.
-4. Move a draft PR to ready-for-review state.
-5. Record the pushed SHA before monitoring checks.
+2. Invoke `local-adversarial-review-gauntlet` against that committed target. Pass that the active Finish Loop authorizes its prerequisite local commit.
+3. Stop if any reviewer is blocked or the gauntlet is incomplete.
+4. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and update the scoped commit when code changes.
+5. Do not launch an ad hoc reviewer, audit, recheck, or direct review skill before or after the gauntlet. Tests, typecheck, lint, build, runtime repros, and deterministic contract checks remain available as verification.
+
+Completion: all four reviewers reached terminal outcomes against the committed target, every actionable finding is fixed or rejected with evidence, and the resulting local diff is committed and verified.
+
+### 5. Published
+
+1. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
+2. Create or update the PR description with Summary, Why, Design, Validation, and Follow-up/Risk.
+3. Move a draft PR to ready-for-review state.
+4. Record the pushed SHA before monitoring checks.
 
 Completion: the open PR points at the recorded SHA, is ready for review, and targets the intended parent or base.
 
-### 5. Start Greptile and Monitor CI
+### 6. Start Greptile and Monitor CI
 
 Immediately after publication and before waiting for CI, fetch Greptile artifacts on the PR and apply the `greptile-address` completed-snapshot predicate. A bot-authored issue comment, check, reaction, standalone inline comment, or status/skip notice is not an existing review. In particular, `PR author is in the excluded authors list` is an ineligibility notice, not a review snapshot. Then fix the run's Greptile disposition:
 
@@ -85,7 +96,7 @@ Then monitor required checks while any requested Greptile review runs in paralle
 
 Completion: every required check is green for the current recorded SHA, and the Greptile disposition is one recorded completed review, `ineligible-size`, or one attempted request. A requested review need not have arrived yet.
 
-### 6. Consume Greptile
+### 7. Consume Greptile
 
 Use the Greptile disposition fixed before the initial CI wait:
 
@@ -100,12 +111,12 @@ Use the Greptile disposition fixed before the initial CI wait:
 
 Completion: Greptile was skipped because no review existed and the diff was ineligible by size, or one existing or newly requested review snapshot was consumed and has zero unaccounted actionable findings.
 
-### 7. Final CI
+### 8. Final CI
 
 Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the Greptile disposition or returning to Consume Greptile. Reconfirm that the PR is conflict-free and points at that SHA.
 
 Completion: required CI is green for the final SHA, the PR is conflict-free and ready for review, and Consume Greptile remains complete.
 
-### 8. Human Gate
+### 9. Human Gate
 
-Append the terminal state and report the PR URL, final SHA, local verification, required CI, Greptile eligibility and consumed review, addressed findings, and any residual risk. Stop and wait for the user.
+Append the terminal state and report the PR URL, final SHA, local adversarial review outcome, local verification, required CI, Greptile eligibility and consumed review, addressed findings, and any residual risk. Stop and wait for the user.
