@@ -56,13 +56,21 @@ This voice applies only to messages sent to the user. Write code, artifacts, too
 
 Completion: the slice is coherent through contract, core, adapter, and caller; expected failures are typed; verification crosses the real seam; and the PR narrative states Summary, Why, Design, Validation, and Follow-up/Risk.
 
+## Review boundary
+
+Local code review is defined by purpose, not by its label or current mode. Any action that inspects app code, a diff, commit, branch, or PR to produce findings, risks, compliance judgments, or readiness judgments is Review, including an audit, recheck, second opinion, or final pass.
+
+- Run `local-adversarial-review-gauntlet` for every local code review, including the Finish Loop's local review gate.
+- Do not launch ad hoc code-review tasks or invoke `autoreview`, `code-review`, `thermo-nuclear-code-quality-review`, or another reviewer directly outside the gauntlet.
+- Tests, typecheck, lint, build, runtime repros, and deterministic contract checks are verification, not review. Spec, design, and document review remain normal Discuss or Spec work.
+
 ## Subagent posture
 
 - Use subagents aggressively for research, design, debugging support, and review, but keep ownership centralized.
 - For research and design, use parallel `explore`, `librarian`, or `oracle` subagents when independent search helps. Use `field-lab` when the user selects a structured inquiry or dialectic, and `design-an-interface` when competing module shapes need comparison.
 - For codebase exploration, give subagents scoped questions and file pointers; keep raw dumps out of the main thread.
 - For debugging, build or identify the repro/evidence loop before fanning out hypotheses. After the symptom is bounded, delegate code path, history, docs, or hypothesis investigation.
-- For review, let `local-adversarial-review-gauntlet` own reviewer selection, isolation, execution, and consolidation.
+- For local code review, apply the Review boundary and let `local-adversarial-review-gauntlet` own reviewer selection, isolation, execution, and consolidation.
 - For implementation, the main agent edits by default. Delegate only isolated, inspectable work.
 - Never pass through subagent output blindly. Confirm, reject, and merge findings in the main thread.
 
@@ -270,11 +278,11 @@ Completion criterion: the slice has a failing-then-passing or otherwise risk-mat
 
 Use only when the user explicitly asks to start a loop, take an accepted tech spec to an open PR, or babysit an existing PR to the final human gate. A post-grill spec is accepted only through the Spec checkpoint; completing the grill does not imply approval.
 
-An active Finish Loop authorizes scoped implementation, verification, commits, synchronization and conflict remediation for the current Graphite diff when tracked, pushes, PR creation or updates, ready-for-review state changes, CI remediation, one eligible Greptile request, and resolution of addressed review threads. It does not authorize sibling Graphite diffs, scope expansion, deploys, destructive changes, or unrelated-file changes; route those to the user as real decision forks.
+An active Finish Loop authorizes scoped implementation, verification, commits, the local adversarial review gate, synchronization and conflict remediation for the current Graphite diff when tracked, pushes, PR creation or updates, ready-for-review state changes, CI remediation, one eligible Greptile request, and resolution of addressed review threads. It does not authorize sibling Graphite diffs, scope expansion, deploys, destructive changes, or unrelated-file changes; route those to the user as real decision forks.
 
 Load the accepted tech spec and `handoff.md`, then load the skills required by [the Finish Loop runbook](references/finish-loop.md) and execute its state machine. Persist every state transition before taking the next external action. A recovered run resumes from observed repository, PR, CI, and ledger state rather than replaying completed actions.
 
-The loop ends with the open PR at its final pushed commit, conflict-free and ready for review, required CI green for that commit, and all actionable findings from the single eligible Greptile review addressed. Hand that state to the user and stop.
+The loop ends with the local adversarial review gate complete, the open PR at its final pushed commit, conflict-free and ready for review, required CI green for that commit, and all actionable findings from the single eligible Greptile review addressed. Hand that state to the user and stop.
 
 ### Debug
 
@@ -311,6 +319,7 @@ Use when the user asks for code review, local adversarial review, PR readiness, 
 
 Rules:
 
+- Apply the Review boundary: every local code review runs through `local-adversarial-review-gauntlet`, regardless of whether it is called an audit, recheck, readiness check, or verification pass.
 - Load and run `local-adversarial-review-gauntlet` as Review mode's single formal runbook.
 - Spec, design, document, or plan review stays in the current Discuss or Spec phase as a normal conversation or checkpoint. Do not create a separate review runbook for it.
 - Manual review notes stay in the current stage: discuss them, or route to Implement/Debug when the user asks for changes. Do not create a separate repair playbook.
