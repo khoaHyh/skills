@@ -2,6 +2,8 @@
 
 This runbook is the bounded supervisor around Implement, the current worktree and diff, its PR, CI, and one paid Greptile review. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
 
+Apply [Commit History](../SKILL.md#commit-history) at every commit-producing step.
+
 ## Load
 
 Load only the skills needed by the observed path:
@@ -21,7 +23,7 @@ Before the first mutation or external action, append a run entry to `handoff.md`
 - Run identifier and current state.
 - Accepted spec path or existing PR goal.
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
-- Initial and current commit SHA.
+- Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
 - Local adversarial review target, four terminal outcomes, and remaining actionable finding count.
 - CI state and the SHA it describes.
 - PR additions plus deletions.
@@ -55,17 +57,17 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 
 1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For an existing PR, diagnose only the observed residue.
 2. Use parallel subagents for independent exploration or deterministic verification when their work is isolated and their output can be checked. Ask for observed facts or check results, not findings or readiness judgments; those belong to Local Review.
-3. Before each commit, inspect the diff and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff.
+3. Before each additive commit, inspect the diff and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff.
 4. Append implementation decisions and verification evidence to the ledger.
 
 Completion: the intended behavior is implemented, local checks pass, and the diff remains within the accepted slice.
 
 ### 4. Local Review
 
-1. Stage only intended files and create or update the scoped commit using the chosen VCS workflow.
+1. Stage only intended files and commit uncommitted review-scope changes under Commit History.
 2. Invoke `local-adversarial-review-gauntlet` against that committed target. Pass that the active Finish Loop authorizes its prerequisite local commit.
 3. Stop if any reviewer is blocked or the gauntlet is incomplete.
-4. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and update the scoped commit when code changes.
+4. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and commit fixes under Commit History.
 5. Do not launch an ad hoc reviewer, audit, recheck, or direct review skill before or after the gauntlet. Tests, typecheck, lint, build, runtime repros, and deterministic contract checks remain available as verification.
 
 Completion: all four reviewers reached terminal outcomes against the committed target, every actionable finding is fixed or rejected with evidence, and the resulting local diff is committed and verified.
@@ -90,7 +92,7 @@ Immediately after publication and before waiting for CI, fetch Greptile artifact
 Then monitor required checks while any requested Greptile review runs in parallel:
 
 1. Never post another Greptile request during this agent run, including after CI fixes, a low confidence score, timeout, ambiguous delivery, context recovery, or a new pushed SHA.
-2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, commit, publish, record the new SHA, and wait again without changing the recorded Greptile disposition.
+2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, commit under Commit History, publish, record the new SHA, and wait again without changing the recorded Greptile disposition.
 3. Treat external outages and unavailable required infrastructure as blockers.
 4. Stop for no-progress when two consecutive cycles produce no new evidence, diagnosis, code change, or check-state change. Report the repeated failure and attempted remedies.
 
@@ -106,7 +108,7 @@ Use the Greptile disposition fixed before the initial CI wait:
 4. For a newly requested review, if no attributable review arrives or attribution is ambiguous, stop with a blocker rather than consuming an older review or retrying the request.
 5. Address every finding that still applies to the current diff and classify findings already covered by newer commits accordingly.
 6. Treat the score as metadata, not an exit condition. The gate is whether every actionable finding in that one review snapshot is fixed or rejected with evidence; an unresolved finding is a blocker to report to the user.
-7. Resolve addressed Greptile threads, run local verification, commit, publish, and record the new SHA when remediation changed files.
+7. Resolve addressed Greptile threads, run local verification, commit under Commit History, publish, and record the new SHA when remediation changed files.
 8. Ignore later automatic or manually requested Greptile reviews for this run. Never transition back to this state.
 
 Completion: Greptile was skipped because no review existed and the diff was ineligible by size, or one existing or newly requested review snapshot was consumed and has zero unaccounted actionable findings.

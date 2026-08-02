@@ -357,6 +357,14 @@ Ask the user when the decision changes product direction, affects public API sha
 
 Do not ask before checking facts discoverable from code, git history, existing docs, config, issue trackers, Slack, or connected MCPs.
 
+## Commit History
+
+When a commit is authorized, use additive history on the current PR or branch. Give every coherent implementation slice and each review, CI, or external-feedback remediation batch its own commit. Use a normal `git commit` with Git and `gt modify --commit` with Graphite. Preserve every commit whose SHA has been pushed, reviewed, recorded as a checkpoint, or observed by CI.
+
+Amend only when the user explicitly requests it, or to repair the construction of the immediately preceding unpublished commit, such as its message or an accidentally omitted intended file. The repair exception requires that no review, CI run, durable checkpoint, or external actor has observed the commit SHA. Record the reason in the active Finish Loop ledger whenever the exception is used.
+
+Completion: the branch history shows each completed slice and remediation batch as a distinct commit, or the active ledger records a qualifying amend exception.
+
 ## Verification gate
 
 For every implementation or debug fix:
