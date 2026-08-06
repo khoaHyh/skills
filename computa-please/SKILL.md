@@ -19,9 +19,10 @@ It is inspired by pstack, but it is not a pstack clone. Keep this skill as a com
 4. If routing is ambiguous, choose Discuss and ask whether to promote the result into artifacts or code changes.
 5. Create or locate the task artifact directory only after routing to Spec, Implement, Finish Loop, Debug, or Review, and only when that mode needs durable context.
 6. For multi-step implementation, finish-loop, debugging, review, or persisted spec work, open a todo list with the selected mode's steps when the harness supports todos.
-7. For nontrivial code work, name the reviewable slice before editing: contract, seam, changed behavior, and verification loop.
-8. Load only the skills that apply to the selected mode.
-9. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
+7. For code, data, or API work, establish the touched surface's Compatibility posture before choosing a design. Inspect observable facts first and ask only for facts the available evidence cannot settle.
+8. For nontrivial code work, name the reviewable slice before editing: contract, seam, changed behavior, and verification loop.
+9. Load only the skills that apply to the selected mode.
+10. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
 
 ## Principles
 
@@ -29,12 +30,28 @@ It is inspired by pstack, but it is not a pstack clone. Keep this skill as a com
 - Evidence before action: inspect, reproduce, measure, or cite before editing.
 - Contract before wiring: make the schema, protocol, domain type, or service interface own the shape before spreading behavior through callers.
 - Tracer bullets before platforms: ship one observable vertical slice before broad horizontal scaffolding.
+- Clean destination, incremental delivery: choose the simplest robust long-term shape, then reach it through the smallest complete vertical slices; add abstraction only when current requirements demand it.
 - Foundations first: fix data shape, seams, interfaces, observability, and test loops before polish.
 - Small verifiable units: every implementation slice ends in a concrete check.
 - Bounded loops: automate only against observable state, persist each transition, and stop on completion, a real decision fork, or repeated no-progress.
 - Structure over reminders: repeated corrections become tests, lints, scripts, review agents, or proposed skill edits.
 - Human judgment at real forks: ask for product, security, irreversible, public API, deploy, money, data deletion, or ownership calls; observe facts directly.
 - Main agent owns synthesis: subagents gather, challenge, or implement scoped work, but the main agent decides.
+
+## Compatibility posture
+
+Establish compatibility per touched surface, not once for the whole repository. Before recommending a design, writing a spec, or editing, inspect repository instructions, releases and deployments, public call sites, known users or clients, integrations, persisted data that must survive, in-flight protocols or jobs, and rollback or rolling-deploy constraints.
+
+Failure to find a dependency is not evidence that none exists when consumer or retention status remains unknowable. If that uncertainty changes the safe posture, state it and ask the user for the risk decision before choosing a design. Otherwise choose and state one posture:
+
+- **Direct cutover:** no observed deployed behavior, external consumer, retained data, or user requirement must survive. Aim at clean long-term ownership and module boundaries. Replace superseded paths and update their callers, tests, docs, fixtures, and schema in the same slice. Prefer a reset or direct schema edit over migration machinery when data need not survive and repository workflow permits it. Finish without aliases, shims, fallbacks, dual reads or writes, deprecation branches, or speculative migrations.
+- **Protected evolution:** an observed contract must survive. Name the exact consumer, behavior, data, deployment constraint, or user requirement that creates the obligation. Preserve that contract at the narrowest boundary while freely improving internal ownership and structure. Any compatibility mechanism must name its dependent contract, verification, and either its removal condition or permanent status.
+
+Use observed reliance as evidence. Repository age, line count, existing architecture, naming, prior migrations, and labels such as `legacy` do not establish a compatibility obligation. In either posture, implement the smallest complete solution toward the chosen long-term shape; do not widen the slice into unrelated cleanup or add layers for hypothetical future requirements.
+
+Keep the posture in working context and record it in the tech spec or `handoff.md` when either artifact exists.
+
+Completion: the touched surfaces, evidence, posture, and target shape are explicit; a Direct cutover leaves one path, while every Protected evolution mechanism is tied to a concrete contract and either a removal condition or permanent status.
 
 ## User-facing voice
 
@@ -158,6 +175,7 @@ Include:
 - Review and CI residue.
 - Verification status.
 - Current reviewable slice.
+- Compatibility posture, supporting evidence, target shape, and any protected contract, removal condition, or permanent status.
 - Contract, seam, lifecycle, and failure-model decisions.
 - PR-ready Summary, Why, Design, Validation, and Follow-up/Risk when implementation occurred.
 - Next action.
@@ -193,16 +211,17 @@ Use when the user asks for a tech spec, PRD, durable plan, implementation phases
 Steps:
 
 1. Create or locate the task artifact directory and select the existing or new tech spec path.
-2. When the spec sequences an addition, refactor, or rewrite, load and apply `principle-subtract-before-you-add` before fixing the implementation order.
-3. Load and run `tech-spec` with the available context and selected artifact path, following its branch selection through an implementation-ready artifact.
-4. Check every slice-checklist item for app-code work and update the artifact for any missing applicable item.
-5. Create or update the comprehension map.
-6. Append `handoff.md`.
-7. Run the pre-grill Spec checkpoint.
+2. Establish the Compatibility posture for every touched surface and carry its evidence and target shape into `tech-spec`.
+3. When the spec sequences an addition, refactor, or rewrite, load and apply `principle-subtract-before-you-add` before fixing the implementation order.
+4. Load and run `tech-spec` with the available context and selected artifact path, following its branch selection through an implementation-ready artifact.
+5. Check every slice-checklist item for app-code work and update the artifact for any missing applicable item.
+6. Create or update the comprehension map.
+7. Append `handoff.md`.
+8. Run the pre-grill Spec checkpoint.
 
 Output: draft tech spec, comprehension map, and updated handoff. Do not change production code.
 
-Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, slice boundaries, verification loop, and open questions without redoing discovery; the comprehension map passes its completion criterion; when subtraction applies, the spec sequences safe removal before construction.
+Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, Compatibility posture, target shape, slice boundaries, verification loop, and open questions without redoing discovery; the comprehension map passes its completion criterion; when subtraction applies, the spec sequences safe removal before construction.
 
 ### Spec checkpoint
 
@@ -284,20 +303,21 @@ Also load when relevant:
 Rules:
 
 - If no spec exists, inspect first and decide whether the request is a small direct slice or needs Discuss/Spec before mutation.
+- Establish or revalidate the touched surface's Compatibility posture from live evidence before choosing the implementation shape.
 - Keep the slice checklist in working context when no artifact is needed.
 - Use red-green-refactor TDD.
-- Make the smallest correct change.
+- Make the smallest complete change that reaches the chosen target shape; do not optimize for the fewest edited lines.
 - Implement one tracer-bullet slice at a time.
 - Prefer contract-first changes before wiring callers.
 - Keep lifecycle/status/outcome vocabulary explicit.
 - For applicable work, complete the `principle-subtract-before-you-add` subtraction pass before constructing the first slice.
-- Do not preserve compatibility unless persisted data, shipped behavior, external consumers, or the user require it.
+- Apply the Compatibility posture: a Direct cutover removes the superseded path in the same slice; Protected evolution preserves only the recorded contract.
 - For every new seam, name what it hides and why deleting it would spread complexity into callers.
 - Keep expected failures typed and boundary translation local.
 - Verify with real commands.
 - Append implementation status, slice checklist decisions, commands, results, and PR-ready narrative to `handoff.md`.
 
-Completion criterion: the slice has a failing-then-passing or otherwise risk-matched verification loop, the diff is inspectable as one coherent behavior, remaining risks are named, and applicable subtraction is visible in the diff or explicitly ruled out from observed usage.
+Completion criterion: the slice has a failing-then-passing or otherwise risk-matched verification loop, the diff is inspectable as one coherent behavior, the Compatibility posture is honored, remaining risks are named, and applicable subtraction is visible in the diff or explicitly ruled out from observed usage.
 
 ### Finish Loop
 
@@ -331,7 +351,7 @@ Steps:
 2. Reproduce and minimize before implementation. Fan out falsifiable hypotheses only after the symptom is bounded.
 3. Use `tdd` when a regression test has a correct seam; otherwise record the testability gap.
 4. When the fix adds, refactors, or rewrites behavior, apply `principle-subtract-before-you-add` before implementation.
-5. Apply the smallest root-cause fix, then rerun the original repro and relevant broader checks.
+5. Apply the smallest complete root-cause fix at the owning seam; do not preserve a poor boundary merely to minimize diff size. Then rerun the original repro and relevant broader checks.
 6. Remove temporary instrumentation and record root cause, verification, and remaining risk in `handoff.md` when an artifact exists.
 
 No implementation until the root cause is understood or explicitly marked unknown with a contained mitigation.
