@@ -101,6 +101,8 @@ handoff.md
 
 If the task directory already has a tech spec, keep using that file. Do not create a second tech spec just because the date changed.
 
+Visual comprehension artifacts are renderer-owned and live outside this task directory. Reference them from `handoff.md`; do not add a third task file.
+
 Use these rules:
 
 - `repo-slug`: the repository root basename, lowercased and slugged. If no VCS root exists, use the current directory basename.
@@ -126,6 +128,17 @@ The `tech-spec` skill is the source of truth for branch selection, required stru
 
 Completion criterion: the artifact satisfies `tech-spec`, every applicable slice-checklist item is represented or marked not applicable, and a fresh session can implement from it without redoing discovery.
 
+## Comprehension map
+
+Create a visual comprehension map at two gates:
+
+1. After the implementation-ready tech spec is complete and before the first grill decision.
+2. After grilling decisions are merged into the tech spec and before implementation or a Finish Loop.
+
+At either gate, read and follow [the comprehension-map runbook](references/comprehension-map.md) in full before rendering. The map is a projection of the tech spec, not a second source of truth.
+
+Completion criterion: the map passes the runbook's completion check and is shown to the user before the checkpoint decision.
+
 ## Handoff format
 
 `handoff.md` references the tech spec instead of duplicating it. Append a dated section when something material changes.
@@ -139,6 +152,7 @@ Include:
 - Decisions made.
 - Rejected approaches.
 - Approved Plannotator annotations.
+- Comprehension-map artifact reference, checkpoint stage, and user decision.
 - Manual review notes.
 - Adversarial review findings.
 - Review and CI residue.
@@ -182,31 +196,42 @@ Steps:
 2. When the spec sequences an addition, refactor, or rewrite, load and apply `principle-subtract-before-you-add` before fixing the implementation order.
 3. Load and run `tech-spec` with the available context and selected artifact path, following its branch selection through an implementation-ready artifact.
 4. Check every slice-checklist item for app-code work and update the artifact for any missing applicable item.
-5. Append `handoff.md`.
-6. Run Spec checkpoint.
+5. Create or update the comprehension map.
+6. Append `handoff.md`.
+7. Run the pre-grill Spec checkpoint.
 
-Output: draft tech spec and updated handoff. Do not change production code.
+Output: draft tech spec, comprehension map, and updated handoff. Do not change production code.
 
-Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, slice boundaries, verification loop, and open questions without redoing discovery; when subtraction applies, it sequences safe removal before construction.
+Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, slice boundaries, verification loop, and open questions without redoing discovery; the comprehension map passes its completion criterion; when subtraction applies, the spec sequences safe removal before construction.
 
 ### Spec checkpoint
 
-Always run after drafting or materially updating the tech spec.
+Run the pre-grill checkpoint after the first complete tech spec and comprehension map. Run the post-grill checkpoint after grilling decisions have been merged and the same map has been refreshed. Show or open the map before asking for a decision.
 
 Ask this checkpoint question using the harness's structured question tool when available:
 
 ```text
-Are you satisfied with this tech spec?
+Does this comprehension map match your understanding of the change?
 ```
 
-Options:
+Pre-grill options:
 
 - `Proceed to grill-with-docs`.
-- `Start Finish Loop`.
+- `Revise the spec or map`.
 - `Skip grill and implement locally`.
 - `Pause to review/annotate`.
 
-Recommend `Proceed to grill-with-docs` for nontrivial work. Recommend `Skip grill and implement locally` only for small, obvious, low-risk work. `Start Finish Loop` is explicit approval to run the accepted spec through the bounded PR workflow.
+Post-grill options:
+
+- `Start Finish Loop`.
+- `Implement locally`.
+- `Revise the spec or map`.
+- `Grill again`.
+- `Pause to review/annotate`.
+
+Recommend `Proceed to grill-with-docs` for nontrivial work at the pre-grill checkpoint. Recommend skipping the grill only for small, obvious, low-risk work. At the post-grill checkpoint, recommend the path matching the user's stated delivery goal. `Start Finish Loop` is explicit approval to run the accepted spec through the bounded PR workflow. Creating, viewing, annotating, or completing the map does not imply implementation approval.
+
+After every checkpoint response, append the stage, artifact reference, user decision, and requested revisions to `handoff.md` before routing onward. When the user requests revision or identifies a disagreement, update the tech spec first, regenerate the map, and repeat the same checkpoint.
 
 ### Grill with docs
 
@@ -222,7 +247,7 @@ Optional supporting skills:
 - `field-lab` when the user selects its dialectic workflow for a real unresolved tension.
 - `documentation` when the output is docs-heavy.
 
-Re-run `tech-spec` with the new decisions and the existing artifact path, then append `handoff.md` with decisions, rejected approaches, and terminology changes. Run Spec checkpoint again so the post-grill artifact is explicitly accepted before implementation or a Finish Loop begins.
+Re-run `tech-spec` with the new decisions and the existing artifact path, refresh the existing comprehension map in place, then append `handoff.md` with decisions, rejected approaches, terminology changes, and the refreshed artifact reference. Run the post-grill Spec checkpoint so the revised design is explicitly understood and accepted before implementation or a Finish Loop begins.
 
 ### Pause to review or annotate
 
