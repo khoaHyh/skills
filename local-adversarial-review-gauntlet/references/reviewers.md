@@ -15,7 +15,7 @@ Only the Codex reviewer may load or use `autoreview`. Cursor and both OpenCode r
 
 ## Cursor
 
-Use Cursor Agent print/headless mode with the Cursor Team Kit plugin, only `thermo-nuclear-code-quality-review`, default Agent execution mode, and the Auto model. Pass `--model auto` and omit `--mode`.
+Use Cursor Agent print/headless mode with the Cursor Team Kit plugin, only `thermo-nuclear-code-quality-review`, default Agent execution mode, and Cursor-native Grok 4.5 High Fast. Pass `--model cursor-grok-4.5-high-fast` and omit `--mode`. If that exact model is unavailable, record a blocker rather than using Auto or another model.
 
 Locate the plugin first under `~/.cursor/plugins/cache/cursor-public/cursor-team-kit/*`, then other local Cursor or agent plugin directories. The plugin directory is the hash directory containing `skills/thermo-nuclear-code-quality-review/SKILL.md`. If none exists, record a blocker.
 
@@ -36,7 +36,7 @@ Command, with a ten-minute timeout for the initial call and retry:
 cursor-agent --print --output-format text --trust \
   --workspace "<repo-root>" \
   --plugin-dir "<cursor-team-kit-plugin-dir>" \
-  --model auto \
+  --model cursor-grok-4.5-high-fast \
   "<cursor-review-prompt>"
 ```
 
