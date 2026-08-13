@@ -11,6 +11,7 @@ Write Effect code that matches the repo's existing style, keeps requirements exp
 
 1. Read `references/patterns.md` before editing Effect code.
 2. Read `references/doc-map.md` when you need topic-specific docs, upstream confirmation, or ready-made `ctx7` queries.
+3. Load `observability-logging` when changing logs, spans, metrics, or production telemetry.
 
 ## Workflow
 
