@@ -93,6 +93,8 @@ Local code review is defined by purpose, not by its label or current mode. Any a
 
 ## Artifact workflow
 
+Whenever this workflow creates a Git worktree, place it under `~/dev/worktrees/<repo-slug>__<branch-slug>`. Create `~/dev/worktrees` when needed, inspect and reuse a matching existing worktree when safe, and use another location only when the user explicitly requests it.
+
 Artifacts live under `~/.computa-please`.
 
 Task directory format:
