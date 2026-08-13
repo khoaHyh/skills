@@ -1,440 +1,165 @@
 ---
 name: computa-please
-description: "Use for /computa-please: route discussion-before-mutation, specs, RGR implementation, bounded finish loops, debugging, recall/pickup, reflection, and review workflows."
+description: "Use for /computa-please: route evaluation, specs, implementation, finish loops, debugging, review, pickup, and workflow reflection before mutation."
 ---
 
 # computa-please
 
-`computa-please` is the user's agent orchestration workflow. It routes a request into the right mode before artifacts or mutation, composes existing skills, protects context-window resets, and runs accepted work to a machine-checkable PR gate when explicitly requested.
+`computa-please` is a compact OpenCode-native router. It aims for the least code and process that robustly completes the job: evidence first, subtraction before construction, one reviewable vertical slice, verification through the real seam, and explicit human decisions only where judgment is required.
 
-The quality bar is opencode-like TypeScript work: contract-first vertical slices, deep modules, explicit lifecycle vocabulary, typed boundaries and failures, real-seam verification, and PR-ready explanations of why the change works.
+## Route first
 
-It is inspired by pstack, but it is not a pstack clone. Keep this skill as a compact OpenCode-native router and gatekeeper. Do not create extra principle files or broad process scaffolding unless the user asks.
+Choose one mode before substantial work and state whether mutation and durable artifacts are allowed:
 
-## Start every run
+- **Discuss** for comparison, evaluation, design, workflow, or ambiguity. No mutation or artifacts by default.
+- **Spec** for a durable implementation plan. No production-code mutation.
+- **Implement** for authorized code changes.
+- **Finish Loop** for an explicitly authorized path from an accepted spec or existing PR to the final human gate.
+- **Debug** for a failure, regression, flaky behavior, or performance problem.
+- **Review** for findings about a diff, branch, commit, or PR.
+- **Recall/Pickup** for recovering live work from a handoff, spec, branch, or PR.
+- **Reflect** for turning observed workflow friction into a proposed structural improvement.
 
-1. Classify the request into one top-level mode: Discuss, Spec, Implement, Finish Loop, Debug, Review, Recall/Pickup, or Reflect.
-2. State the selected mode, whether mutation is allowed, and whether durable artifacts are needed before doing substantial work.
-3. If the request is about comparing, brainstorming, redesigning, evaluating, deciding, or workflow/meta work, default to Discuss. No artifacts or edits by default.
-4. If routing is ambiguous, choose Discuss and ask whether to promote the result into artifacts or code changes.
-5. Create or locate the task artifact directory only after routing to Spec, Implement, Finish Loop, Debug, or Review, and only when that mode needs durable context.
-6. For multi-step implementation, finish-loop, debugging, review, or persisted spec work, open a todo list with the selected mode's steps when the harness supports todos.
-7. For code, data, or API work, establish the touched surface's Compatibility posture before choosing a design. Inspect observable facts first and ask only for facts the available evidence cannot settle.
-8. For nontrivial code work, name the reviewable slice before editing: contract, seam, changed behavior, and verification loop.
-9. Load only the skills that apply to the selected mode.
-10. Ask fewer questions. Ask only for product direction, public API shape, production behavior, auth, security, secrets, money, data deletion, deploys, team ownership, or facts that cannot be observed.
+Default evaluative or ambiguous requests to Discuss. Ask only about product direction, public contracts, production behavior, auth, security, secrets, money, deletion, deploys, ownership, or facts that inspection cannot settle.
 
-## Principles
+Create a todo list only for genuinely multi-step work where progress state helps. Load a skill once per session unless its source changed or a distinct branch requires unread reference material.
 
-- Worthy friction before mutation: discussion, design, architecture, and review are real work, not delays.
-- Evidence before action: inspect, reproduce, measure, or cite before editing.
-- Contract before wiring: make the schema, protocol, domain type, or service interface own the shape before spreading behavior through callers.
-- Tracer bullets before platforms: ship one observable vertical slice before broad horizontal scaffolding.
-- Clean destination, incremental delivery: choose the simplest robust long-term shape, then reach it through the smallest complete vertical slices; add abstraction only when current requirements demand it.
-- Foundations first: fix data shape, seams, interfaces, observability, and test loops before polish.
-- Small verifiable units: every implementation slice ends in a concrete check.
-- Bounded loops: automate only against observable state, persist each transition, and stop on completion, a real decision fork, or repeated no-progress.
-- Structure over reminders: repeated corrections become tests, lints, scripts, review agents, or proposed skill edits.
-- Human judgment at real forks: ask for product, security, irreversible, public API, deploy, money, data deletion, or ownership calls; observe facts directly.
-- Main agent owns synthesis: subagents gather, challenge, or implement scoped work, but the main agent decides.
+## Working contract
 
-## Compatibility posture
+For nontrivial code, name this contract before editing:
 
-Establish compatibility per touched surface, not once for the whole repository. Before recommending a design, writing a spec, or editing, inspect repository instructions, releases and deployments, public call sites, known users or clients, integrations, persisted data that must survive, in-flight protocols or jobs, and rollback or rolling-deploy constraints.
+- **Intent:** requested outcome and observable changed behavior.
+- **Scope:** allowed files or behavioral surface and explicit non-goals.
+- **Compatibility:** Direct cutover or Protected evolution.
+- **Slice:** contract, owning module, real seam, and side effects.
+- **Budget:** maximum reasonable files/concepts, tool or search effort, and zero speculative abstractions.
+- **Proof:** focused loop and final repository-native checks.
 
-Failure to find a dependency is not evidence that none exists when consumer or retention status remains unknowable. If that uncertainty changes the safe posture, state it and ask the user for the risk decision before choosing a design. Otherwise choose and state one posture:
+### Compatibility
 
-- **Direct cutover:** no observed deployed behavior, external consumer, retained data, or user requirement must survive. Aim at clean long-term ownership and module boundaries. Replace superseded paths and update their callers, tests, docs, fixtures, and schema in the same slice. Prefer a reset or direct schema edit over migration machinery when data need not survive and repository workflow permits it. Finish without aliases, shims, fallbacks, dual reads or writes, deprecation branches, or speculative migrations.
-- **Protected evolution:** an observed contract must survive. Name the exact consumer, behavior, data, deployment constraint, or user requirement that creates the obligation. Preserve that contract at the narrowest boundary while freely improving internal ownership and structure. Any compatibility mechanism must name its dependent contract, verification, and either its removal condition or permanent status.
+Inspect public callers, deployments, persisted data, integrations, in-flight work, and rollback constraints for each touched surface.
 
-Use observed reliance as evidence. Repository age, line count, existing architecture, naming, prior migrations, and labels such as `legacy` do not establish a compatibility obligation. In either posture, implement the smallest complete solution toward the chosen long-term shape; do not widen the slice into unrelated cleanup or add layers for hypothetical future requirements.
+- **Direct cutover:** no observed contract must survive. Migrate callers and delete the superseded path in the same slice. Leave no aliases, shims, dual paths, speculative migrations, or compatibility flags.
+- **Protected evolution:** a named consumer, retained datum, deployment constraint, or user requirement must survive. Preserve it at the narrowest seam and record whether the mechanism is permanent or when it can be removed.
 
-Keep the posture in working context and record it in the tech spec or `handoff.md` when either artifact exists.
+Repository age, naming, or an existing `legacy` path does not itself create a compatibility obligation. Unknown external reliance is a user decision only when it changes the safe design.
 
-Completion: the touched surfaces, evidence, posture, and target shape are explicit; a Direct cutover leaves one path, while every Protected evolution mechanism is tied to a concrete contract and either a removal condition or permanent status.
+## Implementation posture
 
-## User-facing voice
+- Inspect observable facts before choosing a design.
+- Pin required behavior before a refactor. Use an existing integration/e2e check, characterization test, snapshot, replay, or equivalence harness. Typecheck and lint alone do not prove unchanged behavior.
+- Apply `principle-subtract-before-you-add` to additions, refactors, and rewrites. Run the full `subtract` workflow when safe removal may materially change the target shape.
+- Delete dead paths, collapse duplication, and inline pass-through wrappers before adding structure.
+- Choose the simplest robust target shape. A new abstraction must hide current complexity that would otherwise spread into callers.
+- Implement one complete vertical slice. Do not widen it into adjacent cleanup.
+- Prefer a direct cutover. Add compatibility only for an observed obligation.
+- Reject or revert speculative cleanup. A refactor must reduce reader load through fewer concepts, branches, paths, representations, or indirection hops.
+- Keep expected failures typed and boundary translation local.
+- Add only the observability needed to make the changed behavior operationally distinguishable. Load `observability-logging` when changing logs, traces, metrics, or production telemetry.
 
-In every message addressed to the user, including progress updates, questions, checkpoints, and the final response, speak simply, concisely, and coherently, like one human talking to another. Prefer plain language. Use technical terms only when they carry necessary meaning in context, and explain an unfamiliar term briefly when the user needs it to follow the point.
+## Verification posture
 
-This voice applies only to messages sent to the user. Write code, artifacts, tool inputs, subagent prompts, reviewer prompts, commit messages, and external messages in the form best suited to their purpose.
+Choose the smallest loop that proves the risk at a stable seam. Prefer evidence in this order:
 
-## Reviewable slice
+1. End-to-end through the affected public entrypoint when practical.
+2. Integration through the real boundary or adapter.
+3. Focused contract or property tests for isolated domain behavior.
+4. Unit tests when they prove meaningful behavior unavailable through a stronger seam.
 
-`coding-standards` owns general TypeScript policy and `codebase-design` owns module design. For nontrivial app-code work, keep one tracer-bullet behavior reviewable and answer:
+Use Red-Green-Refactor when a useful failing test can express the risk. For configuration, migrations, refactors with an existing behavior pin, generated output, or runtime-only failures, use the strongest applicable executable repro, equivalence check, trace query, contract check, or repository-native command instead of manufacturing a red unit test.
 
-- Domain or lifecycle: what concept, state, transition, or invariant owns this behavior?
-- Contract surface: what public schema, API, route, service interface, or module contract changes?
-- Boundary parser/projection: where does untrusted, persisted, or protocol-shaped data become refined, and where is it projected out?
-- Service and adapter seams: what module owns policy, and what adapter owns external mechanics?
-- Failure model: which failures are expected values, and which failures are defects?
-- Async/resource ownership: who owns cancellation, transactions, idempotency, retries, detached work, and cleanup?
-- Verification loop: what test, repro, trace, command, or runtime proves the changed behavior through the real seam?
+Discover repository-native focused and final checks once, retain their commands and outcomes in working context, and rerun only when relevant inputs changed. Before completion, inspect status and the complete diff, run the focused proof plus required final checks, and report anything not run.
 
-Completion: the slice is coherent through contract, core, adapter, and caller; expected failures are typed; verification crosses the real seam; and the PR narrative states Summary, Why, Design, Validation, and Follow-up/Risk.
+## Delegation contract
 
-## Review boundary
+The main agent owns synthesis and the final diff. Delegate only when independent work will reduce elapsed time or provide a genuinely different evidence source.
 
-Local code review is defined by purpose, not by its label or current mode. Any action that inspects app code, a diff, commit, branch, or PR to produce findings, risks, compliance judgments, or readiness judgments is Review, including an audit, recheck, second opinion, or final pass.
+- Default to one wave of at most three parallel subagents.
+- Give every child the same compact evidence packet: observed symptom or goal, repository revision, known commands and outcomes, and facts already established.
+- Give each child a disjoint question or file surface. Do not send several agents to broadly inspect the same code.
+- Include intent, read/write authority, target surface, non-goals, compatibility posture, change and search/run budgets, required evidence, and exact return shape.
+- Research children return facts and citations, not readiness judgments. Implementation children receive isolated, inspectable edits only.
+- Before another wave, merge the first wave's evidence and name the remaining gap.
+- Reuse prior reads, searches, skill content, and command results while their inputs remain unchanged.
+- Confirm subagent findings against source or deterministic checks before acting on them.
 
-- Run `local-adversarial-review-gauntlet` for every local code review, including the Finish Loop's local review gate.
-- Do not launch ad hoc code-review tasks or invoke `autoreview`, `code-review`, `thermo-nuclear-code-quality-review`, or another reviewer directly outside the gauntlet.
-- Tests, typecheck, lint, build, runtime repros, and deterministic contract checks are verification, not review. Spec, design, and document review remain normal Discuss or Spec work.
+Escalate beyond the default only for explicitly requested breadth, independent high-risk hypotheses, or a formal adversarial review.
 
-## Subagent posture
+## Durable artifacts
 
-- Use subagents aggressively for research, design, debugging support, and review, but keep ownership centralized.
-- For research and design, use parallel `explore`, `librarian`, or `oracle` subagents when independent search helps. Use `field-lab` when the user selects a structured inquiry or dialectic, and `design-an-interface` when competing module shapes need comparison.
-- For codebase exploration, give subagents scoped questions and file pointers; keep raw dumps out of the main thread.
-- For debugging, build or identify the repro/evidence loop before fanning out hypotheses. After the symptom is bounded, delegate code path, history, docs, or hypothesis investigation.
-- For local code review, apply the Review boundary and let `local-adversarial-review-gauntlet` own reviewer selection, isolation, execution, and consolidation.
-- For implementation, the main agent edits by default. Delegate only isolated, inspectable work.
-- Never pass through subagent output blindly. Confirm, reject, and merge findings in the main thread.
+Create artifacts only when the user requests persistence, the work must survive sessions, multiple people or agents must coordinate, or a Finish Loop needs an external-action ledger. Otherwise keep state in the conversation.
 
-## Artifact workflow
-
-Whenever this workflow creates a Git worktree, place it under `~/dev/worktrees/<repo-slug>__<branch-slug>`. Create `~/dev/worktrees` when needed, inspect and reuse a matching existing worktree when safe, and use another location only when the user explicitly requests it.
-
-Artifacts live under `~/.computa-please`.
-
-Task directory format:
-
-```text
-<repo-slug>__<branch-slug>
-```
-
-Fallback when the branch is unavailable:
-
-```text
-<repo-slug>__<task-slug>
-```
-
-Use this workflow only after the selected mode needs durable context. Discuss mode does not create artifacts unless the user explicitly asks to persist the outcome.
-
-Create the task directory automatically when needed. It must contain only two files:
+When needed, use `~/.computa-please/<repo-slug>__<branch-or-task-slug>/` with:
 
 ```text
 <task-slug>-tech-spec-YYYY-MM-DD.md
 handoff.md
 ```
 
-If the task directory already has a tech spec, keep using that file. Do not create a second tech spec just because the date changed.
+Reuse an existing tech spec. Keep `handoff.md` cumulative and concise: spec path, current state, decisions, rejected approaches, Compatibility posture, verification, external actions, remaining risk, and next action. Never store secrets, customer data, or raw private transcripts.
 
-Visual comprehension artifacts are renderer-owned and live outside this task directory. Reference them from `handoff.md`; do not add a third task file.
+Create a comprehension map only when the user asks for one or the spec is complex enough that a visual check will materially reduce misunderstanding. Follow [the runbook](references/comprehension-map.md) when creating it.
 
-Use these rules:
-
-- `repo-slug`: the repository root basename, lowercased and slugged. If no VCS root exists, use the current directory basename.
-- `branch-slug`: the current branch name, lowercased and slugged. If no branch exists, use `task-slug`.
-- `task-slug`: a short slug from the user request or the existing tech spec title.
-- Slugs use lowercase letters, numbers, and single hyphens.
-- `handoff.md` is cumulative and append-only. Add a dated section for each update.
-
-Suggested commands are examples, not mandatory. Adapt them to the repository and shell:
-
-```bash
-repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-branch=$(git branch --show-current 2>/dev/null || true)
-```
-
-Never place secrets, tokens, customer data, or raw private transcript dumps in either artifact.
-
-## Tech spec artifact
-
-Use the installed `tech-spec` skill whenever Spec mode creates or materially updates the tech spec artifact. Pass it the available conversation and codebase context plus the selected artifact path; Spec mode's durable-artifact requirement is the instruction to save the result at that path.
-
-The `tech-spec` skill is the source of truth for branch selection, required structure, typed contracts, call stacks, file mapping, and the RGR TDD plan. Apply this skill's slice checklist as an additional completion check rather than maintaining a second tech spec template here.
-
-Completion criterion: the artifact satisfies `tech-spec`, every applicable slice-checklist item is represented or marked not applicable, and a fresh session can implement from it without redoing discovery.
-
-## Comprehension map
-
-Create a visual comprehension map at two gates:
-
-1. After the implementation-ready tech spec is complete and before the first grill decision.
-2. After grilling decisions are merged into the tech spec and before implementation or a Finish Loop.
-
-At either gate, read and follow [the comprehension-map runbook](references/comprehension-map.md) in full before rendering. The map is a projection of the tech spec, not a second source of truth.
-
-Completion criterion: the map passes the runbook's completion check and is shown to the user before the checkpoint decision.
-
-## Handoff format
-
-`handoff.md` references the tech spec instead of duplicating it. Append a dated section when something material changes.
-
-Include:
-
-- Tech spec path.
-- Suggested skills for the next session.
-- Current state.
-- Rabbit holes explored.
-- Decisions made.
-- Rejected approaches.
-- Approved Plannotator annotations.
-- Comprehension-map artifact reference, checkpoint stage, and user decision.
-- Manual review notes.
-- Adversarial review findings.
-- Review and CI residue.
-- Verification status.
-- Current reviewable slice.
-- Compatibility posture, supporting evidence, target shape, and any protected contract, removal condition, or permanent status.
-- Contract, seam, lifecycle, and failure-model decisions.
-- PR-ready Summary, Why, Design, Validation, and Follow-up/Risk when implementation occurred.
-- Next action.
-
-For an active Finish Loop, also record the run identifier, accepted spec path, PR and base, current and final commit SHA, VCS workflow, CI status and checked SHA, Greptile eligibility, request-attempt state, matching review identifier, and remaining actionable finding count. This ledger prevents duplicate external actions after context recovery.
-
-Use the installed `handoff` skill when a normal conversation handoff is needed. This file is the durable task-local handoff.
-
-## Mode router
+## Modes
 
 ### Discuss
 
-Use when the user wants to compare, brainstorm, redesign, evaluate, decide, ask whether something is worth doing, or discuss workflow/meta-work.
-
-Rules:
-
-- Do not edit files.
-- Do not create artifacts.
-- Do not create a task directory.
-- Use web, codebase, trace, or tool research when needed, but keep the output in chat.
-- When deciding how to sequence an addition, refactor, or rewrite, load and apply `principle-subtract-before-you-add` before recommending a direction.
-- End with a recommendation, options, tradeoffs, or a clear next decision.
-- Ask whether to promote the discussion into a spec or implementation only when the user has not already decided.
-
-Completion criterion: the user has a recommendation, decision point, or explicit promotion path, and no file or artifact was changed unless they asked for persistence.
-
-If the user explicitly asks to persist the direction, route to Spec.
+Research enough to produce a recommendation, tradeoff, or decision. Do not edit or persist unless the user promotes the work.
 
 ### Spec
 
-Use when the user asks for a tech spec, PRD, durable plan, implementation phases, or says to persist a discussed direction.
+1. Create an artifact path only when persistence is requested or needed.
+2. Establish Compatibility posture and run subtraction analysis where it can change the design.
+3. Run `tech-spec`; it owns spec structure, typed contracts, call stacks, file mapping, and risk-matched verification planning.
+4. Grill only when unresolved product, terminology, contract, or architecture decisions make the spec unsafe to implement.
+5. Create a comprehension map only under the rule above.
 
-Steps:
-
-1. Create or locate the task artifact directory and select the existing or new tech spec path.
-2. Establish the Compatibility posture for every touched surface and carry its evidence and target shape into `tech-spec`.
-3. When the spec sequences an addition, refactor, or rewrite, load and apply `principle-subtract-before-you-add` before fixing the implementation order.
-4. Load and run `tech-spec` with the available context and selected artifact path, following its branch selection through an implementation-ready artifact.
-5. Check every slice-checklist item for app-code work and update the artifact for any missing applicable item.
-6. Create or update the comprehension map.
-7. Append `handoff.md`.
-8. Run the pre-grill Spec checkpoint.
-
-Output: draft tech spec, comprehension map, and updated handoff. Do not change production code.
-
-Completion criterion: the tech spec is concrete enough that a fresh session can identify the contract, Compatibility posture, target shape, slice boundaries, verification loop, and open questions without redoing discovery; the comprehension map passes its completion criterion; when subtraction applies, the spec sequences safe removal before construction.
-
-### Spec checkpoint
-
-Run the pre-grill checkpoint after the first complete tech spec and comprehension map. Run the post-grill checkpoint after grilling decisions have been merged and the same map has been refreshed. Show or open the map before asking for a decision.
-
-Ask this checkpoint question using the harness's structured question tool when available:
-
-```text
-Does this comprehension map match your understanding of the change?
-```
-
-Pre-grill options:
-
-- `Proceed to grill-with-docs`.
-- `Revise the spec or map`.
-- `Skip grill and implement locally`.
-- `Pause to review/annotate`.
-
-Post-grill options:
-
-- `Start Finish Loop`.
-- `Implement locally`.
-- `Revise the spec or map`.
-- `Grill again`.
-- `Pause to review/annotate`.
-
-Recommend `Proceed to grill-with-docs` for nontrivial work at the pre-grill checkpoint. Recommend skipping the grill only for small, obvious, low-risk work. At the post-grill checkpoint, recommend the path matching the user's stated delivery goal. `Start Finish Loop` is explicit approval to run the accepted spec through the bounded PR workflow. Creating, viewing, annotating, or completing the map does not imply implementation approval.
-
-After every checkpoint response, append the stage, artifact reference, user decision, and requested revisions to `handoff.md` before routing onward. When the user requests revision or identifies a disagreement, update the tech spec first, regenerate the map, and repeat the same checkpoint.
-
-### Grill with docs
-
-Use when the user chooses to grill, or when the task has architecture, product, or terminology risk.
-
-Invoke:
-
-- `grill-with-docs`.
-
-Optional supporting skills:
-
-- `design-an-interface` when API or interface shape matters.
-- `field-lab` when the user selects its dialectic workflow for a real unresolved tension.
-- `documentation` when the output is docs-heavy.
-
-Re-run `tech-spec` with the new decisions and the existing artifact path, refresh the existing comprehension map in place, then append `handoff.md` with decisions, rejected approaches, terminology changes, and the refreshed artifact reference. Run the post-grill Spec checkpoint so the revised design is explicitly understood and accepted before implementation or a Finish Loop begins.
-
-### Pause to review or annotate
-
-Use when the user wants to inspect the spec.
-
-Steps:
-
-1. Stop implementation.
-2. Point to the tech spec path.
-3. If Plannotator annotations exist, append approved annotations to `handoff.md`.
-4. Wait for the user's next instruction.
+Complete when a fresh session can implement without rediscovering the contract, target shape, call flow, files, proof, and open decisions.
 
 ### Implement
 
-Use when the user asks to make code changes, chooses implementation after a spec checkpoint, or says to implement a persisted spec.
+Read the accepted spec and handoff when they exist. Load `principle-subtract-before-you-add` for additions, refactors, or rewrites; Finish Loop implementation inherits this rule. Load `coding-standards`, plus `codebase-design` for a nontrivial seam and technology-specific skills when relevant. Load `tdd` only when RGR is the selected verification loop.
 
-First load:
+Apply the working contract, implementation posture, and verification posture. Persist progress only when a durable artifact exists.
 
-- the tech spec, if implementing a persisted spec.
-- `handoff.md`, if it exists.
-- `principle-subtract-before-you-add` when the change adds, refactors, or rewrites behavior.
-- `tdd`.
-- `coding-standards`.
-- `codebase-design` for nontrivial module seams.
-
-Also load when relevant:
-
-- `write-effect-ts`.
-- `find-docs`.
-- `typescript-magician`.
-- `diagnosing-bugs`.
-- `feedback-loop`.
-
-Rules:
-
-- If no spec exists, inspect first and decide whether the request is a small direct slice or needs Discuss/Spec before mutation.
-- Establish or revalidate the touched surface's Compatibility posture from live evidence before choosing the implementation shape.
-- Keep the slice checklist in working context when no artifact is needed.
-- Use red-green-refactor TDD.
-- Make the smallest complete change that reaches the chosen target shape; do not optimize for the fewest edited lines.
-- Implement one tracer-bullet slice at a time.
-- Prefer contract-first changes before wiring callers.
-- Keep lifecycle/status/outcome vocabulary explicit.
-- For applicable work, complete the `principle-subtract-before-you-add` subtraction pass before constructing the first slice.
-- Apply the Compatibility posture: a Direct cutover removes the superseded path in the same slice; Protected evolution preserves only the recorded contract.
-- For every new seam, name what it hides and why deleting it would spread complexity into callers.
-- Keep expected failures typed and boundary translation local.
-- Verify with real commands.
-- Append implementation status, slice checklist decisions, commands, results, and PR-ready narrative to `handoff.md`.
-
-Completion criterion: the slice has a failing-then-passing or otherwise risk-matched verification loop, the diff is inspectable as one coherent behavior, the Compatibility posture is honored, remaining risks are named, and applicable subtraction is visible in the diff or explicitly ruled out from observed usage.
+Complete when the smallest complete slice works through its real seam, additions justify their reader load, refactors measurably reduce it, final checks have no new failure, and remaining risk is explicit.
 
 ### Finish Loop
 
-Use only when the user explicitly asks to start a loop, take an accepted tech spec to an open PR, or babysit an existing PR to the final human gate. A post-grill spec is accepted only through the Spec checkpoint; completing the grill does not imply approval.
-
-An active Finish Loop authorizes scoped implementation, verification, commits, the local adversarial review gate, synchronization and conflict remediation for the current Graphite diff when tracked, pushes, PR creation or updates, ready-for-review state changes, CI remediation, one eligible Greptile request, and resolution of addressed review threads. It does not authorize sibling Graphite diffs, scope expansion, deploys, destructive changes, or unrelated-file changes; route those to the user as real decision forks.
-
-Load the accepted tech spec and `handoff.md`, then load the skills required by [the Finish Loop runbook](references/finish-loop.md) and execute its state machine. Persist every state transition before taking the next external action. A recovered run resumes from observed repository, PR, CI, and ledger state rather than replaying completed actions.
-
-The loop ends with the local adversarial review gate complete, the open PR at its final pushed commit, conflict-free and ready for review, required CI green for that commit, and all actionable findings from the single eligible Greptile review addressed. Hand that state to the user and stop.
+Use only with explicit authorization to take an accepted spec or existing PR through commits, publication, CI, and external review. Follow [the Finish Loop runbook](references/finish-loop.md). Its ledger prevents replaying external actions after recovery.
 
 ### Debug
 
-Use when the user reports a bug, failing test, runtime error, production error, performance regression, flaky behavior, CI failure, or asks to diagnose/fix something broken.
+Load `diagnosing-bugs`; add `feedback-loop`, `motel-debug`, `observability-logging`, or technology skills only when the observed path needs them.
 
-First load:
-
-- `diagnosing-bugs`.
-- `tdd`.
-- `coding-standards`.
-
-Also load when relevant:
-
-- `feedback-loop`.
-- `write-effect-ts`.
-- `find-docs`.
-
-Steps:
-
-1. Classify the symptom and use `diagnosing-bugs` to build a tight red-capable loop against the user's actual failure.
-2. Reproduce and minimize before implementation. Fan out falsifiable hypotheses only after the symptom is bounded.
-3. Use `tdd` when a regression test has a correct seam; otherwise record the testability gap.
-4. When the fix adds, refactors, or rewrites behavior, apply `principle-subtract-before-you-add` before implementation.
-5. Apply the smallest complete root-cause fix at the owning seam; do not preserve a poor boundary merely to minimize diff size. Then rerun the original repro and relevant broader checks.
-6. Remove temporary instrumentation and record root cause, verification, and remaining risk in `handoff.md` when an artifact exists.
-
-No implementation until the root cause is understood or explicitly marked unknown with a contained mitigation.
-
-Completion criterion: the original symptom is reproduced or convincingly bounded, the fix addresses root cause rather than only symptoms, and the final verification reruns the repro loop plus relevant broader checks.
+1. Reproduce or tightly bound the actual symptom.
+2. Improve the evidence loop before fanning out hypotheses.
+3. Understand root cause, or explicitly mark it unknown before a contained mitigation.
+4. Apply the smallest fix at the owning seam.
+5. Rerun the original repro and relevant final checks.
+6. Remove temporary probes after the post-fix repro unless the user chooses to keep production telemetry.
 
 ### Review
 
-Use when the user asks for code review, local adversarial review, PR readiness, or a final local review gate.
+Review findings are proportional to risk:
 
-Rules:
+- Use the repository's normal review path for ordinary diffs.
+- Use `local-adversarial-review-gauntlet` only when the user explicitly requests adversarial review, the change is high risk, or an authorized Finish Loop selects that gate.
+- Tests, typecheck, lint, build, repros, and trace queries are verification, not review.
+- Keep Greptile and CI remediation in their explicit workflows.
 
-- Apply the Review boundary: every local code review runs through `local-adversarial-review-gauntlet`, regardless of whether it is called an audit, recheck, readiness check, or verification pass.
-- Load and run `local-adversarial-review-gauntlet` as Review mode's single formal runbook.
-- Spec, design, document, or plan review stays in the current Discuss or Spec phase as a normal conversation or checkpoint. Do not create a separate review runbook for it.
-- Manual review notes stay in the current stage: discuss them, or route to Implement/Debug when the user asks for changes. Do not create a separate repair playbook.
-- Pass the gauntlet the user's intent, non-goals, reviewable slice, contract/seam/lifecycle decisions, verification evidence, artifact path when one exists, and whether the user explicitly authorized its prerequisite local commit. A generic review or PR-readiness request does not supply that commit authorization.
-- Greptile feedback and CI remediation remain separate workflows and require their own user intent or active Finish Loop authorization.
+Report findings first, ordered by severity with file and line references. Do not require a commit merely to inspect a worktree unless the selected review tool requires one and the user authorizes it.
 
 ### Recall/Pickup
 
-Use when the user asks to resume, continue from a handoff/transcript/branch/PR, catch up, or reconstruct recent work.
-
-Steps:
-
-1. Read the supplied handoff, spec, transcript, branch, PR, or live state first.
-2. Reconstruct what is done, pending, blocked, and risky.
-3. Do not redo completed research or implementation unless verification requires it.
-4. Route the remaining work to Discuss, Spec, Implement, Finish Loop, Debug, or Review. Resume Finish Loop only when its ledger records the original explicit authorization.
-5. State the resume point and what was inherited versus re-verified.
+Read supplied artifacts and live state first. Reconstruct done, pending, blocked, and risky work; distinguish inherited claims from reverified facts; route only the remainder. Resume a Finish Loop only when its ledger records explicit authorization.
 
 ### Reflect
 
-Use after a complex run, a user correction, a routing mistake, repeated workflow friction, or a successful recipe worth keeping.
+Use observed corrections, retries, churn, or successful recipes as evidence. Prefer deleting instructions or enforcing behavior through tests, scripts, metadata, or tool configuration. Propose skill changes and evals before editing unless the user has already authorized implementation.
 
-Rules:
+## VCS and completion
 
-- Propose durable lessons and where they belong.
-- Prefer structural enforcement: tests, lints, scripts, metadata, review agents, or skill edits.
-- Do not edit skills automatically. Present proposed changes and wait for explicit approval.
-- Use evals before promoting behavior-changing routing, prompt, or skill changes when practical.
+Outside an active Finish Loop, require explicit approval before commit, push, merge, deploy, destructive data changes, or external messages. Never rewrite an observed commit unless the user explicitly requests it.
 
-## Decision rules
-
-Auto-choose defaults when the choice is spec-only, reversible, narrows scope, defers nonessential work, follows existing repo convention after inspection, or adds durable documentation for an architectural decision.
-
-Ask the user when the decision changes product direction, affects public API shape, changes production behavior, touches auth, security, secrets, money, data deletion, deployments, team process, ownership, or cannot be observed.
-
-Do not ask before checking facts discoverable from code, git history, existing docs, config, issue trackers, Slack, or connected MCPs.
-
-## Commit History
-
-When a commit is authorized, use additive history on the current PR or branch. Give every coherent implementation slice and each review, CI, or external-feedback remediation batch its own commit. Use a normal `git commit` with Git and `gt modify --commit` with Graphite. Preserve every commit whose SHA has been pushed, reviewed, recorded as a checkpoint, or observed by CI.
-
-Amend only when the user explicitly requests it, or to repair the construction of the immediately preceding unpublished commit, such as its message or an accidentally omitted intended file. The repair exception requires that no review, CI run, durable checkpoint, or external actor has observed the commit SHA. Record the reason in the active Finish Loop ledger whenever the exception is used.
-
-Completion: the branch history shows each completed slice and remediation batch as a distinct commit, or the active ledger records a qualifying amend exception.
-
-## Verification gate
-
-For every implementation or debug fix:
-
-1. Inspect repository status.
-2. Inspect the diff.
-3. Run relevant tests, typecheck, lint, or build.
-4. Run feature-specific verification when available.
-5. Summarize the PR-ready narrative for nontrivial code changes: Summary, Why, Design, Validation, and Follow-up/Risk.
-6. Append commands, results, and PR-ready narrative to `handoff.md` when a task artifact exists.
-7. Do not claim done if verification is inconclusive.
-
-Outside an active Finish Loop, ask for explicit approval before commit, push, merge, deploy, destructive data changes, or external messages. Inside a Finish Loop, its declared scope supplies approval only for the operations listed in that mode; stop at any operation or decision outside that boundary.
-
-## Final response
-
-Follow the user-facing voice and keep the final response short. Include:
-
-- Mode used.
-- Artifact paths, if any.
-- What changed.
-- Reviewable slice and contract/seam decisions when nontrivial.
-- Verification run and result.
-- Remaining risks or next action.
-
-If no code was changed, say so directly.
+For nontrivial changes, summarize Summary, Why, Design, Validation, and Follow-up/Risk. Keep the final response short: mode, changed files or artifacts, proof run, and remaining risk.

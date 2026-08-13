@@ -10,4 +10,6 @@ My collection of markdown files and scripts that I give to agents to hopefully d
 - **greptile-address**: Consume one existing Greptile review snapshot, address its actionable comments, resolve addressed threads, and never request another review.
 - **local-adversarial-review-gauntlet**: Run four isolated local reviewers across Cursor, Codex, and OpenCode against one committed diff, then consolidate supported findings.
 - **write-effect-ts**: Write idiomatic Effect TypeScript by matching repo style, following effect-solutions patterns, and verifying current APIs with Context7 before implementing.
-- **computa-please**: Personal router and gatekeeper for discussion, persisted specs, RGR TDD implementation, bounded Finish Loops, debugging, recall, reflection, and review workflows.
+- **observability-logging**: Add the least production telemetry needed using structured logs, OpenTelemetry spans/events, bounded metrics, safe fields, and exact-once error recording.
+- **tech-spec**: Write an implementation-ready typed call-stack architecture handoff with subtraction-first design and risk-matched verification.
+- **computa-please**: Route discussion, specs, minimal implementation, bounded Finish Loops, debugging, review, pickup, and workflow reflection before mutation.

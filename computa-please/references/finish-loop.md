@@ -2,15 +2,15 @@
 
 This runbook is the bounded supervisor around Implement, the current worktree and diff, its PR, CI, and one paid Greptile review. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
 
-Apply [Commit History](../SKILL.md#commit-history) at every commit-producing step.
+Use additive commits for coherent implementation and remediation slices. Preserve commits already pushed, reviewed, recorded, or observed by CI; amend only with explicit user approval.
 
 ## Load
 
 Load only the skills needed by the observed path:
 
 - `vcs-detect` before VCS commands.
-- `tdd`, `coding-standards`, and `codebase-design` for accepted-spec implementation.
-- `local-adversarial-review-gauntlet` for the only local code review gate.
+- `coding-standards` and `codebase-design` for accepted-spec implementation; `tdd` only when RGR is the selected verification loop.
+- `local-adversarial-review-gauntlet` when the accepted spec or explicit Finish Loop authorization selects the high-assurance review gate.
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
@@ -24,7 +24,7 @@ Before the first mutation or external action, append a run entry to `handoff.md`
 - Accepted spec path or existing PR goal.
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
 - Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
-- Local adversarial review target, four terminal outcomes, and remaining actionable finding count.
+- Selected local review path, target, terminal outcome, and remaining actionable finding count.
 - CI state and the SHA it describes.
 - PR additions plus deletions.
 - Greptile eligibility, request-attempted flag and time, matching review identifier, and remaining actionable count.
@@ -36,7 +36,7 @@ Update the entry before every state transition and before every external action.
 ### 1. Bound
 
 1. Confirm explicit Finish Loop authorization.
-2. Confirm an accepted post-grill spec or a concrete existing PR goal.
+2. Confirm an accepted spec or a concrete existing PR goal.
 3. Inspect the current worktree, diff, branch, PR, required checks, and Graphite parent when tracked.
 4. Name the allowed files or behavioral slice, verifier, external actions, and blockers.
 5. Stop for unresolved product, public API, production behavior, auth, security, secrets, money, deletion, deploy, ownership, or scope decisions.
@@ -64,13 +64,13 @@ Completion: the intended behavior is implemented, local checks pass, and the dif
 
 ### 4. Local Review
 
-1. Stage only intended files and commit uncommitted review-scope changes under Commit History.
-2. Invoke `local-adversarial-review-gauntlet` against that committed target. Pass that the active Finish Loop authorizes its prerequisite local commit.
-3. Stop if any reviewer is blocked or the gauntlet is incomplete.
-4. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and commit fixes under Commit History.
-5. Do not launch an ad hoc reviewer, audit, recheck, or direct review skill before or after the gauntlet. Tests, typecheck, lint, build, runtime repros, and deterministic contract checks remain available as verification.
+1. Select the repository's normal review path unless the accepted spec, risk assessment, or user explicitly requires the adversarial gauntlet.
+2. If using the gauntlet, stage only intended files, create an additive commit, and invoke `local-adversarial-review-gauntlet` against that target. The active Finish Loop authorizes this prerequisite local commit.
+3. Stop if a required reviewer is blocked or the selected review path is incomplete.
+4. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and commit the fix as a new slice.
+5. Do not add review passes without new risk or evidence. Tests, typecheck, lint, build, runtime repros, and deterministic contract checks remain verification.
 
-Completion: all four reviewers reached terminal outcomes against the committed target, every actionable finding is fixed or rejected with evidence, and the resulting local diff is committed and verified.
+Completion: the selected review path reached a terminal outcome, every actionable finding is fixed or rejected with evidence, and the resulting local diff is committed and verified.
 
 ### 5. Published
 
@@ -92,7 +92,7 @@ Immediately after publication and before waiting for CI, fetch Greptile artifact
 Then monitor required checks while any requested Greptile review runs in parallel:
 
 1. Never post another Greptile request during this agent run, including after CI fixes, a low confidence score, timeout, ambiguous delivery, context recovery, or a new pushed SHA.
-2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, commit under Commit History, publish, record the new SHA, and wait again without changing the recorded Greptile disposition.
+2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, create an additive commit, publish, record the new SHA, and wait again without changing the recorded Greptile disposition.
 3. Treat external outages and unavailable required infrastructure as blockers.
 4. Stop for no-progress when two consecutive cycles produce no new evidence, diagnosis, code change, or check-state change. Report the repeated failure and attempted remedies.
 
@@ -108,7 +108,7 @@ Use the Greptile disposition fixed before the initial CI wait:
 4. For a newly requested review, if no attributable review arrives or attribution is ambiguous, stop with a blocker rather than consuming an older review or retrying the request.
 5. Address every finding that still applies to the current diff and classify findings already covered by newer commits accordingly.
 6. Treat the score as metadata, not an exit condition. The gate is whether every actionable finding in that one review snapshot is fixed or rejected with evidence; an unresolved finding is a blocker to report to the user.
-7. Resolve addressed Greptile threads, run local verification, commit under Commit History, publish, and record the new SHA when remediation changed files.
+7. Resolve addressed Greptile threads, run local verification, create an additive commit, publish, and record the new SHA when remediation changed files.
 8. Ignore later automatic or manually requested Greptile reviews for this run. Never transition back to this state.
 
 Completion: Greptile was skipped because no review existed and the diff was ineligible by size, or one existing or newly requested review snapshot was consumed and has zero unaccounted actionable findings.
@@ -121,4 +121,4 @@ Completion: required CI is green for the final SHA, the PR is conflict-free and 
 
 ### 9. Human Gate
 
-Append the terminal state and report the PR URL, final SHA, local adversarial review outcome, local verification, required CI, Greptile eligibility and consumed review, addressed findings, and any residual risk. Stop and wait for the user.
+Append the terminal state and report the PR URL, final SHA, selected local review outcome, local verification, required CI, Greptile eligibility and consumed review, addressed findings, and any residual risk. Stop and wait for the user.
