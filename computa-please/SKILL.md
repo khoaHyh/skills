@@ -37,7 +37,11 @@ For nontrivial code, name this contract before editing:
 
 ### Compatibility
 
-Inspect public callers, deployments, persisted data, integrations, in-flight work, and rollback constraints for each touched surface.
+Inspect public callers, known users or clients, deployments, persisted data, integrations, in-flight work, and rollback or rolling-deploy constraints for each touched surface.
+
+Preserve compatibility only for an observed obligation. When evidence shows there are no users, deployed clients, or retained data that must survive, choose Direct cutover and remove the old path. Do not add compatibility for hypothetical consumers.
+
+Failure to find a dependency is not evidence that none exists when external consumers or data-retention requirements remain genuinely unknowable. Ask only when that uncertainty changes the safe design; state the missing evidence and the decision required.
 
 - **Direct cutover:** no observed contract must survive. Migrate callers and delete the superseded path in the same slice. Leave no aliases, shims, dual paths, speculative migrations, or compatibility flags.
 - **Protected evolution:** a named consumer, retained datum, deployment constraint, or user requirement must survive. Preserve it at the narrowest seam and record whether the mechanism is permanent or when it can be removed.
@@ -89,16 +93,16 @@ Escalate beyond the default only for explicitly requested breadth, independent h
 
 Create artifacts only when the user requests persistence, the work must survive sessions, multiple people or agents must coordinate, or a Finish Loop needs an external-action ledger. Otherwise keep state in the conversation.
 
-When needed, use `~/.computa-please/<repo-slug>__<branch-or-task-slug>/` with:
+When needed, use `~/.computa-please/<repo-slug>__<branch-slug>/`, falling back to `<repo-slug>__<task-slug>` when no branch is available. Slugs use lowercase letters, numbers, and single hyphens. Keep the task directory to:
 
 ```text
 <task-slug>-tech-spec-YYYY-MM-DD.md
 handoff.md
 ```
 
-Reuse an existing tech spec. Keep `handoff.md` cumulative and concise: spec path, current state, decisions, rejected approaches, Compatibility posture, verification, external actions, remaining risk, and next action. Never store secrets, customer data, or raw private transcripts.
+Reuse an existing tech spec. Append a dated section to `handoff.md` when material state changes; do not rewrite prior decisions. Keep it concise: spec path, current state, decisions, rejected approaches, Compatibility posture, verification, external actions, remaining risk, and next action. Never store secrets, customer data, or raw private transcripts.
 
-Create a comprehension map only when the user asks for one or the spec is complex enough that a visual check will materially reduce misunderstanding. Follow [the runbook](references/comprehension-map.md) when creating it.
+Create a comprehension map only when the user asks for one or the spec is complex enough that a visual check will materially reduce misunderstanding. Keep renderer-owned visual artifacts outside the task directory and reference them from `handoff.md`. Follow [the runbook](references/comprehension-map.md) when creating one.
 
 ## Modes
 
@@ -159,6 +163,8 @@ Read supplied artifacts and live state first. Reconstruct done, pending, blocked
 Use observed corrections, retries, churn, or successful recipes as evidence. Prefer deleting instructions or enforcing behavior through tests, scripts, metadata, or tool configuration. Propose skill changes and evals before editing unless the user has already authorized implementation.
 
 ## VCS and completion
+
+When this workflow creates a Git worktree, place it under `~/dev/worktrees/<repo-slug>__<branch-slug>`. Create the parent directory when needed, inspect and reuse a matching safe worktree, and use another location only when the user explicitly requests it.
 
 Outside an active Finish Loop, require explicit approval before commit, push, merge, deploy, destructive data changes, or external messages. Never rewrite an observed commit unless the user explicitly requests it.
 
