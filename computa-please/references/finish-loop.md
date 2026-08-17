@@ -75,11 +75,33 @@ Completion: the selected review path reached a terminal outcome, every actionabl
 ### 5. Published
 
 1. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
-2. Create or update the PR description with Summary, Why, Design, Validation, and Follow-up/Risk.
+2. Create or update the PR description with Summary, Why, Design, Call Stacks, Validation, and Follow-up/Risk. Write Call Stacks using the contract below.
 3. Move a draft PR to ready-for-review state.
 4. Record the pushed SHA before monitoring checks.
 
 Completion: the open PR points at the recorded SHA, is ready for review, and targets the intended parent or base.
+
+#### PR Call Stacks
+
+A call stack is an ordered execution path from an affected entrypoint through each callable or boundary to its terminal result or effect. Derive the before state from the PR base and the after state from the current diff.
+
+In the PR body's `Call Stacks` section:
+
+- Include every added or edited call stack. If there are none, write `No call stacks added or edited.`
+- Show the complete `Before` and `After` path for each call stack so unchanged surrounding layers keep the change understandable. For a new path, write `Before: Not present.`
+- List layers in execution order using exact callable, module, or boundary names. Mark each after-layer as `Added`, `Changed`, or `Unchanged` relative to the before path.
+- For every layer in both paths, state `Input`, `Output`, `Errors`, and `Side effects`. Use source-level types, or the concrete runtime shape when the codebase is untyped. Include typed failures, thrown exceptions or defects, and boundary failures with their trigger conditions. Write `None` rather than omitting a field.
+
+Use this shape for each path:
+
+```markdown
+### `<entrypoint> -> <terminal result or effect>`
+**Before**
+1. `<layer>` - Input: `<type>`; Output: `<type>`; Errors: `<error and condition | None>`; Side effects: `<effect | None>`
+
+**After**
+1. `[Added|Changed|Unchanged] <layer>` - Input: `<type>`; Output: `<type>`; Errors: `<error and condition | None>`; Side effects: `<effect | None>`
+```
 
 ### 6. Start Greptile and Monitor CI
 
@@ -115,9 +137,9 @@ Completion: Greptile was skipped because no review existed and the diff was inel
 
 ### 8. Final CI
 
-Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the Greptile disposition or returning to Consume Greptile. Reconfirm that the PR is conflict-free and points at that SHA.
+Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the Greptile disposition or returning to Consume Greptile. Refresh the PR description's Call Stacks section from the final diff, then reconfirm that the PR is conflict-free and points at that SHA.
 
-Completion: required CI is green for the final SHA, the PR is conflict-free and ready for review, and Consume Greptile remains complete.
+Completion: required CI is green for the final SHA, the PR description accounts for every added or edited call stack in the final diff, the PR is conflict-free and ready for review, and Consume Greptile remains complete.
 
 ### 9. Human Gate
 
