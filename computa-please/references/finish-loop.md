@@ -2,6 +2,8 @@
 
 This runbook is the bounded supervisor around Implement, the current worktree and diff, its PR, CI, and one paid Greptile review. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
 
+Default PR posture: publish every PR as a draft. Mark it ready for review only when the user explicitly requests it. Draft PRs are publication-only: skip CI monitoring and Greptile or other agent review, then proceed directly to Human Gate.
+
 Use additive commits for coherent implementation and remediation slices. Preserve commits already pushed, reviewed, recorded, or observed by CI; amend only with explicit user approval.
 
 ## Load
@@ -76,10 +78,10 @@ Completion: the selected review path reached a terminal outcome, every actionabl
 
 1. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
 2. Create or update the PR description with Summary, Why, Design, Call Stacks, Validation, and Follow-up/Risk. Write Call Stacks using the contract below.
-3. Move a draft PR to ready-for-review state.
-4. Record the pushed SHA before monitoring checks.
+3. Keep the PR as a draft unless the user explicitly requested ready-for-review state.
+4. Record the pushed SHA before monitoring checks, or before proceeding to Human Gate for a draft PR.
 
-Completion: the open PR points at the recorded SHA, is ready for review, and targets the intended parent or base.
+Completion: the open PR points at the recorded SHA, is draft unless readiness was explicitly requested, and targets the intended parent or base.
 
 #### PR Call Stacks
 
@@ -133,6 +135,8 @@ Put long error or side-effect details in the adjacent `Contracts` list keyed by 
 
 ### 6. Start Greptile and Monitor CI
 
+Skip this state, Consume Greptile, and Final CI for a draft PR. Record the skipped CI and agent-review disposition, then proceed to Human Gate. Run the remainder of this state only when the user explicitly requested ready-for-review state.
+
 Immediately after publication and before waiting for CI, fetch Greptile artifacts on the PR and apply the `greptile-address` completed-snapshot predicate. A bot-authored issue comment, check, reaction, standalone inline comment, or status/skip notice is not an existing review. In particular, `PR author is in the excluded authors list` is an ineligibility notice, not a review snapshot. Then fix the run's Greptile disposition:
 
 - If any completed Greptile review exists, select the latest snapshot and record its review ID and reviewed SHA without posting a request.
@@ -146,7 +150,7 @@ Then monitor required checks while any requested Greptile review runs in paralle
 3. Treat external outages and unavailable required infrastructure as blockers.
 4. Stop for no-progress when two consecutive cycles produce no new evidence, diagnosis, code change, or check-state change. Report the repeated failure and attempted remedies.
 
-Completion: every required check is green for the current recorded SHA, and the Greptile disposition is one recorded completed review, `ineligible-size`, or one attempted request. A requested review need not have arrived yet.
+Completion: for a ready PR, every required check is green for the current recorded SHA, and the Greptile disposition is one recorded completed review, `ineligible-size`, or one attempted request. A requested review need not have arrived yet.
 
 ### 7. Consume Greptile
 
@@ -161,13 +165,13 @@ Use the Greptile disposition fixed before the initial CI wait:
 7. Resolve addressed Greptile threads, run local verification, create an additive commit, publish, and record the new SHA when remediation changed files.
 8. Ignore later automatic or manually requested Greptile reviews for this run. Never transition back to this state.
 
-Completion: Greptile was skipped because no review existed and the diff was ineligible by size, or one existing or newly requested review snapshot was consumed and has zero unaccounted actionable findings.
+Completion: for a ready PR, Greptile was skipped because no review existed and the diff was ineligible by size, or one existing or newly requested review snapshot was consumed and has zero unaccounted actionable findings.
 
 ### 8. Final CI
 
 Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the Greptile disposition or returning to Consume Greptile. Refresh the PR description's Call Stacks section from the final diff, then reconfirm that the PR is conflict-free and points at that SHA.
 
-Completion: required CI is green for the final SHA, the PR description accounts for every added or edited call stack in the final diff, the PR is conflict-free and ready for review, and Consume Greptile remains complete.
+Completion: for a ready PR, required CI is green for the final SHA, the PR description accounts for every added or edited call stack in the final diff, the PR is conflict-free and ready for review, and Consume Greptile remains complete.
 
 ### 9. Human Gate
 
