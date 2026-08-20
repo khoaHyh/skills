@@ -24,6 +24,12 @@ Default evaluative or ambiguous requests to Discuss. Ask only about product dire
 
 Create a todo list only for genuinely multi-step work where progress state helps. Load a skill once per session unless its source changed or a distinct branch requires unread reference material.
 
+## Pull request descriptions
+
+Before drafting, creating, or updating a pull request description in any mode, read and follow [the PR Description contract](references/pr-description.md). This applies whether the description is returned in the conversation or published externally.
+
+Complete only when the contract's required schema is present and its Call Stacks section accounts for every added or edited call stack in the diff, or explicitly states that there are none.
+
 ## Working contract
 
 For nontrivial code, name this contract before editing:
@@ -168,4 +174,4 @@ When this workflow creates a Git worktree, place it under `~/dev/worktrees/<repo
 
 Outside an active Finish Loop, require explicit approval before commit, push, merge, deploy, destructive data changes, or external messages. Never rewrite an observed commit unless the user explicitly requests it.
 
-For nontrivial changes, summarize Summary, Why, Design, Validation, and Follow-up/Risk. Keep the final response short: mode, changed files or artifacts, proof run, and remaining risk.
+For nontrivial changes, summarize Summary, Why, Design, Validation, and Follow-up/Risk in the assistant's final response. When the response is a pull request description, use the PR Description contract instead. Keep completion reporting short: mode, changed files or artifacts, proof run, and remaining risk.
