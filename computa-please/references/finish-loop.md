@@ -16,7 +16,7 @@ Load only the skills needed by the observed path:
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
-- `greptile-address` for its completed-snapshot predicate during discovery, then for remediation only after the one allowed completed review exists.
+- `review-remediation` after the one allowed completed Greptile review has been selected.
 
 ## Run Ledger
 
@@ -87,7 +87,7 @@ Completion: the open PR points at the recorded SHA, is draft unless readiness wa
 
 Skip this state, Consume Greptile, and Final CI for a draft PR. Record the skipped CI and agent-review disposition, then proceed to Human Gate. Run the remainder of this state only when the user explicitly requested ready-for-review state.
 
-Immediately after publication and before waiting for CI, fetch Greptile artifacts on the PR and apply the `greptile-address` completed-snapshot predicate. A bot-authored issue comment, check, reaction, standalone inline comment, or status/skip notice is not an existing review. In particular, `PR author is in the excluded authors list` is an ineligibility notice, not a review snapshot. Then fix the run's Greptile disposition:
+Immediately after publication and before waiting for CI, fetch pull-request reviews, inline comments, and issue comments separately. A completed Greptile review is a submitted pull-request review authored by `greptile-apps[bot]` or `greptile-apps-staging[bot]` with a numeric ID, non-empty commit ID and submission time, and positive completion evidence: attached inline comments, a numeric confidence score, or explicit reviewed-commit/review-counter metadata. Pending or dismissed reviews and status, skip, progress, or eligibility notices are not completed reviews; in particular, `PR author is in the excluded authors list` is an ineligibility notice. Then fix the run's Greptile disposition:
 
 - If any completed Greptile review exists, select the latest snapshot and record its review ID and reviewed SHA without posting a request.
 - If no completed review exists and the PR reports 300 changed lines or fewer, record `ineligible-size`.
@@ -107,8 +107,8 @@ Completion: for a ready PR, every required check is green for the current record
 Use the Greptile disposition fixed before the initial CI wait:
 
 1. For `ineligible-size`, skip to Final CI.
-2. For an existing completed review, invoke `greptile-address` once with its recorded review ID.
-3. For an attempted request, use a review that is attributable to the recorded request if it has arrived; otherwise wait for it, then invoke `greptile-address` once with the PR, request time, and reviewed SHA.
+2. For an existing completed review, invoke `review-remediation` once with its recorded review ID, reviewer identity, and reviewed SHA as the fixed feedback selector.
+3. For an attempted request, use a review that is attributable to the recorded request if it has arrived; otherwise wait for it, then invoke `review-remediation` once with the PR, review ID, reviewer identity, request time, and reviewed SHA as the fixed feedback selector.
 4. For a newly requested review, if no attributable review arrives or attribution is ambiguous, stop with a blocker rather than consuming an older review or retrying the request.
 5. Address every finding that still applies to the current diff and classify findings already covered by newer commits accordingly.
 6. Treat the score as metadata, not an exit condition. The gate is whether every actionable finding in that one review snapshot is fixed or rejected with evidence; an unresolved finding is a blocker to report to the user.
