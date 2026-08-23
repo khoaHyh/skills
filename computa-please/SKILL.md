@@ -156,7 +156,7 @@ Review findings are proportional to risk:
 - Use the repository's normal review path for ordinary diffs.
 - Use `local-adversarial-review-gauntlet` only when the user explicitly requests adversarial review, the change is high risk, or an authorized Finish Loop selects that gate.
 - Tests, typecheck, lint, build, repros, and trace queries are verification, not review.
-- Keep Greptile and CI remediation in their explicit workflows.
+- Keep PR feedback and CI remediation in their explicit workflows. Use `review-remediation` for a frozen feedback set from any human or automated reviewer.
 
 Report findings first, ordered by severity with file and line references. Do not require a commit merely to inspect a worktree unless the selected review tool requires one and the user authorizes it.
 

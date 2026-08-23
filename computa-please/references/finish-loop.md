@@ -1,8 +1,8 @@
 # Finish Loop
 
-This runbook is the bounded supervisor around Implement, the current worktree and diff, its PR, CI, and one paid Greptile review. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
+This runbook is the bounded supervisor around Implement, the current worktree and diff, its PR, CI, and one frozen set of external review feedback. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
 
-Default PR posture: publish every PR as a draft. Mark it ready for review only when the user explicitly requests it. Draft PRs are publication-only: skip CI monitoring and Greptile or other agent review, then proceed directly to Human Gate.
+Default PR posture: publish every PR as a draft. Mark it ready for review only when the user explicitly requests it. Draft PRs are publication-only: skip CI monitoring and external review collection or remediation, then proceed directly to Human Gate.
 
 Use additive commits for coherent implementation and remediation slices. Preserve commits already pushed, reviewed, recorded, or observed by CI; amend only with explicit user approval.
 
@@ -16,7 +16,7 @@ Load only the skills needed by the observed path:
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
-- `review-remediation` after the one allowed completed Greptile review has been selected.
+- `review-remediation` after the run's external feedback set has been frozen.
 
 ## Run Ledger
 
@@ -29,9 +29,10 @@ Before the first mutation or external action, append a run entry to `handoff.md`
 - Selected local review path, target, terminal outcome, and remaining actionable finding count.
 - CI state and the SHA it describes.
 - PR additions plus deletions.
-- Greptile eligibility, request-attempted flag and time, matching review identifier, and remaining actionable count.
+- Review plan: `existing-only`, `request-once`, or explicit `skip`; reviewer selectors; delivery surfaces; expected revision or time window; completion evidence; named request actions and the selectors each covers; and an absolute result deadline for `request-once`.
+- Per-selector disposition, request-action attempts and times, completed artifact identifiers, frozen feedback payload, remaining actionable count, and per-item response or addressed-state action attempts.
 
-Update the entry before every state transition and before every external action. On pickup, reconcile the ledger with live state and trust observed state for everything except whether a Greptile request was already attempted. An attempted request remains spent even when its result is ambiguous.
+Update the entry before every state transition and before every external action. On pickup, reconcile the ledger with live state and trust observed state except for recorded external-action attempts and the frozen feedback payload. Each attempted request, response, or addressed-state mutation remains spent when its result is ambiguous. The recorded IDs, authors, bodies, source surfaces, and revision or timestamps remain authoritative after the set freezes; live state can update only delivery and addressed status.
 
 ## State Machine
 
@@ -40,10 +41,10 @@ Update the entry before every state transition and before every external action.
 1. Confirm explicit Finish Loop authorization.
 2. Confirm an accepted spec or a concrete existing PR goal.
 3. Inspect the current worktree, diff, branch, PR, required checks, and Graphite parent when tracked.
-4. Name the allowed files or behavioral slice, verifier, external actions, and blockers.
+4. Name the allowed files or behavioral slice, verifier, external actions, blockers, and review plan. A ready PR requires `existing-only`, `request-once`, or an explicit `skip`; `request-once` names each authorized request action, the reviewer selectors it covers, its mechanism, and an absolute result deadline.
 5. Stop for unresolved product, public API, production behavior, auth, security, secrets, money, deletion, deploy, ownership, or scope decisions.
 
-Completion: the goal, blast radius, verifier, PR target, and authorization are recorded with no unresolved decision fork.
+Completion: the goal, blast radius, verifier, PR target, review plan, and authorization are recorded with no unresolved decision fork.
 
 ### 2. Synchronized
 
@@ -83,46 +84,51 @@ Completion: the selected review path reached a terminal outcome, every actionabl
 
 Completion: the open PR points at the recorded SHA, is draft unless readiness was explicitly requested, targets the intended parent or base, and its description satisfies the PR Description contract for the published diff.
 
-### 6. Start Greptile and Monitor CI
+### 6. Collect External Review and Monitor CI
 
-Skip this state, Consume Greptile, and Final CI for a draft PR. Record the skipped CI and agent-review disposition, then proceed to Human Gate. Run the remainder of this state only when the user explicitly requested ready-for-review state.
+Skip this state, Remediate Review Feedback, and Final CI for a draft PR. Record the skipped CI and review disposition, then proceed to Human Gate. Run the remainder of this state only when the user explicitly requested ready-for-review state.
 
-Immediately after publication and before waiting for CI, fetch pull-request reviews, inline comments, and issue comments separately. A completed Greptile review is a submitted pull-request review authored by `greptile-apps[bot]` or `greptile-apps-staging[bot]` with a numeric ID, non-empty commit ID and submission time, and positive completion evidence: attached inline comments, a numeric confidence score, or explicit reviewed-commit/review-counter metadata. Pending or dismissed reviews and status, skip, progress, or eligibility notices are not completed reviews; in particular, `PR author is in the excluded authors list` is an ineligibility notice. Then fix the run's Greptile disposition:
+Immediately after publication and before waiting for CI, execute the fixed review plan:
 
-- If any completed Greptile review exists, select the latest snapshot and record its review ID and reviewed SHA without posting a request.
-- If no completed review exists and the PR reports 300 changed lines or fewer, record `ineligible-size`.
-- If no completed review exists and the PR reports more than 300 changed lines, record `request-attempted: true` and the time immediately before posting one `@greptileai` review request.
+1. Resolve each reviewer selector against the provider's current review surfaces. A selector may name one reviewer, several reviewers, or all current external feedback.
+2. Discover submitted reviews, review bodies, inline comments, issue comments, check runs, annotations, or equivalent provider objects relevant to those selectors.
+3. Apply the plan's provider-specific attribution and positive completion evidence. Author identity alone, progress notices, eligibility notices, duplicate summaries, and other artifacts without completed feedback do not qualify.
+4. For `existing-only`, record completed results or `no-existing-feedback` separately for every configured reviewer selector. Treat an `all current external feedback` wildcard as one selector.
+5. For `request-once`, reuse attributable completed results. Execute each request action required by the fixed plan at most once; one action may cover one or several reviewer selectors. Append its action ID, covered selectors, `request-attempted: true`, timestamp, and expected revision before invoking its documented mechanism.
+6. For `skip`, record the explicit reason and perform no review action.
 
-Then monitor required checks while any requested Greptile review runs in parallel:
+Then monitor required checks while any requested reviews run in parallel:
 
-1. Never post another Greptile request during this agent run, including after CI fixes, a low confidence score, timeout, ambiguous delivery, context recovery, or a new pushed SHA.
-2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, create an additive commit, publish, record the new SHA, and wait again without changing the recorded Greptile disposition.
-3. Treat external outages and unavailable required infrastructure as blockers.
-4. Stop for no-progress when two consecutive cycles produce no new evidence, diagnosis, code change, or check-state change. Report the repeated failure and attempted remedies.
+1. Preserve each recorded review disposition. A named request action is attempted at most once during the run, including after CI fixes, timeouts, ambiguous delivery, context recovery, or a new pushed SHA.
+2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, create an additive commit, publish, record the new SHA, and wait again without changing the review plan or request attempts.
+3. Retain feedback that targets an earlier SHA; `review-remediation` will compare every finding with the current diff.
+4. Treat external outages and unavailable required infrastructure as blockers.
+5. Stop for no-progress when two consecutive remediation cycles for the same failure produce no new evidence, diagnosis, code change, reviewer state, or check-state change. Passive pending states follow their recorded or provider deadline and do not count as remediation cycles.
 
-Completion: for a ready PR, every required check is green for the current recorded SHA, and the Greptile disposition is one recorded completed review, `ineligible-size`, or one attempted request. A requested review need not have arrived yet.
+Completion: for a ready PR, every required check is green for the current recorded SHA, and every configured reviewer selector is represented by completed artifacts, `no-existing-feedback`, explicit `skip`, or one recorded pending request. Requested feedback need not have arrived yet.
 
-### 7. Consume Greptile
+### 7. Remediate Review Feedback
 
-Use the Greptile disposition fixed before the initial CI wait:
+Use the review plan and dispositions fixed before the initial CI wait:
 
-1. For `ineligible-size`, skip to Final CI.
-2. For an existing completed review, invoke `review-remediation` once with its recorded review ID, reviewer identity, and reviewed SHA as the fixed feedback selector.
-3. For an attempted request, use a review that is attributable to the recorded request if it has arrived; otherwise wait for it, then invoke `review-remediation` once with the PR, review ID, reviewer identity, request time, and reviewed SHA as the fixed feedback selector.
-4. For a newly requested review, if no attributable review arrives or attribution is ambiguous, stop with a blocker rather than consuming an older review or retrying the request.
-5. Address every finding that still applies to the current diff and classify findings already covered by newer commits accordingly.
-6. Treat the score as metadata, not an exit condition. The gate is whether every actionable finding in that one review snapshot is fixed or rejected with evidence; an unresolved finding is a blocker to report to the user.
-7. Resolve addressed Greptile threads, run local verification, create an additive commit, publish, and record the new SHA when remediation changed files.
-8. Ignore later automatic or manually requested Greptile reviews for this run. Never transition back to this state.
+1. For explicit `skip`, or when every `existing-only` selector has `no-existing-feedback`, skip to Final CI.
+2. For `request-once`, wait for every configured reviewer selector to produce an attributable completed result until its recorded absolute deadline. At the deadline, an absent or ambiguous result is a blocker and every covering request action remains spent.
+3. Build one feedback set from every claim, requested change, question, and informational item requiring acknowledgement in the completed results. Freeze each item's stable ID or URL, reviewer, delivery surface, body, and reviewed SHA or observed timestamp in the ledger. Record completed results with zero feedback items as `completed-no-feedback`.
+4. Treat the frozen ledger payload as the source of truth on recovery. A live edit to an object with the same ID does not change the finding under remediation; re-fetch only to observe delivery, deletion, and addressed state.
+5. Run `review-remediation` once against the frozen records. Complete classification, primary-source research, minimum, durable, robust implementation, and verification, but defer provider replies and addressed-state changes until the remediation is published.
+6. Treat every blocked item as a Finish Loop blocker. Scores, severity summaries, and approval labels remain metadata.
+7. When files changed, create an additive remediation commit, publish it, confirm the PR head contains it, and record the new SHA.
+8. After publication, complete `review-remediation` responses and provider-native addressed-state changes. Before each external action, record its item ID, exact payload or intended state, and `attempted` status; then execute it once and record the observed result. An ambiguous attempt is a blocker rather than permission to replay it. A deleted item receives terminal `delivery-unavailable: deleted` status instead of a reply or state mutation. When no files changed, respond after verification and classification.
+9. Treat feedback arriving after the set freezes as a separate run. Never transition back to this state.
 
-Completion: for a ready PR, Greptile was skipped because no review existed and the diff was ineligible by size, or one existing or newly requested review snapshot was consumed and has zero unaccounted actionable findings.
+Completion: for a ready PR, the plan was explicitly skipped; every `existing-only` selector had `no-existing-feedback`; or every selector has a terminal disposition, every completed result is represented by frozen items or `completed-no-feedback`, every item is accounted for with no blocker, and changed remediation was published before its response or addressed-state update.
 
 ### 8. Final CI
 
-Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the Greptile disposition or returning to Consume Greptile. Refresh the PR description from the final diff using [the PR Description contract](pr-description.md), then reconfirm that the PR is conflict-free and points at that SHA.
+Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the review plan or frozen set and without returning to Remediate Review Feedback. Refresh the PR description from the final diff using [the PR Description contract](pr-description.md), then reconfirm that the PR is conflict-free and points at that SHA.
 
-Completion: for a ready PR, required CI is green for the final SHA, the PR description satisfies the PR Description contract for the final diff, the PR is conflict-free and ready for review, and Consume Greptile remains complete.
+Completion: for a ready PR, required CI is green for the final SHA, the PR description satisfies the PR Description contract for the final diff, the PR is conflict-free and ready for review, and Remediate Review Feedback remains complete.
 
 ### 9. Human Gate
 
-Append the terminal state and report the PR URL, final SHA, selected local review outcome, local verification, required CI, Greptile eligibility and consumed review, addressed findings, and any residual risk. Stop and wait for the user.
+Append the terminal state and report the PR URL, final SHA, selected local review outcome, local verification, required CI, review plan, per-selector dispositions, frozen feedback set, addressed findings, and any residual risk. Stop and wait for the user.
