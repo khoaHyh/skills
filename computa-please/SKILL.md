@@ -1,6 +1,6 @@
 ---
 name: computa-please
-description: "Use for /computa-please: route evaluation, specs, implementation, finish loops, debugging, review, pickup, and workflow reflection before mutation."
+description: "Use for /computa-please: route design intake, grilling, specs, implementation, finish loops, debugging, review, pickup, and workflow reflection before mutation."
 ---
 
 # computa-please
@@ -20,7 +20,9 @@ Choose one mode before substantial work and state whether mutation and durable a
 - **Recall/Pickup** for recovering live work from a handoff, spec, branch, or PR.
 - **Reflect** for turning observed workflow friction into a proposed structural improvement.
 
-Default evaluative or ambiguous requests to Discuss. Ask only about product direction, public contracts, production behavior, auth, security, secrets, money, deletion, deploys, ownership, or facts that inspection cannot settle.
+Default evaluative or ambiguous requests to Discuss. Resolve discoverable facts through inspection and reserve questions for user decisions.
+
+Before substantial design or mutation, follow [the Design Readiness runbook](references/design-readiness.md) for new behavior, a nontrivial redesign or refactor, architecture work, or a Spec/Implement request without an accepted contract. It owns the preliminary questions, the user checkpoint, and routing to `feature-grill`, `grill-with-docs`, general `grilling`, or no grill. Keep production code read-only until that gate passes; mutate design docs only through a user-authorized `grill-with-docs` route.
 
 Create a todo list only for genuinely multi-step work where progress state helps. Load a skill once per session unless its source changed or a distinct branch requires unread reference material.
 
@@ -114,21 +116,21 @@ Create a comprehension map only when the user asks for one or the spec is comple
 
 ### Discuss
 
-Research enough to produce a recommendation, tradeoff, or decision. Do not edit or persist unless the user promotes the work.
+Research enough to produce a recommendation, tradeoff, or decision. Run Design Readiness when the discussion could become a feature, architecture, or consequential redesign; use its selected grilling flow before claiming shared understanding. Do not edit or persist unless the user promotes the work.
 
 ### Spec
 
-1. Create an artifact path only when persistence is requested or needed.
-2. Establish Compatibility posture and run subtraction analysis where it can change the design.
-3. Run `tech-spec`; it owns spec structure, typed contracts, call stacks, file mapping, and risk-matched verification planning.
-4. Grill only when unresolved product, terminology, contract, or architecture decisions make the spec unsafe to implement.
+1. Run Design Readiness. Complete any selected grilling flow and obtain user confirmation before specifying.
+2. Create an artifact path only when persistence is requested or needed.
+3. Establish Compatibility posture and run subtraction analysis where it can change the design.
+4. Run `tech-spec`; it owns spec structure, typed contracts, call stacks, file mapping, and risk-matched verification planning.
 5. Create a comprehension map only under the rule above.
 
 Complete when a fresh session can implement without rediscovering the contract, target shape, call flow, files, proof, and open decisions.
 
 ### Implement
 
-Read the accepted spec and handoff when they exist. Load `principle-subtract-before-you-add` for additions, refactors, or rewrites; Finish Loop implementation inherits this rule. Load `coding-standards`, plus `codebase-design` for a nontrivial seam and technology-specific skills when relevant. Load `tdd` only when RGR is the selected verification loop.
+Read the accepted spec, its linked Feature Contract, and handoff when they exist. Run Design Readiness before editing when no accepted tech spec or equally explicit implementation contract settles the requested behavior and design; a Feature Contract alone opens Spec, not Implement. Load `principle-subtract-before-you-add` for additions, refactors, or rewrites; Finish Loop implementation inherits this rule. Load `coding-standards`, plus `codebase-design` for a nontrivial seam and technology-specific skills when relevant. Load `tdd` only when RGR is the selected verification loop.
 
 Apply the working contract, implementation posture, and verification posture. Persist progress only when a durable artifact exists.
 
@@ -145,7 +147,7 @@ Load `diagnosing-bugs`; add `feedback-loop`, `motel-debug`, `observability-loggi
 1. Reproduce or tightly bound the actual symptom.
 2. Improve the evidence loop before fanning out hypotheses.
 3. Understand root cause, or explicitly mark it unknown before a contained mitigation.
-4. Apply the smallest fix at the owning seam.
+4. If the proposed fix crosses any Design Readiness trigger, run its gate before mutation; otherwise apply the smallest fix at the owning seam.
 5. Rerun the original repro and relevant final checks.
 6. Remove temporary probes after the post-fix repro unless the user chooses to keep production telemetry.
 
