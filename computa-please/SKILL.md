@@ -82,6 +82,21 @@ Use Red-Green-Refactor when a useful failing test can express the risk. For conf
 
 Discover repository-native focused and final checks once, retain their commands and outcomes in working context, and rerun only when relevant inputs changed. Before completion, inspect status and the complete diff, run the focused proof plus required final checks, and report anything not run.
 
+## High-assurance local review
+
+`local-adversarial-review-gauntlet` costs roughly ten minutes, so select it when the expected defect-finding value justifies that delay. Do not wait for the user to name the skill when `computa-please` is orchestrating qualifying work. Treat these as presumptive risk signals rather than keyword triggers:
+
+- Security, authentication, authorization, secrets, privacy, or another trust boundary.
+- Money movement, billing, pricing, entitlements, or financially consequential accounting.
+- Production infrastructure, deployment control planes, or recovery and data-integrity paths.
+- Internal developer platforms or internal tooling with broad workflow, release, or repository impact.
+- Architecture or design changes that establish a durable seam, ownership boundary, protocol, or hard-to-reverse contract.
+- Complex cross-module changes or nontrivial features with multiple failure paths, consequential state transitions, or weak deterministic coverage.
+
+Select the gauntlet when one of those risks is materially present and four independent reviewers could plausibly change the result. Use the normal review path when the slice is small, mechanically proven, and a broader review is unlikely to repay its runtime. This orchestration route is the exception to the gauntlet's direct-invocation rule; outside `computa-please`, the user must explicitly request it.
+
+Run the selected gauntlet once, after the coherent slice passes deterministic verification and has an immutable committed target, but before publication or the final human gate. The orchestration packet must name the risk signal, fixed point, target, and whether a prerequisite local commit is authorized. An active Finish Loop supplies that commit authorization; otherwise ask one bounded question before committing or invoking the gauntlet.
+
 ## Delegation contract
 
 The main agent owns synthesis and the final diff. Delegate only when independent work will reduce elapsed time or provide a genuinely different evidence source.
@@ -156,7 +171,7 @@ Load `diagnosing-bugs`; add `feedback-loop`, `motel-debug`, `observability-loggi
 Review findings are proportional to risk:
 
 - Use the repository's normal review path for ordinary diffs.
-- Use `local-adversarial-review-gauntlet` only when the user explicitly requests adversarial review, the change is high risk, or an authorized Finish Loop selects that gate.
+- Apply the High-assurance local review gate above. An explicit request for the gauntlet always selects it; qualifying orchestrated work selects it through the risk and ROI test.
 - Tests, typecheck, lint, build, repros, and trace queries are verification, not review.
 - Keep PR feedback and CI remediation in their explicit workflows. Use `review-remediation` for a frozen feedback set from any human or automated reviewer.
 
