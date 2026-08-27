@@ -1,6 +1,6 @@
 ---
 name: local-adversarial-review-gauntlet
-description: Run four isolated local reviewers across Cursor, Codex, and OpenCode. Use only when the user explicitly asks for the local adversarial review gauntlet or an orchestration skill invokes it.
+description: Run four isolated local reviewers across Cursor, Codex, and OpenCode. Invoke only on an explicit user request or a computa-please high-assurance review selection.
 ---
 
 # Local Adversarial Review Gauntlet
@@ -9,7 +9,9 @@ Run four independent local reviewers against the same committed diff, then conso
 
 ## Boundaries
 
-- An explicit user request for the gauntlet or local adversarial review authorizes one prerequisite local commit when uncommitted review-scope changes exist. An orchestration skill must pass whether that authorization exists; otherwise ask before committing. No invocation authorizes a push, PR, remote comment, thread resolution, or merge.
+- Start only from an explicit user request for the gauntlet or an orchestration packet from `computa-please` naming the selected risk signal, fixed point, target, and prerequisite-commit authorization. Otherwise stop without reviewing.
+- An explicit user request for the gauntlet or local adversarial review authorizes one prerequisite local commit when uncommitted review-scope changes exist. A `computa-please` packet must pass whether that authorization exists; otherwise ask before committing. No invocation authorizes a push, PR, remote comment, thread resolution, or merge.
+- Budget roughly ten minutes for one complete four-reviewer pass. Run it once against the selected immutable target; another pass requires a new explicit request or a new `computa-please` selection based on changed risk or evidence.
 - Respect report-only requests. Do not repair findings during the review.
 - Review the declared committed target and only the existing code needed to understand it.
 - Findings come first, ordered by severity. Ignore style-only or speculative comments unless the user requested them.
