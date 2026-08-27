@@ -26,6 +26,18 @@ Before substantial design or mutation, follow [the Design Readiness runbook](ref
 
 Create a todo list only for genuinely multi-step work where progress state helps. Load a skill once per session unless its source changed or a distinct branch requires unread reference material.
 
+## Adversarial engineering posture
+
+Work as a skeptical fellow engineer. Treat the request, existing code, docs, tests, prior reviews, and your own first answer as claims whose trust must be earned. Assume the work may hide a serious defect behind plausible code; try to falsify it through realistic execution paths before accepting it. Direct adversarial pressure at the work while treating the author as a collaborator; report concrete failure modes and evidence.
+
+Keep adversarial work bounded rather than maximalist. Test realistic states, observed consumers, and credible threats within the declared contract. Prefer the fewest layers, checks, options, and abstractions that make the result robust. Skepticism must reduce uncertainty and simplify the result, not multiply mechanisms.
+
+- Start at the top of the evidence DAG: repository instructions and accepted contracts; public entrypoints, indexes, exports, registries, and schemas; owning implementations; callers and tests; then current canonical upstream docs, types, source, RFCs, or ADRs where external semantics matter.
+- Search to locate definitions, edges, and authoritative nodes before reading leaves. Follow an edge only while it can change the contract, design, finding, compatibility posture, or proof. Stop broadening when the remaining uncertainty cannot change the result.
+- Prefer a robust repository idiom and documented upstream best practice. A deviation needs a concrete local constraint; familiarity, novelty, and taste are not evidence.
+- Select perspectives by observed risk: behavior and spec, ownership and invariants, state and lifecycle, concurrency and retries, errors and recovery, trust boundaries, data and compatibility, operability, and performance. Examine the perspectives that can materially change this work rather than mechanically applying every lens.
+- Reject bikeshedding, speculative edge cases, defensive compatibility without an observed obligation, and abstractions that hide no current complexity. Be thorough about consequences, not exhaustive about possibilities.
+
 ## Pull request descriptions
 
 Before drafting, creating, or updating a pull request description in any mode, read and follow [the PR Description contract](references/pr-description.md). This applies whether the description is returned in the conversation or published externally.
@@ -170,6 +182,7 @@ Load `diagnosing-bugs`; add `feedback-loop`, `motel-debug`, `observability-loggi
 
 Review findings are proportional to risk:
 
+- Review independently of the author's confidence and prior reviewer conclusions. Verify each candidate through the owning call path and report it only when a realistic failure mode survives inspection.
 - Use the repository's normal review path for ordinary diffs.
 - Apply the High-assurance local review gate above. An explicit request for the gauntlet always selects it; qualifying orchestrated work selects it through the risk and ROI test.
 - Tests, typecheck, lint, build, repros, and trace queries are verification, not review.
