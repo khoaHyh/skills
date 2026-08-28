@@ -1,6 +1,6 @@
 # Design Readiness Runbook
 
-Use this runbook to decide with the user whether a request is ready for direct work or needs grilling. This is a production-code read-only gate: inspect facts, expose consequential unknowns, and obtain the user's route choice before implementation. A user-selected `grill-with-docs` route may create or update only its authorized design documents while the implementation gate remains closed.
+Use this runbook to decide whether a request is exempt, ready for direct work, or needs grilling. For a non-exempt request, this is a production-code read-only gate: inspect facts, expose consequential unknowns, and obtain the user's route choice before implementation. A user-selected `grill-with-docs` route may create or update only its authorized design documents while the implementation gate remains closed.
 
 ## 1. Decide whether the gate applies
 
