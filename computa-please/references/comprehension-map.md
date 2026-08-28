@@ -8,7 +8,7 @@ Derive every claim from the tech spec or observed code. Mark missing information
 
 ## Delivery
 
-- When Executor MCP artifact tools are available, create one saved artifact at the first gate and update that same artifact in place after grilling. Record its artifact ID or link in `handoff.md`.
+- When Executor MCP artifact tools are available, create one saved artifact at the Spec map checkpoint and update that same artifact in place after spec revisions. Record its artifact ID or link in `handoff.md`.
 - Otherwise, load `plannotator-visual-explainer`, use its Visual explainer path, and open it through the informational annotation flow. The Spec checkpoint owns approval. Record the HTML path and accepted annotations in `handoff.md`.
 
 ## Content

@@ -14,7 +14,7 @@ Choose one mode before substantial work and state whether mutation and durable a
 - **Discuss** for comparison, evaluation, design, workflow, or ambiguity. No mutation or artifacts by default.
 - **Spec** for a durable implementation plan. No production-code mutation.
 - **Implement** for authorized code changes.
-- **Finish Loop** for an explicitly authorized path from an accepted spec or existing PR to the final human gate.
+- **Finish Loop** for an explicitly authorized path from an accepted spec, completed change, or existing PR to the final human gate.
 - **Debug** for a failure, regression, flaky behavior, or performance problem.
 - **Review** for findings about a diff, branch, commit, or PR.
 - **Recall/Pickup** for recovering live work from a handoff, spec, branch, or PR.
@@ -22,7 +22,19 @@ Choose one mode before substantial work and state whether mutation and durable a
 
 Default evaluative or ambiguous requests to Discuss. Resolve discoverable facts through inspection and reserve questions for user decisions.
 
-Before substantial design or mutation, follow [the Design Readiness runbook](references/design-readiness.md) for new behavior, a nontrivial redesign or refactor, architecture work, or a Spec/Implement request without an accepted contract. It owns the preliminary questions, the user checkpoint, and routing to `feature-grill`, `grill-with-docs`, general `grilling`, or no grill. Keep production code read-only until that gate passes; mutate design docs only through a user-authorized `grill-with-docs` route.
+## Reference gates
+
+After selecting a mode, name and evaluate every matched gate below. More than one gate may apply. Read each matched reference in full before its gated action; naming or linking the file does not satisfy the gate.
+
+- **Design:** Before substantial design or mutation when a request may introduce new behavior; change a public contract, domain rule, or retained data; affect trust, security, money, deletion, deployment, or ownership; create or move an architectural seam; make a nontrivial refactor or redesign; or enter Spec/Implement without an accepted contract, read and follow [Design Readiness](references/design-readiness.md). Keep production code read-only until the runbook marks the request exempt or its user checkpoint passes.
+- **VCS:** Before the first mutating VCS command, commit, push, branch or worktree creation, synchronization, or PR publication, read and follow [VCS Actions](references/vcs.md).
+- **Finish Loop:** When the user explicitly authorizes the bounded delivery path from an accepted spec, completed change, or existing PR through its applicable commit, publication, CI, and review states to the Human Gate, read and follow [Finish Loop](references/finish-loop.md) before its first mutation or external action.
+- **PR description:** Before any command that can create a PR, or before drafting or updating a PR body in any mode, read and follow [PR Description](references/pr-description.md), including when returning the body only in conversation.
+- **Comprehension map:** A requested comprehension map selects or resumes Spec. At its map checkpoint, or when a complex spec needs a visual misunderstanding check, read and follow [Comprehension Map](references/comprehension-map.md) before rendering it.
+
+After compaction, Recall/Pickup, or a mode change, evaluate the gates again. A prior read remains usable only when the current context or durable handoff names the reference, the active step, and its still-applicable constraints. Otherwise re-read it before the next gated action.
+
+This step is complete when every applicable reference has been read and its entry condition or completion criterion is present in working context.
 
 Create a todo list only for genuinely multi-step work where progress state helps. Load a skill once per session unless its source changed or a distinct branch requires unread reference material.
 
@@ -37,12 +49,6 @@ Keep adversarial work bounded rather than maximalist. Test realistic states, obs
 - Prefer a robust repository idiom and documented upstream best practice. A deviation needs a concrete local constraint; familiarity, novelty, and taste are not evidence.
 - Select perspectives by observed risk: behavior and spec, ownership and invariants, state and lifecycle, concurrency and retries, errors and recovery, trust boundaries, data and compatibility, operability, and performance. Examine the perspectives that can materially change this work rather than mechanically applying every lens.
 - Reject bikeshedding, speculative edge cases, defensive compatibility without an observed obligation, and abstractions that hide no current complexity. Be thorough about consequences, not exhaustive about possibilities.
-
-## Pull request descriptions
-
-Before drafting, creating, or updating a pull request description in any mode, read and follow [the PR Description contract](references/pr-description.md). This applies whether the description is returned in the conversation or published externally.
-
-Complete only when the contract's required schema is present and its Call Stacks section accounts for every added or edited call stack in the diff, or explicitly states that there are none.
 
 ## Working contract
 
@@ -137,7 +143,7 @@ handoff.md
 
 Reuse an existing tech spec. Append a dated section to `handoff.md` when material state changes; do not rewrite prior decisions. Keep it concise: spec path, current state, decisions, rejected approaches, Compatibility posture, verification, external actions, remaining risk, and next action. Never store secrets, customer data, or raw private transcripts.
 
-Create a comprehension map only when the user asks for one or the spec is complex enough that a visual check will materially reduce misunderstanding. Keep renderer-owned visual artifacts outside the task directory and reference them from `handoff.md`. Follow [the runbook](references/comprehension-map.md) when creating one.
+Create a comprehension map only under the Comprehension Map reference gate. Keep renderer-owned visual artifacts outside the task directory and reference them from `handoff.md`.
 
 ## Modes
 
@@ -165,7 +171,7 @@ Complete when the smallest complete slice works through its real seam, additions
 
 ### Finish Loop
 
-Use only with explicit authorization to take an accepted spec or existing PR through commits, publication, CI, and external review. Follow [the Finish Loop runbook](references/finish-loop.md). Its ledger prevents replaying external actions after recovery.
+Use only with explicit authorization to take an accepted spec, completed change, or existing PR through its applicable delivery states to the Human Gate. Execute the state machine loaded by the Finish Loop reference gate. Its ledger prevents replaying external actions after recovery.
 
 ### Debug
 
@@ -200,8 +206,6 @@ Use observed corrections, retries, churn, or successful recipes as evidence. Pre
 
 ## VCS and completion
 
-When this workflow creates a Git worktree, place it under `~/dev/worktrees/<repo-slug>__<branch-slug>`. Create the parent directory when needed, inspect and reuse a matching safe worktree, and use another location only when the user explicitly requests it.
-
-Outside an active Finish Loop, require explicit approval before commit, push, merge, deploy, destructive data changes, or external messages. Never rewrite an observed commit unless the user explicitly requests it.
+Apply the VCS Actions contract for every VCS mutation and PR publication. Outside an active Finish Loop, require explicit approval before merge, deploy, destructive data changes, or external messages.
 
 For nontrivial changes, summarize Summary, Why, Design, Validation, and Follow-up/Risk in the assistant's final response. When the response is a pull request description, use the PR Description contract instead. Keep completion reporting short: mode, changed files or artifacts, proof run, and remaining risk.

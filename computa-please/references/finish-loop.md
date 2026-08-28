@@ -2,15 +2,14 @@
 
 This runbook is the bounded supervisor around Implement, the current worktree and diff, its PR, CI, and one frozen set of external review feedback. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
 
-Default PR posture: publish every PR as a draft. Mark it ready for review only when the user explicitly requests it. Draft PRs are publication-only: skip CI monitoring and external review collection or remediation, then proceed directly to Human Gate.
+For a draft PR, skip CI monitoring and external review collection or remediation, then proceed directly to Human Gate.
 
-Use additive commits for coherent implementation and remediation slices. Preserve commits already pushed, reviewed, recorded, or observed by CI; amend only with explicit user approval.
+The router's [VCS Actions contract](vcs.md) applies to every branch, worktree, commit, push, synchronization, and PR publication in this run. Load it before the first such action.
 
 ## Load
 
 Load only the skills needed by the observed path:
 
-- `vcs-detect` before VCS commands.
 - `coding-standards` and `codebase-design` for accepted-spec implementation; `tdd` only when RGR is the selected verification loop.
 - `local-adversarial-review-gauntlet` when `computa-please`'s High-assurance local review gate selects it.
 - `graphite` when Graphite tracks the current branch.
@@ -20,10 +19,10 @@ Load only the skills needed by the observed path:
 
 ## Run Ledger
 
-Before the first mutation or external action, append a run entry to `handoff.md` containing:
+Creating the task directory and `handoff.md`, when absent, is the ledger-initialization exception. Make that initialization the first mutation, append the run entry below, then perform no other mutation or external action until it exists:
 
 - Run identifier and current state.
-- Accepted spec path or existing PR goal.
+- Accepted spec path, completed-change delivery goal, or existing PR goal.
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
 - Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
 - Selected local review path, target, terminal outcome, and remaining actionable finding count.
@@ -39,7 +38,7 @@ Update the entry before every state transition and before every external action.
 ### 1. Bound
 
 1. Confirm explicit Finish Loop authorization.
-2. Confirm an accepted spec or a concrete existing PR goal.
+2. Confirm an accepted spec, a completed change with a concrete delivery goal, or a concrete existing PR goal.
 3. Inspect the current worktree, diff, branch, PR, required checks, and Graphite parent when tracked.
 4. Name the allowed files or behavioral slice, verifier, external actions, blockers, and review plan. A ready PR requires `existing-only`, `request-once`, or an explicit `skip`; `request-once` names each authorized request action, the reviewer selectors it covers, its mechanism, and an absolute result deadline.
 5. Stop for unresolved product, public API, production behavior, auth, security, secrets, money, deletion, deploy, ownership, or scope decisions.
@@ -48,7 +47,7 @@ Completion: the goal, blast radius, verifier, PR target, review plan, and author
 
 ### 2. Synchronized
 
-1. Run `vcs-detect` and use Graphite when it tracks the current branch; otherwise use the repository's Git workflow.
+1. Use the Git or Graphite workflow established by the VCS Actions preflight.
 2. Inspect enough Graphite context to identify the current diff's intended parent and base. Do not switch to, edit, submit, or otherwise advance sibling diffs.
 3. If the current diff's parent has changed, synchronize only the current diff before editing. If the required Graphite operation would mutate another diff, stop and ask the user.
 4. Resolve mechanical conflicts with `fix-merge-conflicts`; stop when resolution requires product intent or changes outside the declared slice.
@@ -58,12 +57,12 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 
 ### 3. Implemented
 
-1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For an existing PR, diagnose only the observed residue.
+1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For a completed change or existing PR, diagnose only the observed residue.
 2. Use parallel subagents for independent exploration or deterministic verification when their work is isolated and their output can be checked. Ask for observed facts or check results, not findings or readiness judgments; those belong to Local Review.
-3. Before each additive commit, inspect the diff and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff.
+3. Before each additive commit, inspect the diff, form its Conventional Commit subject under the VCS Actions contract, and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff.
 4. Append implementation decisions and verification evidence to the ledger.
 
-Completion: the intended behavior is implemented, local checks pass, and the diff remains within the accepted slice.
+Completion: the intended behavior is implemented, local checks pass, the diff remains within the accepted slice, and every agent-authored commit has a verified Conventional Commit subject.
 
 ### 4. Local Review
 
@@ -79,14 +78,14 @@ Completion: the selected review path reached a terminal outcome, every actionabl
 
 1. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
 2. Create or update the PR description by following [the PR Description contract](pr-description.md).
-3. Keep the PR as a draft unless the user explicitly requested ready-for-review state.
+3. Preserve the PR state authorized under the VCS Actions contract.
 4. Record the pushed SHA before monitoring checks, or before proceeding to Human Gate for a draft PR.
 
-Completion: the open PR points at the recorded SHA, is draft unless readiness was explicitly requested, targets the intended parent or base, and its description satisfies the PR Description contract for the published diff.
+Completion: the open PR points at the recorded SHA, retains its authorized draft or ready state, targets the intended parent or base, and its description satisfies the PR Description contract for the published diff.
 
 ### 6. Collect External Review and Monitor CI
 
-Skip this state, Remediate Review Feedback, and Final CI for a draft PR. Record the skipped CI and review disposition, then proceed to Human Gate. Run the remainder of this state only when the user explicitly requested ready-for-review state.
+Skip this state, Remediate Review Feedback, and Final CI for a draft PR. Record the skipped CI and review disposition, then proceed to Human Gate. Run the remainder of this state when the PR's authorized state is ready for review.
 
 Immediately after publication and before waiting for CI, execute the fixed review plan:
 
