@@ -11,7 +11,7 @@ The router's [VCS Actions contract](vcs.md) applies to every branch, worktree, c
 Load only the skills needed by the observed path:
 
 - `coding-standards` and `codebase-design` for accepted-spec implementation; `tdd` only when RGR is the selected verification loop.
-- `local-adversarial-review-gauntlet` when `computa-please`'s High-assurance local review gate selects it.
+- `local-adversarial-review-gauntlet` when `computa-please`'s Review Gate selects it.
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
@@ -66,7 +66,7 @@ Completion: the intended behavior is implemented, local checks pass, the diff re
 
 ### 4. Local Review
 
-1. Apply `computa-please`'s High-assurance local review gate to select the repository's normal review path or the adversarial gauntlet.
+1. Apply `computa-please`'s Review Gate to select the repository's normal review path or the adversarial gauntlet.
 2. If using the gauntlet, stage only intended files, create an additive commit, and invoke `local-adversarial-review-gauntlet` against that target. The active Finish Loop authorizes this prerequisite local commit.
 3. Stop if a required reviewer is blocked or the selected review path is incomplete.
 4. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and commit the fix as a new slice.
