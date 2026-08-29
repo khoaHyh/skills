@@ -1,6 +1,6 @@
 ---
 name: local-adversarial-review-gauntlet
-description: Run four isolated local reviewers asynchronously across Cursor, Codex, and OpenCode. Invoke only on an explicit user request or a computa-please high-assurance review selection.
+description: Run four isolated local reviewers asynchronously across Cursor, Codex, and OpenCode. Invoke only on an explicit user request or a computa-please Review Gate selection.
 ---
 
 # Local Adversarial Review Gauntlet
@@ -9,9 +9,9 @@ Run four independent local reviewers against the same committed diff, then conso
 
 ## Boundaries
 
-- Start only from an explicit user request for the gauntlet or an orchestration packet from `computa-please` naming the selected risk signal, fixed point, target, and prerequisite-commit authorization. Otherwise stop without reviewing.
+- Start only from an explicit user request for the gauntlet or an orchestration packet from `computa-please`'s Review Gate naming the selected risk signal, fixed point, target, and prerequisite-commit authorization. Otherwise stop without reviewing.
 - An explicit user request for the gauntlet or local adversarial review authorizes one prerequisite local commit when uncommitted review-scope changes exist. A `computa-please` packet must pass whether that authorization exists; otherwise ask before committing. No invocation authorizes a push, PR, remote comment, thread resolution, or merge.
-- Budget roughly ten minutes for a typical four-reviewer pass. Autoreview may take up to thirty minutes per bounded Codex pass and may run several passes for an oversized diff. Run the gauntlet once against the selected immutable target; another pass requires a new explicit request or a new `computa-please` selection based on changed risk or evidence.
+- Budget roughly ten minutes for a typical four-reviewer pass. Autoreview may take up to thirty minutes per bounded Codex pass and may run several passes for an oversized diff. Run the gauntlet once against the selected immutable target; another pass requires a new explicit request or a new `computa-please` Review Gate selection based on changed risk or evidence.
 - Respect report-only requests. Do not repair findings during the review.
 - Review the declared committed target and only the existing code needed to understand it.
 - Background review is snapshot-based. Work performed after dispatch is outside the review target and requires a new explicit pass to be reviewed.
