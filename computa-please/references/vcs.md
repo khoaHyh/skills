@@ -22,7 +22,7 @@ Use this contract before a mutating VCS command, commit, push, branch or worktre
 - Create workflow-owned worktrees under `~/dev/worktrees/<repo-slug>__<branch-slug>`. Inspect and reuse a matching safe worktree; use another location only when the user explicitly requests it.
 - When Graphite tracks the branch, mutate or submit only the current diff unless the user explicitly authorizes a stack-wide action.
 - Publish every new PR as a draft. Mark it ready only when the user explicitly requests that state.
-- Before drafting, creating, or updating a PR body, satisfy the router's PR Description gate.
+- Before drafting, creating, or updating a PR body, satisfy the router's PR Description gate through **Verify** (`check-pr-body` exits 0).
 
 ## Completion
 
