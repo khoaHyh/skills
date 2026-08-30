@@ -25,7 +25,7 @@ Creating the task directory and `handoff.md`, when absent, is the ledger-initial
 - Accepted spec path, completed-change delivery goal, or existing PR goal.
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
 - Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
-- Selected local review path, target, terminal outcome, and remaining actionable finding count.
+- Selected local review path, specialist lens, target commit and tree, Proof attestation, terminal outcome, and remaining actionable finding count.
 - CI state and the SHA it describes.
 - PR additions plus deletions.
 - Review plan: `existing-only`, `request-once`, or explicit `skip`; reviewer selectors; delivery surfaces; expected revision or time window; completion evidence; named request actions and the selectors each covers; and an absolute result deadline for `request-once`.
@@ -59,18 +59,20 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 
 1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For a completed change or existing PR, diagnose only the observed residue.
 2. Use parallel subagents for independent exploration or deterministic verification when their work is isolated and their output can be checked. Ask for observed facts or check results, not findings or readiness judgments; those belong to Local Review.
-3. Before each additive commit, inspect the diff, form its Conventional Commit subject under the VCS Actions contract, and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff.
-4. Append implementation decisions and verification evidence to the ledger.
+3. Before each additive commit, inspect the diff, form its Conventional Commit subject under the VCS Actions contract, and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff. Cache each exact command, exit status, and justified omission.
+4. After committing a gauntlet target, record its commit and tree and bind the cached Proof to those exact bytes. A changed tree makes prior Proof stale.
+5. Append implementation decisions and verification evidence to the ledger.
 
 Completion: the intended behavior is implemented, local checks pass, the diff remains within the accepted slice, and every agent-authored commit has a verified Conventional Commit subject.
 
 ### 4. Local Review
 
-1. Apply `computa-please`'s Review Gate to select the repository's normal review path or the adversarial gauntlet.
-2. If using the gauntlet, stage only intended files, create an additive commit, and invoke `local-adversarial-review-gauntlet` against that target. The active Finish Loop authorizes this prerequisite local commit.
-3. Stop if a required reviewer is blocked or the selected review path is incomplete.
-4. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and commit the fix as a new slice.
-5. Do not add review passes without new risk or evidence. Tests, typecheck, lint, build, runtime repros, and deterministic contract checks remain verification.
+1. Apply `computa-please`'s Review Gate to select the repository's normal review path or the adversarial gauntlet. For the gauntlet, select one specialist lens from the highest-consequence unresolved risk; material trust or security risk selects `security`.
+2. If using the gauntlet, stage only intended files and create an additive commit. Record the target commit and tree, then create its Proof attestation from the cached observed checks. The active Finish Loop authorizes this prerequisite local commit.
+3. Invoke `local-adversarial-review-gauntlet` once with the fixed point, target, Proof, intent, spec disposition, and lens through a shell tool with a 600-second process-tree timeout. Material security risk also passes `--require-specialized-security`. Do not place Task jobs, nested reviewers, retries, multipass Autoreview, or full deterministic checks on this timed path.
+4. Stop if required behavior coverage, required risk coverage, target integrity, cleanup, or the selected review path is incomplete. Missing optional providers do not block completed role coverage.
+5. Confirm or reject every finding. Apply the smallest in-scope root-cause fix for confirmed findings, rerun deterministic verification, and commit the fix as a new slice.
+6. Do not add review passes without new risk or evidence. Tests, typecheck, lint, build, runtime repros, and deterministic contract checks remain verification.
 
 Completion: the selected review path reached a terminal outcome, every actionable finding is fixed or rejected with evidence, and the resulting local diff is committed and verified.
 
