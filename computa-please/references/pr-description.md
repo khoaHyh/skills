@@ -2,9 +2,20 @@
 
 Use this contract whenever drafting, creating, or updating a pull request description, whether the description is returned in the conversation or published externally.
 
+## Verify
+
+After the body exists (drafted in chat, written to a file, or already on the PR), run the structural check. Heading presence is owned by the script, not by re-reading this list:
+
+```bash
+node <computa-please>/scripts/check-pr-body.mjs --file <body.md>
+# or: <body on stdin> | node <computa-please>/scripts/check-pr-body.mjs
+```
+
+**Complete when:** `check-pr-body` exits 0, the claims match the diff and observed evidence, and Call Stacks accounts for every added or edited call stack under the rules below. If there are no added or edited call stacks, the Call Stacks body is exactly `No call stacks added or edited.`
+
 ## Required schema
 
-Use these sections for every PR body:
+Use these `##` headings (exact titles; additional repository sections may follow):
 
 - **Summary:** the observable change, kept concise.
 - **Why:** the problem, constraint, or opportunity that requires the change.
@@ -12,8 +23,6 @@ Use these sections for every PR body:
 - **Call Stacks:** every added or edited execution path under the contract below.
 - **Validation:** commands or checks run and their outcomes; state material checks not run.
 - **Follow-up/Risk:** remaining risk, rollout or ordering constraints, and genuinely separate follow-up work.
-
-Use `##` headings with these exact section names. Additional repository-required sections may follow them. Complete only when all six sections are present, the claims match the diff and observed evidence, and Call Stacks accounts for every added or edited call stack. If there are no added or edited call stacks, write `No call stacks added or edited.` under `## Call Stacks`.
 
 ## Call stacks
 

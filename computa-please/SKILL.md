@@ -39,7 +39,7 @@ Evaluate all matching Gates after selecting a Mode. Read each matched reference 
 - **Design:** When a request may introduce new behavior; change a public contract, domain rule, or retained datum; affect trust, security, money, deletion, deployment, or ownership; create or move a seam; make a nontrivial refactor or redesign; or enter Spec/Implement without an accepted contract, follow [Design Readiness](references/design-readiness.md) before substantial design or mutation. Production code stays read-only until the request is exempt or its user checkpoint passes.
 - **VCS:** Before the first VCS mutation, commit, push, branch or worktree creation, synchronization, or PR publication, follow [VCS Actions](references/vcs.md).
 - **Finish Loop:** After explicit Finish Loop authorization and before its first mutation or external action, follow [Finish Loop](references/finish-loop.md).
-- **PR description:** Before drafting, returning, creating, or updating a PR body, follow [PR Description](references/pr-description.md).
+- **PR description:** Before drafting, returning, creating, or updating a PR body, follow [PR Description](references/pr-description.md) through **Verify** (`check-pr-body` exits 0).
 - **Comprehension map:** A requested map selects or resumes Spec. At its checkpoint, or when a complex spec needs a visual misunderstanding check, follow [Comprehension Map](references/comprehension-map.md) before rendering.
 
 Re-evaluate Gates after compaction, Recall/Pickup, or a Mode change. Reuse a prior read only when working context or a durable handoff records the reference, active step, and still-live constraints.

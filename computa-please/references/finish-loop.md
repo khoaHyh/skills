@@ -79,11 +79,11 @@ Completion: the selected review path reached a terminal outcome, every actionabl
 ### 5. Published
 
 1. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
-2. Create or update the PR description by following [the PR Description contract](pr-description.md).
+2. Create or update the PR description by following [the PR Description contract](pr-description.md) through **Verify**.
 3. Preserve the PR state authorized under the VCS Actions contract.
 4. Record the pushed SHA before monitoring checks, or before proceeding to Human Gate for a draft PR.
 
-Completion: the open PR points at the recorded SHA, retains its authorized draft or ready state, targets the intended parent or base, and its description satisfies the PR Description contract for the published diff.
+Completion: the open PR points at the recorded SHA, retains its authorized draft or ready state, targets the intended parent or base, and `check-pr-body` exits 0 on that description.
 
 ### 6. Collect External Review and Monitor CI
 
@@ -126,9 +126,9 @@ Completion: for a ready PR, the plan was explicitly skipped; every `existing-onl
 
 ### 8. Final CI
 
-Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the review plan or frozen set and without returning to Remediate Review Feedback. Refresh the PR description from the final diff using [the PR Description contract](pr-description.md), then reconfirm that the PR is conflict-free and points at that SHA.
+Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the review plan or frozen set and without returning to Remediate Review Feedback. Refresh the PR description from the final diff using [the PR Description contract](pr-description.md) through **Verify**, then reconfirm that the PR is conflict-free and points at that SHA.
 
-Completion: for a ready PR, required CI is green for the final SHA, the PR description satisfies the PR Description contract for the final diff, the PR is conflict-free and ready for review, and Remediate Review Feedback remains complete.
+Completion: for a ready PR, required CI is green for the final SHA, `check-pr-body` exits 0 on the final description, the PR is conflict-free and ready for review, and Remediate Review Feedback remains complete.
 
 ### 9. Human Gate
 
