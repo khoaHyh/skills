@@ -40,7 +40,7 @@ The supervisor detects executables at runtime instead of pinning transient model
 - Override binaries with `GAUNTLET_CODEX_BIN`, `GAUNTLET_CURSOR_BIN`, `GAUNTLET_OPENCODE_BIN`, or `GAUNTLET_CODEX_SECURITY_BIN`.
 - Override role adapters with `--behavior-adapter` and `--specialist-adapter` only to select an installed capability, not to increase lane count.
 
-Codex runs in its read-only sandbox with ephemeral session state, disabled multi-agent execution, and schema-constrained output. OpenCode uses pure mode. Cursor, OpenCode, and Codex Security receive isolated detached checkouts because their CLIs do not expose the same read-only guarantee. Prompts require each general reviewer to perform its own lane without delegation, and every checkout must remain clean at the target SHA.
+Codex runs in its read-only sandbox with ephemeral session state, disabled multi-agent execution, and schema-constrained output. Cursor runs in read-only ask mode, and OpenCode uses pure mode. OpenCode and Codex Security receive isolated detached checkouts because their CLIs do not expose the same read-only guarantee. Prompts require each general reviewer to perform its own lane without delegation, and every checkout must remain clean at the target SHA.
 
 ## Specialized Security
 
