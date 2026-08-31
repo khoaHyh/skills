@@ -12,6 +12,7 @@ Use this language consistently:
 
 - **Mode:** the one active workflow branch.
 - **Gate:** a condition that blocks an action until its completion criterion is met; a Reference Gate also requires a runbook.
+- **Task Worktree:** the one task-owned isolated checkout that contains all mutations and durable state. Locally it lives under `~/dev/worktrees/<repo-slug>__<branch-slug>`.
 - **Work Frame:** Intent, Scope, Compatibility, Slice, Budget, and Proof.
 - **Obligation:** an evidence-backed requirement that an existing contract survive.
 - **Proof:** a risk, proving seam, command, and result status: pending or observed. Before a gauntlet, attest observed results to the exact target commit and tree.
@@ -37,12 +38,12 @@ Default evaluative or ambiguous work to Discuss. Resolve inspectable facts yours
 Evaluate all matching Gates after selecting a Mode. Read each matched reference in full before its gated action; a mention or link is not a read.
 
 - **Design:** When a request may introduce new behavior; change a public contract, domain rule, or retained datum; affect trust, security, money, deletion, deployment, or ownership; create or move a seam; make a nontrivial refactor or redesign; or enter Spec/Implement without an accepted contract, follow [Design Readiness](references/design-readiness.md) before substantial design or mutation. Production code stays read-only until the request is exempt or its user checkpoint passes.
-- **VCS:** Before the first VCS mutation, commit, push, branch or worktree creation, synchronization, or PR publication, follow [VCS Actions](references/vcs.md).
+- **Worktree/VCS:** On Recall/Pickup, follow [VCS Actions](references/vcs.md) before artifact recovery. Otherwise follow it before the first repository or Durable State mutation, and before any branch or worktree creation, synchronization, commit, push, or PR publication.
 - **Finish Loop:** After explicit Finish Loop authorization and before its first mutation or external action, follow [Finish Loop](references/finish-loop.md).
 - **PR description:** Before drafting, returning, creating, or updating a PR body, follow [PR Description](references/pr-description.md) through **Verify** (`check-pr-body` exits 0).
 - **Comprehension map:** A requested map selects or resumes Spec. At its checkpoint, or when a complex spec needs a visual misunderstanding check, follow [Comprehension Map](references/comprehension-map.md) before rendering.
 
-Re-evaluate Gates after compaction, Recall/Pickup, or a Mode change. Reuse a prior read only when working context or a durable handoff records the reference, active step, and still-live constraints.
+Re-evaluate Gates after compaction, Recall/Pickup, a Mode change, or a change in mutation or persistence authority. Reuse a prior read only when working context or a durable handoff records the reference, active step, and still-live constraints.
 
 **Complete when:** every matched reference has been read and its applicable entry condition or completion criterion is in working context.
 
@@ -182,7 +183,7 @@ The main agent owns synthesis and the final diff. Delegate only for lower latenc
 
 - Default to one wave of at most three children with disjoint questions or file surfaces.
 - Give each child the goal or symptom, repository revision, established facts, commands and outcomes, Work Frame, authority, required evidence, and return shape.
-- Research children return facts and citations, not readiness judgments. Implementation children make isolated, inspectable edits.
+- Research children return facts and citations, not readiness judgments. Implementation children receive disjoint file authority within the Task Worktree; the main agent alone writes Durable State.
 - Merge each wave before opening another, name the remaining gap, and verify child claims against source or deterministic checks.
 
 Escalate beyond one wave only for requested breadth, independent high-risk hypotheses, or formal adversarial review.
@@ -193,7 +194,7 @@ Escalate beyond one wave only for requested breadth, independent high-risk hypot
 
 Persist when the user requests it, work must survive sessions, people or agents must coordinate, or a Finish Loop needs an external-action ledger. Otherwise keep state in the conversation.
 
-Use `~/.computa-please/<repo-slug>__<branch-slug>/`, or `<repo-slug>__<task-slug>` without a branch. Slugs contain lowercase letters, numbers, and single hyphens. The directory contains only:
+Establish the Task Worktree before persisting. Use `<task-worktree>/.computa-please/`; it contains only:
 
 ```text
 <task-slug>-tech-spec-YYYY-MM-DD.md
@@ -202,10 +203,12 @@ handoff.md
 
 Reuse the tech spec. Keep the handoff append-only: add a dated section after material changes with the spec path, state, decisions, rejected approaches, Compatibility, Proof, external actions, residual risk, and next action. Store renderer-owned maps elsewhere and link them. Keep secrets, customer data, and private transcripts out of artifacts.
 
-**Complete when:** no persistence condition applies and state remains conversational, or the required two-file directory accounts for every durable decision and action.
+Account for `.computa-please/` in status checks, but keep this workflow-owned local state out of product diffs, commits, and PRs.
+
+**Complete when:** no persistence condition applies and state remains conversational, or the Task Worktree's two-file directory accounts for every durable decision and action.
 
 ## Stop Cleanly
 
-Apply VCS Actions to every VCS mutation and PR publication. Outside a Finish Loop, obtain explicit approval for merge, deploy, destructive data change, or external message.
+Outside a Finish Loop, obtain explicit approval for merge, deploy, destructive data change, or external message.
 
 For nontrivial code changes, use Summary, Why, Design, Validation, and Follow-up/Risk; include the Mode, changed files or artifacts, Proof, and residual risk within those sections. For trivial code changes, report those four facts without headings. Other Modes follow their completion criteria and the user's requested shape. A PR body follows the PR Description Gate instead.
