@@ -22,7 +22,7 @@ from security import SecurityOutputError, normalize_findings as normalize_securi
 
 SEVERITY_ORDER = {"P0": 0, "P1": 1, "P2": 2}
 GENERAL_ADAPTERS = ("codex", "cursor", "opencode")
-READ_ONLY_ADAPTERS = frozenset(("codex",))
+READ_ONLY_ADAPTERS = frozenset(("codex", "cursor"))
 EXECUTABLE_NAMES = {
     "codex": "codex",
     "cursor": "cursor-agent",
@@ -53,7 +53,6 @@ class Lane:
     response_path: Path | None = None
     process: subprocess.Popen[bytes] | None = None
     timed_out: bool = False
-    descendant_processes: bool = False
     duration_seconds: float = 0.0
 
 
@@ -380,6 +379,8 @@ def adapter_command(
             "--print",
             "--output-format",
             "text",
+            "--mode",
+            "ask",
             "--trust",
             "--workspace",
             str(checkout),
@@ -479,30 +480,30 @@ def run_lanes(lanes: list[Lane], deadline_seconds: float, grace_seconds: float =
 
         deadline = started + deadline_seconds
         while any(lane.process and lane.process.poll() is None for lane in lanes):
+            now = time.monotonic()
             for lane in lanes:
-                if (
-                    lane.process
-                    and lane.process.poll() is not None
-                    and process_group_exists(lane.process.pid)
-                    and not lane.descendant_processes
-                ):
-                    lane.descendant_processes = True
-                    terminate_process_group(lane.process.pid, force=False)
-            if time.monotonic() >= deadline:
+                if lane.process and lane.process.poll() is not None:
+                    if lane.duration_seconds == 0.0:
+                        lane.duration_seconds = now - started
+                    if process_group_exists(lane.process.pid):
+                        terminate_process_group(lane.process.pid, force=False)
+            if now >= deadline:
                 for lane in lanes:
                     if lane.process and lane.process.poll() is None:
                         lane.timed_out = True
+                        lane.duration_seconds = now - started
                         terminate_process_group(lane.process.pid, force=False)
                 break
             time.sleep(0.05)
 
         for lane in lanes:
+            if lane.process and lane.process.poll() is not None and lane.duration_seconds == 0.0:
+                lane.duration_seconds = time.monotonic() - started
             if (
                 lane.process
                 and not lane.timed_out
                 and process_group_exists(lane.process.pid)
             ):
-                lane.descendant_processes = True
                 terminate_process_group(lane.process.pid, force=False)
         grace_deadline = time.monotonic() + grace_seconds
         while any(lane.process and process_group_exists(lane.process.pid) for lane in lanes):
@@ -515,7 +516,8 @@ def run_lanes(lanes: list[Lane], deadline_seconds: float, grace_seconds: float =
         for lane in lanes:
             if lane.process:
                 lane.process.wait()
-            lane.duration_seconds = time.monotonic() - started
+            if lane.duration_seconds == 0.0:
+                lane.duration_seconds = time.monotonic() - started
     finally:
         for handle in handles:
             handle.close()
@@ -525,15 +527,6 @@ def lane_result(lane: Lane) -> LaneResult:
     assert lane.process is not None
     if lane.timed_out:
         return LaneResult(lane.role, lane.adapter.name, "blocked", lane.duration_seconds, (), "deadline")
-    if lane.descendant_processes:
-        return LaneResult(
-            lane.role,
-            lane.adapter.name,
-            "blocked",
-            lane.duration_seconds,
-            (),
-            "adapter left descendant processes",
-        )
 
     if lane.adapter.name == "codex-security":
         stdout = lane.stdout_path.read_text(errors="replace")
