@@ -1,13 +1,15 @@
-# VCS Actions Contract
+# Worktree And VCS Actions Contract
 
-Use this contract before a mutating VCS command, commit, push, branch or worktree creation, synchronization, or pull request publication in any `computa-please` mode.
+Establish one task-owned checkout for mutation, durable state, delegation, and VCS actions in any `computa-please` mode.
 
 ## Preflight
 
-1. Load `vcs-detect` before VCS commands and use the repository's established Git or Graphite workflow.
-2. Inspect repository instructions, status, the complete intended diff, and relevant commit subjects before mutation. Before PR publication, inspect every subject between the intended base and `HEAD`.
-3. Confirm the action is authorized. An active Finish Loop authorizes only the operations and scope recorded in its ledger; otherwise obtain explicit approval before commit, push, or PR publication.
-4. Stage only intended files. Preserve unrelated worktree changes.
+1. Load `worktrees` and `vcs-detect`, follow the applicable local or cloud branch, and use the repository's established Git or Graphite workflow.
+2. Inspect repository instructions, current root, branch, status, and worktree list; identify the canonical checkout, linked checkouts, and task ownership before choosing a write path.
+3. When the local layout applies, follow `worktrees` to establish or reuse exactly one Task Worktree before any repository-content or Durable State write.
+4. In the local layout, use the canonical checkout only to bootstrap the Task Worktree, and leave it on `main`. If it already contains task changes, preserve them and stop for a migration decision. Re-anchor every later tool working directory, repository path, artifact path, and delegated local agent to the Task Worktree.
+5. Before commit, synchronization, push, or publication, inspect the complete intended diff and relevant commit subjects. Before PR publication, inspect every subject between the intended base and `HEAD`.
+6. Confirm the action is authorized. An active Finish Loop authorizes its scoped Task Worktree bootstrap and ledger initialization; afterward it authorizes only operations recorded in the ledger. Otherwise obtain explicit approval before commit, push, or PR publication. Stage only intended files and preserve unrelated changes.
 
 ## Commits
 
@@ -19,11 +21,10 @@ Use this contract before a mutating VCS command, commit, push, branch or worktre
 
 ## Branches And Publication
 
-- Create workflow-owned worktrees under `~/dev/worktrees/<repo-slug>__<branch-slug>`. Inspect and reuse a matching safe worktree; use another location only when the user explicitly requests it.
 - When Graphite tracks the branch, mutate or submit only the current diff unless the user explicitly authorizes a stack-wide action.
 - Publish every new PR as a draft. Mark it ready only when the user explicitly requests that state.
 - Before drafting, creating, or updating a PR body, satisfy the router's PR Description gate through **Verify** (`check-pr-body` exits 0).
 
 ## Completion
 
-Complete only when authorization, workflow, scope, staged files, resulting commit, every base-to-`HEAD` subject, remote branch, and PR state match the intended action, with any unperformed or ambiguous action reported explicitly.
+Routing is complete when the Task Worktree's path, branch, and ownership are verified and every planned write resolves beneath it. A later VCS action completes only when its authorization, workflow, scope, staged files, resulting commit, applicable base-to-`HEAD` subjects, remote branch, and PR state match the request, with any unperformed or ambiguous action reported explicitly.

@@ -1,10 +1,10 @@
 # Finish Loop
 
-This runbook is the bounded supervisor around Implement, the current worktree and diff, its PR, CI, and one frozen set of external review feedback. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
+This runbook is the bounded supervisor around Implement, the Task Worktree and diff, its PR, CI, and one frozen set of external review feedback. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
 
 For a draft PR, skip CI monitoring and external review collection or remediation, then proceed directly to Human Gate.
 
-The router's [VCS Actions contract](vcs.md) applies to every branch, worktree, commit, push, synchronization, and PR publication in this run. Load it before the first such action.
+Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree before initializing the Run Ledger.
 
 ## Load
 
@@ -19,7 +19,7 @@ Load only the skills needed by the observed path:
 
 ## Run Ledger
 
-Creating the task directory and `handoff.md`, when absent, is the ledger-initialization exception. Make that initialization the first mutation, append the run entry below, then perform no other mutation or external action until it exists:
+After VCS Preflight establishes the Task Worktree, create `.computa-please/` and `handoff.md` when absent, then append the run entry below. Worktree bootstrap is the sole permitted earlier mutation; perform no repository-content mutation or external action until the entry exists:
 
 - Run identifier and current state.
 - Accepted spec path, completed-change delivery goal, or existing PR goal.
@@ -39,7 +39,7 @@ Update the entry before every state transition and before every external action.
 
 1. Confirm explicit Finish Loop authorization.
 2. Confirm an accepted spec, a completed change with a concrete delivery goal, or a concrete existing PR goal.
-3. Inspect the current worktree, diff, branch, PR, required checks, and Graphite parent when tracked.
+3. Verify the Task Worktree path and inspect its diff, branch, PR, required checks, and Graphite parent when tracked.
 4. Name the allowed files or behavioral slice, verifier, external actions, blockers, and review plan. A ready PR requires `existing-only`, `request-once`, or an explicit `skip`; `request-once` names each authorized request action, the reviewer selectors it covers, its mechanism, and an absolute result deadline.
 5. Stop for unresolved product, public API, production behavior, auth, security, secrets, money, deletion, deploy, ownership, or scope decisions.
 
