@@ -34,7 +34,8 @@ Use this language internally:
 - **Task Worktree:** the one task-owned isolated checkout that contains all mutations and durable state. Locally it lives under `~/dev/worktrees/<repo-slug>__<branch-slug>`.
 - **Work Frame:** Intent, Scope, Compatibility, Slice, Budget, and Proof.
 - **Obligation:** an evidence-backed requirement that an existing contract survive.
-- **Proof:** a risk, proving seam, command, and result status: pending or observed. Before a gauntlet, attest observed results to the exact target commit and tree.
+- **Proof:** a risk, proving seam, command, and result status: pending or observed.
+- **Review Receipt:** the immutable review target, terminal status, candidate dispositions, remediation commit, and verification that account for one Local Review.
 - **Human Gate:** the final handoff; the agent reports the proven state and stops.
 
 ## 1. Select one Mode
@@ -182,33 +183,34 @@ Before writing a test, name the production failure it uniquely detects, why exis
 
 Use Red-Green-Refactor when a test meets that criterion. For migrations, configuration, generated output, runtime-only failures, or a behavior-preserving refactor with a pin, use the least costly applicable repro, equivalence check, trace query, contract check, or repository command.
 
-Cache focused and final commands with their outcomes. Rerun them only when relevant inputs change. Before completion, inspect status and the complete diff, run the focused Proof and required final checks, and report every omitted check. When the Review Gate selects the gauntlet, bind those observed outcomes and omissions to the resulting target commit and tree; stale Proof returns to this Gate instead of being rerun inside review.
+Cache focused and final commands with their outcomes. Rerun them only when relevant inputs change. Before completion, inspect status and the complete diff, run the focused Proof and required final checks, and report every omitted check. When the Review Gate selects Local Review, bind those observed outcomes and omissions to its target commit and tree; stale Proof returns to this Gate instead of being rerun inside review.
 
 **Complete when:** the selected Proof can expose the named risk; each added test uniquely exposes a named production failure at the highest-value affordable seam and earns its maintenance cost; every new abstraction hides current complexity; each refactor reduces at least one named reader-load dimension without moving the burden; final checks have no new failure; and residual risk is explicit.
 
 ## Review Gate
 
-Review and Finish Loop select one path. Implement and Debug enter this Gate only when the user requests review or a qualifying risk is material; otherwise record the Gate as exempt.
+Finish Loop and PR-bound Implement or Debug work enter Local Review. Review mode follows an explicitly requested review workflow or uses Normal review. Non-PR Implement and Debug work is exempt unless the user requests independent review.
 
+- **Requested review:** follow the named review skill and its target, authority, and completion contract.
 - **Normal review:** the repository's review workflow, or this fallback: inspect every changed hunk, trace each candidate defect through its owning call path and relevant tests, and confirm or reject it with evidence.
-- **Gauntlet:** `local-adversarial-review-gauntlet` when the user requests it, or when a qualifying risk is material and independent behavior plus risk-specialist review could plausibly change the result.
+- **Local Review:** follow [Local Review](references/local-review.md) once after deterministic Proof passes against the complete committed PR candidate and before draft publication. It owns the Codex Autoreview target, optional structural exception, one disposition and remediation pass, and Review Receipt.
 
-Qualifying risks are trust, security, privacy, money, billing or entitlements, production infrastructure, deployment, recovery, data integrity, broad internal tooling, a durable seam, ownership boundary, protocol, hard-to-reverse contract, or a complex cross-module change or feature with multiple failure paths, consequential state transitions, or weak deterministic Proof.
+Independent remote PR review remains a later delivery layer over the remediated published head. New product scope or unreviewed behavior after Local Review makes its receipt stale; finding, CI, and external-review remediation do not trigger another local pass.
 
-Run one gauntlet after deterministic Proof passes against an immutable committed target, before publication or the Human Gate. Select one specialist lens from the observed risk: architecture, compatibility, reliability, or security; material trust or security risk selects security and requires specialized security coverage. Its packet names the risk, lens, fixed point, target commit and tree, target-bound Proof attestation, and prerequisite-commit authority. An active Finish Loop supplies that authority; otherwise ask before committing. This selection is `computa-please`'s exception to the gauntlet's direct-invocation rule.
-
-**Complete when:** the Gate is exempt for a named reason, Normal review covers every changed hunk and disposes every candidate, or the gauntlet satisfies its own completion criterion.
+**Complete when:** the Gate is exempt for a named reason, the requested review reaches its completion criterion, Normal review covers every changed hunk and disposes every candidate, or a complete Review Receipt accounts for Local Review and its resulting head.
 
 ## Delegation
 
 The main agent owns synthesis and the final diff. Delegate only for lower latency or an independent evidence source.
+
+Independent defect finding and readiness judgment occur only in the Review Gate. Implementation and Debug delegates return scoped code, observed facts, or deterministic verification results.
 
 - Default to one wave of at most three children with disjoint questions or file surfaces.
 - Give each child the goal or symptom, repository revision, established facts, commands and outcomes, Work Frame, authority, required evidence, and return shape.
 - Research children return facts and citations, not readiness judgments. Implementation children receive disjoint file authority within the Task Worktree; the main agent alone writes Durable State.
 - Merge each wave before opening another, name the remaining gap, and verify child claims against source or deterministic checks.
 
-Escalate beyond one wave only for requested breadth, independent high-risk hypotheses, or formal adversarial review.
+Escalate beyond one wave only for requested breadth or independent high-risk hypotheses.
 
 **Complete when:** every child had disjoint authority and each returned claim is verified, merged, or rejected.
 
