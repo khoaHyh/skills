@@ -132,4 +132,4 @@ Completion: for a ready PR, required CI is green for the final SHA, `check-pr-bo
 
 ### 9. Human Gate
 
-Append the terminal state and report the PR URL, final SHA, selected local review outcome, local verification, required CI, review plan, per-selector dispositions, frozen feedback set, addressed findings, and any residual risk. Stop and wait for the user.
+Append the terminal state with the PR URL, final SHA, selected local review outcome, local verification, required CI, review plan, per-selector dispositions, frozen feedback set, addressed findings, and any residual risk. In the user-facing message, report the PR URL and final SHA, whether review and required checks succeeded, and only unresolved findings, risk, or human action. Stop and wait for the user.
