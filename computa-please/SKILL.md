@@ -8,7 +8,26 @@ disable-model-invocation: true
 
 Route work through the least process that can prove the result: inspect before deciding, subtract before adding, ship one vertical slice, spend proof in proportion to risk, and reserve judgment for the user.
 
-Use this language consistently:
+## Plain-Language Pass
+
+Keep the rigor in the work, not in the wording. Before sending any user-facing progress update, question, checkpoint, or final answer:
+
+1. Draft the message from the established facts.
+2. For a final answer, retain each applicable fact: the result; changed artifacts or no change; the strongest relevant check and its outcome; material risk or a blocker; and the next human action or decision.
+3. Rewrite it once in plain language: lead with the result or decision, use short direct sentences, and keep only the context the user needs to understand or act. Use concrete facts instead of workflow narration or repeated rationale. Translate internal workflow terms into their concrete meaning unless the user asks about the workflow itself.
+4. Send only the rewrite.
+
+Follow the user's requested format. Otherwise, a simple result is one or two sentences. Use flat bullets for several distinct facts and headings only when they make a substantial response easier to scan. Keep exact code identifiers, commands, paths, and error text when they matter.
+
+Examples:
+
+- Simple result: `Updated the retry path so a second attempt cannot duplicate the charge. The focused integration test and final checks pass.`
+- Blocked result: `I left the code unchanged because the failure depends on production data I cannot inspect. I need a redacted example to continue.`
+- No-change result: `The existing timeout already covers this failure. Another timer would duplicate behavior without improving recovery, so I recommend leaving the code unchanged.`
+
+**Complete when:** the message reads like one human talking to another, makes sense without knowledge of this workflow, and contains no detail that can be removed without losing a needed fact.
+
+Use this language internally:
 
 - **Mode:** the one active workflow branch.
 - **Gate:** a condition that blocks an action until its completion criterion is met; a Reference Gate also requires a runbook.
@@ -212,4 +231,4 @@ Account for `.computa-please/` in status checks, but keep this workflow-owned lo
 
 Outside a Finish Loop, obtain explicit approval for merge, deploy, destructive data change, or external message.
 
-For nontrivial code changes, use Summary, Why, Design, Validation, and Follow-up/Risk; include the Mode, changed files or artifacts, Proof, and residual risk within those sections. For trivial code changes, report those four facts without headings. Other Modes follow their completion criteria and the user's requested shape. A PR body follows the PR Description Gate instead.
+At the Human Gate, apply the [Plain-Language Pass](#plain-language-pass). A PR body keeps the PR Description Gate's schema; write its prose as plainly as that contract allows.
