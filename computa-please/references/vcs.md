@@ -9,7 +9,7 @@ Establish one task-owned checkout for mutation, durable state, delegation, and V
 3. When the local layout applies, follow `worktrees` to establish or reuse exactly one Task Worktree before any repository-content or Durable State write.
 4. In the local layout, use the canonical checkout only to bootstrap the Task Worktree, and leave it on `main`. If it already contains task changes, preserve them and stop for a migration decision. Re-anchor every later tool working directory, repository path, artifact path, and delegated local agent to the Task Worktree.
 5. Before commit, synchronization, push, or publication, inspect the complete intended diff and relevant commit subjects. Before PR publication, inspect every subject between the intended base and `HEAD`.
-6. Confirm the action is authorized. An active Finish Loop authorizes its scoped Task Worktree bootstrap and ledger initialization; afterward it authorizes only operations recorded in the ledger. Otherwise obtain explicit approval before commit, push, or PR publication. Stage only intended files and preserve unrelated changes.
+6. Confirm the action is authorized. An active Finish Loop authorizes its scoped Task Worktree bootstrap and ledger initialization; afterward it authorizes only actions permitted by its recorded delivery ceiling and pre-recorded in its external-action journal. Otherwise obtain explicit approval before commit, push, or PR publication. Stage only intended files and preserve unrelated changes.
 
 ## Commits
 
@@ -22,7 +22,7 @@ Establish one task-owned checkout for mutation, durable state, delegation, and V
 ## Branches And Publication
 
 - When Graphite tracks the branch, mutate or submit only the current diff unless the user explicitly authorizes a stack-wide action.
-- Publish every new PR as a draft. Mark it ready only when the user explicitly requests that state.
+- Publish every new PR as a draft. After the Finish Loop's local review and publication gates pass, either recorded delivery ceiling authorizes marking its active PR ready. Outside a Finish Loop, mark it ready only when the user explicitly requests that state.
 - Before drafting, creating, or updating a PR body, satisfy the router's PR Description gate through **Verify** (`check-pr-body` exits 0).
 
 ## Completion

@@ -42,11 +42,13 @@ Use this language internally:
 - **Discuss:** compare, evaluate, design, decide, or resolve ambiguity. Read-only and ephemeral by default.
 - **Spec:** produce a durable, implementation-ready plan. Production code stays read-only.
 - **Implement:** make authorized code changes.
-- **Finish Loop:** carry an accepted spec, completed change, or existing PR through its authorized delivery states to the Human Gate.
+- **Finish Loop:** own autonomous delivery for one bounded accepted spec, completed change, or existing PR. Select it instead of Implement when the requested outcome includes driving a ready PR through external review or CI, making it merge-ready, merging, landing, shipping, verifying post-merge workflows, or running accepted work through delivery without stopping.
 - **Debug:** diagnose a failure, regression, flake, or performance problem.
 - **Review:** find defects in a diff, branch, commit, or PR.
 - **Recall/Pickup:** recover live work from artifacts and repository state.
 - **Reflect:** turn observed workflow evidence into a structural improvement.
+
+Route by the requested terminal outcome, not by the presence of a PR. A one-pass PR status check routes to Discuss, defect-finding only routes to Review, and local verified code or draft-only publication routes to Implement. `Get this PR green`, `make it merge-ready`, `ship`, `land`, `merge`, and `run this through delivery` route to Finish Loop. These words authorize entry, not merge; only the Finish Loop's mandatory question-tool choice authorizes merge.
 
 Default evaluative or ambiguous work to Discuss. Resolve inspectable facts yourself; ask the user only for decisions.
 
@@ -57,8 +59,8 @@ Default evaluative or ambiguous work to Discuss. Resolve inspectable facts yours
 Evaluate all matching Gates after selecting a Mode. Read each matched reference in full before its gated action; a mention or link is not a read.
 
 - **Design:** When a request may introduce new behavior; change a public contract, domain rule, or retained datum; affect trust, security, money, deletion, deployment, or ownership; create or move a seam; make a nontrivial refactor or redesign; or enter Spec/Implement without an accepted contract, follow [Design Readiness](references/design-readiness.md) before substantial design or mutation. Production code stays read-only until the request is exempt or its user checkpoint passes.
+- **Finish Loop:** After this mode is selected and before fresh-run bootstrap, persistence, polling, mutation, or external action, follow [Finish Loop](references/finish-loop.md) from its Entry Gate.
 - **Worktree/VCS:** Treat the invocation checkout as inspection/bootstrap only. Follow [VCS Actions](references/vcs.md) to establish the Task Worktree before Recall/Pickup artifact recovery or any repository-content or Durable State write, then re-anchor every tool, artifact, and delegate path there. Follow it again before later VCS mutation or publication.
-- **Finish Loop:** After explicit Finish Loop authorization and before its first mutation or external action, follow [Finish Loop](references/finish-loop.md).
 - **PR description:** Before drafting, returning, creating, or updating a PR body, follow [PR Description](references/pr-description.md) through **Verify** (`check-pr-body` exits 0).
 - **Comprehension map:** A requested map selects or resumes Spec. At its checkpoint, or when a complex spec needs a visual misunderstanding check, follow [Comprehension Map](references/comprehension-map.md) before rendering.
 
@@ -90,7 +92,7 @@ Load `coding-standards`, `codebase-design` when a nontrivial seam changes, relev
 
 ### Finish Loop
 
-Enter only through explicit authorization. Execute the Finish Loop Reference Gate's state machine and ledger to prevent replayed external actions.
+Execute when the requested terminal outcome selects this mode. The matching request authorizes entry only; the runbook's mandatory question is the sole source of merge authority. Use its state machine and ledger to prevent replayed external actions.
 
 **Complete when:** the runbook reaches the Human Gate.
 
@@ -117,7 +119,7 @@ Report findings first, ordered by severity with file and line references. A work
 
 ### Recall/Pickup
 
-Read artifacts and live state first. Reconstruct done, pending, blocked, and risky work; separate inherited claims from reverified facts; route only the remainder. Resume a Finish Loop only from recorded authorization.
+Read artifacts and live state first. Reconstruct done, pending, blocked, and risky work; separate inherited claims from reverified facts; route only the remainder. Resume a Finish Loop only from a nonterminal ledger entry with a recorded Entry Gate choice; a closed run provides no authority.
 
 **Complete when:** inherited and reverified state are distinct and every remaining item is routed or blocked by a named decision.
 
@@ -229,6 +231,6 @@ Account for `.computa-please/` in status checks, but keep this workflow-owned lo
 
 ## Stop Cleanly
 
-Outside a Finish Loop, obtain explicit approval for merge, deploy, destructive data change, or external message.
+Merge requires recorded `merge-and-verify` authority in the active Finish Loop; otherwise obtain explicit approval. A Finish Loop never authorizes deploy or destructive data change. An external message requires explicit approval unless it is pre-recorded in an active Finish Loop review plan and action journal.
 
 At the Human Gate, apply the [Plain-Language Pass](#plain-language-pass). A PR body keeps the PR Description Gate's schema; write its prose as plainly as that contract allows.
