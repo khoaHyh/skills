@@ -1,8 +1,17 @@
 # Finish Loop
 
-This runbook is the bounded supervisor around Implement, the Task Worktree and diff, its PR, CI, and one frozen set of external review feedback. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
+This runbook is the bounded supervisor around Implement, the Task Worktree and diff, its PR, CI, one frozen set of external review feedback per delivery cycle, and an optional merge and post-merge repair loop. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
 
-For a draft PR, skip CI monitoring and external review collection or remediation, then proceed directly to Human Gate.
+A run owns one Entry Gate choice and one or more delivery cycles. A delivery cycle owns one PR goal from Bound through its Authority Boundary. Only an attributable post-merge repair may create another cycle; it inherits the run's delivery ceiling but receives its own review plan, at-most-once actions, frozen feedback set, CI state, and one `review-remediation` invocation.
+
+## Entry Gate
+
+For every fresh Finish Loop run, before worktree bootstrap, persistence, polling, mutation, or external action, use the environment's question tool to ask `How far may this Finish Loop go?` with exactly these choices:
+
+- `stop-before-merge`: complete all agent-owned pre-merge work, mark the PR ready, run final CI, then stop before merge or auto-merge is armed.
+- `merge-and-verify`: complete the same gates, then merge; use admin bypass only when branch protection is the sole remaining blocker, monitor the relevant post-merge workflows, and deliver attributable fixes through focused follow-up PRs until green or blocked.
+
+Explicit prose such as `ship it`, a standing preference, or a custom answer does not substitute for one of these tool choices. If the question tool is unavailable or neither choice is selected, stop. A pickup of the same nonterminal ledger entry reuses its recorded answer; a closed run requires a new question. A post-merge repair cycle remains inside the same run and inherits `merge-and-verify` without another question.
 
 Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree before initializing the Run Ledger.
 
@@ -15,13 +24,13 @@ Load only the skills needed by the observed path:
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
-- `review-remediation` after the run's external feedback set has been frozen.
+- `review-remediation` after the delivery cycle's external feedback set has been frozen.
 
 ## Run Ledger
 
 After VCS Preflight establishes the Task Worktree, create `.computa-please/` and `handoff.md` when absent, then append the run entry below. Worktree bootstrap is the sole permitted earlier mutation; perform no repository-content mutation or external action until the entry exists:
 
-- Run identifier and current state.
+- Run identifier, active owner, current state, Entry Gate answer and timestamps, active cycle, terminal predicate, no-progress counter, and terminal reason.
 - Accepted spec path, completed-change delivery goal, or existing PR goal.
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
 - Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
@@ -30,20 +39,25 @@ After VCS Preflight establishes the Task Worktree, create `.computa-please/` and
 - PR additions plus deletions.
 - Review plan: `existing-only`, `request-once`, or explicit `skip`; reviewer selectors; delivery surfaces; expected revision or time window; completion evidence; named request actions and the selectors each covers; and an absolute result deadline for `request-once`.
 - Per-selector disposition, request-action attempts and times, completed artifact identifiers, frozen feedback payload, remaining actionable count, and per-item response or addressed-state action attempts.
+- For `merge-and-verify`, the per-cycle expected head and base, merge mechanism and attempts, admin-bypass evidence and attempt, merged SHA and time, and post-merge workflow watch plan and results.
+- An append-only external-action journal. Each entry records a stable action key, cycle, action type, target object, expected head or revision, exact payload or payload hash, prerequisite snapshot, attempted time, actor or tool, provider action ID, observed result, reconciliation result, and spent status.
 
-Update the entry before every state transition and before every external action. On pickup, reconcile the ledger with live state and trust observed state except for recorded external-action attempts and the frozen feedback payload. Each attempted request, response, or addressed-state mutation remains spent when its result is ambiguous. The recorded IDs, authors, bodies, source surfaces, and revision or timestamps remain authoritative after the set freezes; live state can update only delivery and addressed status.
+Update the entry before every state transition. Before every external action, append its journal entry with `spent: true`, then act. Key review requests by cycle and named request action rather than SHA; key replies and addressed-state changes by frozen feedback ID; key PR creation by cycle; key normal or admin merge by cycle and expected head; key workflow reruns by provider run ID; and key pushes by commit SHA. A new action after a terminal failure requires a recorded changed precondition.
+
+On pickup, reconcile the ledger with live state and trust observed state except for recorded external-action attempts and the frozen feedback payload. Every ambiguous attempt remains spent and may be reconciled but not replayed. The recorded IDs, authors, bodies, source surfaces, and revision or timestamps remain authoritative after a feedback set freezes; live state can update only delivery and addressed status.
 
 ## State Machine
 
 ### 1. Bound
 
-1. Confirm explicit Finish Loop authorization.
+1. Confirm the recorded Entry Gate answer. A post-merge repair cycle records its inherited `merge-and-verify` ceiling instead of reopening the question.
 2. Confirm an accepted spec, a completed change with a concrete delivery goal, or a concrete existing PR goal.
-3. Verify the Task Worktree path and inspect its diff, branch, PR, required checks, and Graphite parent when tracked.
+3. Verify one active run owner, the Task Worktree path, and its diff, branch, PR, required checks, and Graphite parent when tracked. If exclusive ownership cannot be established, stop before any external action.
 4. Name the allowed files or behavioral slice, verifier, external actions, blockers, and review plan. A ready PR requires `existing-only`, `request-once`, or an explicit `skip`; `request-once` names each authorized request action, the reviewer selectors it covers, its mechanism, and an absolute result deadline.
-5. Stop for unresolved product, public API, production behavior, auth, security, secrets, money, deletion, deploy, ownership, or scope decisions.
+5. For `merge-and-verify`, name the protected target branch and post-merge watch requirements: workflow IDs or names, triggers, expected commit lineage or causal run IDs, discovery deadline, terminal deadline, and accepted terminal conclusions.
+6. Stop for unresolved product, public API, production behavior, auth, security, secrets, money, deletion, deploy, ownership, or scope decisions.
 
-Completion: the goal, blast radius, verifier, PR target, review plan, and authorization are recorded with no unresolved decision fork.
+Completion: the goal, blast radius, verifier, PR target, review plan, delivery ceiling, applicable post-merge predicate, and authorization are recorded with no unresolved decision fork.
 
 ### 2. Synchronized
 
@@ -80,14 +94,12 @@ Completion: the selected review path reached a terminal outcome, every actionabl
 
 1. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
 2. Create or update the PR description by following [the PR Description contract](pr-description.md) through **Verify**.
-3. Preserve the PR state authorized under the VCS Actions contract.
-4. Record the pushed SHA before monitoring checks, or before proceeding to Human Gate for a draft PR.
+3. Mark the PR ready under the recorded delivery ceiling.
+4. Record the pushed SHA before monitoring checks.
 
-Completion: the open PR points at the recorded SHA, retains its authorized draft or ready state, targets the intended parent or base, and `check-pr-body` exits 0 on that description.
+Completion: the ready PR points at the recorded SHA, targets the intended parent or base, and `check-pr-body` exits 0 on that description.
 
 ### 6. Collect External Review and Monitor CI
-
-Skip this state, Remediate Review Feedback, and Final CI for a draft PR. Record the skipped CI and review disposition, then proceed to Human Gate. Run the remainder of this state when the PR's authorized state is ready for review.
 
 Immediately after publication and before waiting for CI, execute the fixed review plan:
 
@@ -100,13 +112,13 @@ Immediately after publication and before waiting for CI, execute the fixed revie
 
 Then monitor required checks while any requested reviews run in parallel:
 
-1. Preserve each recorded review disposition. A named request action is attempted at most once during the run, including after CI fixes, timeouts, ambiguous delivery, context recovery, or a new pushed SHA.
+1. Preserve each recorded review disposition. A named request action is attempted at most once during the delivery cycle, including after CI fixes, timeouts, ambiguous delivery, context recovery, or a new pushed SHA.
 2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, create an additive commit, publish, record the new SHA, and wait again without changing the review plan or request attempts.
 3. Retain feedback that targets an earlier SHA; `review-remediation` will compare every finding with the current diff.
 4. Treat external outages and unavailable required infrastructure as blockers.
-5. Stop for no-progress when two consecutive remediation cycles for the same failure produce no new evidence, diagnosis, code change, reviewer state, or check-state change. Passive pending states follow their recorded or provider deadline and do not count as remediation cycles.
+5. Stop for no-progress when two consecutive CI-fix iterations for the same failure produce no new evidence, diagnosis, code change, reviewer state, or check-state change. Passive pending states follow their recorded or provider deadline and do not count as iterations.
 
-Completion: for a ready PR, every required check is green for the current recorded SHA, and every configured reviewer selector is represented by completed artifacts, `no-existing-feedback`, explicit `skip`, or one recorded pending request. Requested feedback need not have arrived yet.
+Completion: every required check is green for the current recorded SHA, and every configured reviewer selector is represented by completed artifacts, `no-existing-feedback`, explicit `skip`, or one recorded pending request. Requested feedback need not have arrived yet.
 
 ### 7. Remediate Review Feedback
 
@@ -116,20 +128,46 @@ Use the review plan and dispositions fixed before the initial CI wait:
 2. For `request-once`, wait for every configured reviewer selector to produce an attributable completed result until its recorded absolute deadline. At the deadline, an absent or ambiguous result is a blocker and every covering request action remains spent.
 3. Build one feedback set from every claim, requested change, question, and informational item requiring acknowledgement in the completed results. Freeze each item's stable ID or URL, reviewer, delivery surface, body, and reviewed SHA or observed timestamp in the ledger. Record completed results with zero feedback items as `completed-no-feedback`.
 4. Treat the frozen ledger payload as the source of truth on recovery. A live edit to an object with the same ID does not change the finding under remediation; re-fetch only to observe delivery, deletion, and addressed state.
-5. Run `review-remediation` once against the frozen records. Complete classification, primary-source research, minimum, durable, robust implementation, and verification, but defer provider replies and addressed-state changes until the remediation is published.
+5. Run exactly one `review-remediation` pass against the frozen records. Complete classification, primary-source research, minimum, durable, robust implementation, and verification, but defer provider replies and addressed-state changes until the remediation is published.
 6. Treat every blocked item as a Finish Loop blocker. Scores, severity summaries, and approval labels remain metadata.
 7. When files changed, create an additive remediation commit, publish it, confirm the PR head contains it, and record the new SHA.
-8. After publication, complete `review-remediation` responses and provider-native addressed-state changes. Before each external action, record its item ID, exact payload or intended state, and `attempted` status; then execute it once and record the observed result. An ambiguous attempt is a blocker rather than permission to replay it. A deleted item receives terminal `delivery-unavailable: deleted` status instead of a reply or state mutation. When no files changed, respond after verification and classification.
+8. After publication, complete `review-remediation` responses and provider-native addressed-state changes through per-item external-action journal entries. Attempt each once and record the observed result. An ambiguous attempt is a blocker rather than permission to replay it. A deleted item receives terminal `delivery-unavailable: deleted` status instead of a reply or state mutation. When no files changed, respond after verification and classification.
 9. Treat feedback arriving after the set freezes as a separate run. Never transition back to this state.
 
-Completion: for a ready PR, the plan was explicitly skipped; every `existing-only` selector had `no-existing-feedback`; or every selector has a terminal disposition, every completed result is represented by frozen items or `completed-no-feedback`, every item is accounted for with no blocker, and changed remediation was published before its response or addressed-state update.
+Completion: the plan was explicitly skipped; every `existing-only` selector had `no-existing-feedback`; or every selector has a terminal disposition, every completed result is represented by frozen items or `completed-no-feedback`, every item is accounted for with no blocker, and changed remediation was published before its response or addressed-state update.
 
 ### 8. Final CI
 
 Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the review plan or frozen set and without returning to Remediate Review Feedback. Refresh the PR description from the final diff using [the PR Description contract](pr-description.md) through **Verify**, then reconfirm that the PR is conflict-free and points at that SHA.
 
-Completion: for a ready PR, required CI is green for the final SHA, `check-pr-body` exits 0 on the final description, the PR is conflict-free and ready for review, and Remediate Review Feedback remains complete.
+Completion: required CI is green for the final SHA, `check-pr-body` exits 0 on the final description, the PR is conflict-free and ready for delivery, and Remediate Review Feedback remains complete.
 
-### 9. Human Gate
+### 9. Authority Boundary
 
-Append the terminal state with the PR URL, final SHA, selected local review outcome, local verification, required CI, review plan, per-selector dispositions, frozen feedback set, addressed findings, and any residual risk. In the user-facing message, report the PR URL and final SHA, whether review and required checks succeeded, and only unresolved findings, risk, or human action. Stop and wait for the user.
+1. For `stop-before-merge`, record `merge-ready`, proceed to Human Gate, and perform no merge or auto-merge action.
+2. For `merge-and-verify`, reconfirm that the PR still points at the final-CI SHA, targets the recorded base, is conflict-free, and has complete review and CI gates. Use the provider's expected-head precondition when available.
+3. Freeze the final post-merge watch plan against the current workflow configuration and expected merge lineage before any merge action.
+4. Stop if the PR targets an unmerged Graphite parent or merging would mutate a sibling diff or stack topology. The Finish Loop owns only its current diff.
+5. Record and attempt the repository's normal merge mechanism. An accepted, queued, pending, or ambiguous normal action is not permission for admin bypass; reconcile or wait.
+6. Admin bypass is authorized at most once for that head only when the provider conclusively rejects normal merge and live state names branch protection as the sole remaining blocker. It never bypasses failed or pending CI, unresolved frozen feedback, a conflict, stale head or base, an outage, missing permission, or an unowned stack.
+7. Treat every ambiguous merge attempt as spent. Reconcile live PR and target-branch state without replaying it. Record the merged commit and time only after the provider reports merged and the target branch contains the result.
+8. `merge-and-verify` does not authorize deploy approval, release, data migration, customer communication, destructive rollback, or history rewriting.
+
+Completion: `stop-before-merge` is recorded with no merge action, or `merge-and-verify` has an observed merged commit on the intended target branch.
+
+### 10. Post-Merge Verification
+
+Run this state only for `merge-and-verify`:
+
+1. Discover runs from the frozen watch plan by workflow identity, target branch, merged commit lineage, and causal run IDs. Squash or rebase merges may require the observed merge commit rather than the former PR head.
+2. Wait through the discovery and terminal deadlines. Green means every expected relevant run for the latest merged cycle reaches an accepted terminal conclusion. An expected run that never appears is a blocker, not success. If no applicable post-merge workflow exists, record `none-configured` from repository and provider evidence and verify the target branch contains the merged result.
+3. Classify every failure from its exact logs and changed path. Temporal proximity alone is not attribution. Retry only a proven flake or infrastructure failure under the provider's safe retry policy.
+4. For a failure attributable to the landed change, append a focused follow-up cycle from the current protected target branch. Inherit `merge-and-verify` and the review plan kind and selectors, but give the new PR fresh per-cycle request actions, deadlines, frozen feedback, CI state, and merge actions. Execute states 1 through 9 for that cycle, then return here for its merged result.
+5. Keep the run's no-progress counter across cycles. Stop after two consecutive repair cycles that do not change the failure evidence, root-cause diagnosis, or terminal workflow state; code churn alone is not progress. Stop sooner for an external blocker or a real user decision.
+6. A repair is a new PR, never a direct target-branch edit, force-push, or history rewrite.
+
+Completion: every expected relevant post-merge workflow is green for the latest merged cycle, or the run is blocked by a named no-progress condition, external dependency, missing evidence, or user decision.
+
+### 11. Human Gate
+
+Append the terminal state with every cycle and PR URL, the delivery ceiling, final PR or merged SHA, merge and admin-bypass outcomes, selected local review outcome, local verification, required CI, review plan, per-selector dispositions, frozen feedback sets, addressed findings, post-merge workflow results, follow-up repairs, and any residual risk. In the user-facing message, report the relevant PR URLs and final SHA, whether review, required checks, merge, and post-merge verification succeeded, and only unresolved findings, risk, or human action. Stop and wait for the user.
