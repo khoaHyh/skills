@@ -2,74 +2,33 @@
 
 Use this contract whenever drafting, creating, or updating a pull request description, whether the description is returned in the conversation or published externally.
 
+## Draft
+
+1. Derive every claim from the PR diff and observed evidence. Keep implementation and review Proof internal; the body does not list test commands or validation results.
+2. Load `show-me` for every PR description. Identify the one thing the reviewer needs to understand first, then build the smallest complete set of visuals that exposes it. Prefer one visual.
+3. When production execution changes, account for every materially distinct changed production call stack. A call stack runs from an affected entrypoint through each callable or boundary to its terminal result or effect. Use a diff-shaped call tree for an existing path and an after-only tree for a new path. Group shared structure and include only enough unchanged context to locate the edited seam. Do not inventory test call stacks.
+4. Use exact callable, module, boundary, event, and terminal-result names. Add file paths, types, errors, or effects only where they explain the changed contract. Use `->` for a direct call and `~>` for an asynchronous handoff; nest a changed consumer without implying synchronous completion.
+5. When no production call stack changes, let `show-me` choose the smallest fitting alternative visual. Every PR still has a visual.
+6. If available, use `calldiff` to discover changed paths: `npx calldiff@latest diff <base> <head>`, narrowed with `--entry`, `--file`, or an affected path when useful. Treat its result as evidence, not authority; verify routes, dependency injection, RPC, events, dynamic calls, and other unresolved edges against source. Do not block the PR on `calldiff`.
+7. After the visual is settled, load `personal-drafting` and shape only the surrounding prose for the GitHub PR audience. Keep the visual's factual structure intact.
+
+## Required schema
+
+Use these `##` headings in this order with the exact titles below. Add another section only when the target repository requires it.
+
+- **What changed:** at most two sentences. Lead with the observable change; add its motivation only when the change is not self-explanatory.
+- **Where to look:** the smallest complete set of nonempty fenced visuals. Follow the production call-stack rules above when production execution changes.
+- **Why it is safe:** one to three diff-backed facts about preserved boundaries, invariants, or material remaining risk. Do not include test commands or a validation summary.
+
 ## Verify
 
-After the body exists (drafted in chat, written to a file, or already on the PR), run the structural check. Heading presence is owned by the script, not by re-reading this list:
+After the body exists, run the structural check. The script owns required-heading and fenced-visual presence:
 
 ```bash
 node <computa-please>/scripts/check-pr-body.mjs --file <body.md>
 # or: <body on stdin> | node <computa-please>/scripts/check-pr-body.mjs
 ```
 
-**Complete when:** `check-pr-body` exits 0, the claims match the diff and observed evidence, and Call Stacks accounts for every added or edited call stack under the rules below. If there are no added or edited call stacks, the Call Stacks body is exactly `No call stacks added or edited.`
+Then compare the body with the diff and confirm that its claims are factual, its visuals are the smallest complete set, every materially distinct changed production call stack is represented, test call stacks and validation output are absent, and every additional section is repository-required.
 
-## Required schema
-
-Use these `##` headings (exact titles; additional repository sections may follow):
-
-- **Summary:** the observable change, kept concise.
-- **Why:** the problem, constraint, or opportunity that requires the change.
-- **Design:** the chosen shape, important boundaries, and rejected alternatives that matter to review.
-- **Call Stacks:** every added or edited execution path under the contract below.
-- **Validation:** commands or checks run and their outcomes; state material checks not run.
-- **Follow-up/Risk:** remaining risk, rollout or ordering constraints, and genuinely separate follow-up work.
-
-## Call stacks
-
-A call stack is an ordered execution path from an affected entrypoint through each callable or boundary to its terminal result or effect. Derive the before state from the PR base and the after state from the current diff. The readable form is a code-shaped outline, not a numbered inventory: indentation shows a call or caused handoff, and sibling lines stay at the same depth in execution order.
-
-In the PR body's `Call Stacks` section:
-
-- Account for every added or edited call stack.
-- If available, use `calldiff` to discover the structural change before writing the section: `npx calldiff@latest diff <base> <head>`, narrowed with `--entry`, `--file`, or an affected path when needed. Treat its AST result as evidence, not authority: verify each path against source and add routes, dependency-injection edges, RPC boundaries, events, dynamic calls, and other edges a syntactic call tree cannot resolve. Do not block the PR on installing or running it.
-- Give each semantic flow its own heading. Split materially different paths such as `Production`, `Tests`, a worker, or an event consumer instead of braiding them into one tree. A test double or in-memory adapter belongs in the test tree, not in the production tree.
-- Show the complete path, including unchanged context around the edited layer. Use one `Before` and one `After` tree when the path is short; use a `diff` tree when the paths mostly share context. For a new path, show `Before: Not present.` and one `After` tree.
-- Use exact callable, module, boundary, event, and terminal-result names. Put the input and output types on the frame as `name(input) -> output`; use concrete runtime shapes when the codebase is untyped.
-- Keep errors and side effects compact and local to the frame that owns them. Add `[errors: ...; effects: ...]` only when those facts are non-empty or materially important; do not repeat `None` on every frame. Include typed failures, thrown exceptions or defects, and boundary failures with their trigger conditions.
-- Use `->` for a direct call and `~>` for an asynchronous event or handoff. Show the handoff's consumer as a nested path when the PR changes that consumer. Do not imply synchronous completion for a published event, queued job, or worker.
-- Keep the tree as the primary view. Use strict Mermaid only when the important fact is interaction between multiple actors, branching, concurrency, retries, or an asynchronous message exchange that an outline would hide. Use a fenced `mermaid` block with valid Mermaid syntax and simple quoted labels; do not use Mermaid for a linear call stack merely because it can draw boxes.
-
-Use this shape for a production path:
-
-````markdown
-### `<entrypoint> -> <terminal result or effect>`
-
-#### Production
-```text
-<entrypoint>(<input>) -> <response>
-  -> <callable>(<input>) -> <output>
-    -> <boundary>(<input>) -> <output> [errors: <error and trigger>; effects: <effect>]
-      ~> <consumer>(<input>) -> <output>
-```
-
-#### Tests
-```text
-<test entrypoint>(<fixture>) -> <assertion>
-  -> <callable>(<input>) -> <output>
-    -> <test double or real adapter>(<input>) -> <output>
-```
-
-#### Contracts
-- `<frame>`: errors `<typed failure and trigger>`; effects `<effect>`.
-
-For a before/after change, prefer a diff-shaped tree:
-
-```diff
-  <entrypoint>(<input>) -> <response>
-    -> <unchanged callable>(<input>) -> <output>
--     -> <old callable>(<input>) -> <old output>
-+     -> <new callable>(<input>) -> <new output> [errors: <error and trigger>; effects: <effect>]
-```
-
-Put long error or side-effect details in the adjacent `Contracts` list keyed by exact frame name. The tree must remain readable at a glance while the contracts retain the facts a reviewer needs to verify.
-````
+**Complete when:** `check-pr-body` exits 0 and the manual comparison passes every condition above.

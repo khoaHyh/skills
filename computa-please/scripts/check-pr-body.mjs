@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * Structural check for the computa-please PR Description contract.
- * Owns required ## heading presence. Call Stacks content rules stay in
- * references/pr-description.md.
+ * Owns required ## heading and fenced-visual presence. Semantic visual rules
+ * stay in references/pr-description.md.
  *
  * Usage:
  *   node check-pr-body.mjs --file body.md
@@ -15,12 +15,9 @@ import { resolve } from "node:path";
 
 /** Single source of truth for required section headings (exact ## titles). */
 export const REQUIRED_SECTIONS = [
-  "Summary",
-  "Why",
-  "Design",
-  "Call Stacks",
-  "Validation",
-  "Follow-up/Risk",
+  "What changed",
+  "Where to look",
+  "Why it is safe",
 ];
 
 /**
@@ -57,16 +54,19 @@ export function checkPrBody(body) {
     }
   }
 
-  const call = sections.get("Call Stacks");
-  if (call) {
+  const where = sections.get("Where to look");
+  if (where) {
     const content = text
-      .slice(call.start, call.end)
-      .replace(/^##\s+Call Stacks\s*/m, "")
+      .slice(where.start, where.end)
+      .replace(/^##\s+Where to look\s*$/m, "")
       .trim();
-    if (!content) {
-      errors.push(
-        "## Call Stacks has no body (use trees or `No call stacks added or edited.`)",
-      );
+    const fencedBlockRe =
+      /^[ \t]*(`{3,}|~{3,})[^\n]*\n([\s\S]*?)\n[ \t]*\1[ \t]*$/gm;
+    const hasVisual = Array.from(content.matchAll(fencedBlockRe)).some(
+      (match) => match[2].trim().length > 0,
+    );
+    if (!hasVisual) {
+      errors.push("## Where to look needs a nonempty fenced visual");
     }
   }
 
@@ -80,31 +80,47 @@ function printHelp() {
   node check-pr-body.mjs --self-test
 
 Required ## sections: ${REQUIRED_SECTIONS.join(", ")}
+## Where to look must contain a nonempty fenced visual.
 `);
 }
 
 function selfTest() {
-  const good = `## Summary
-x
-## Why
-y
-## Design
-z
+  const good = [
+    "## What changed",
+    "Retries no longer duplicate a charge.",
+    "## Where to look",
+    "```diff",
+    " charge",
+    "+  rejectDuplicate",
+    "```",
+    "## Why it is safe",
+    "The existing idempotency key remains authoritative.",
+    "## Repository checklist",
+    "- [x] Required item",
+    "",
+  ].join("\n");
+  const badEmptyVisual = good.replace(
+    "```diff\n charge\n+  rejectDuplicate\n```",
+    "The charge path changed.",
+  );
+  const badEmptyFence = good.replace(
+    "```diff\n charge\n+  rejectDuplicate\n```",
+    "```text\n\n```",
+  );
+  const badMissing = `## What changed
+Only one section.
+`;
+  const oldSchema = `## Summary
+Old shape.
 ## Call Stacks
 No call stacks added or edited.
-## Validation
-ran check
-## Follow-up/Risk
-none
-`;
-  const badEmptyCall = good.replace("No call stacks added or edited.", "");
-  const badMissing = `## Summary
-only
 `;
   const cases = [
     [good, true],
-    [badEmptyCall, false],
+    [badEmptyVisual, false],
+    [badEmptyFence, false],
     [badMissing, false],
+    [oldSchema, false],
     ["", false],
   ];
   for (const [body, wantOk] of cases) {
