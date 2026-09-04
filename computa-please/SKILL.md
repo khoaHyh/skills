@@ -14,8 +14,10 @@ Keep the rigor in the work, not in the wording. Before sending any user-facing p
 
 1. Draft the message from the established facts.
 2. For a final answer, retain each applicable fact: the result; changed artifacts or no change; the strongest relevant check and its outcome; material risk or a blocker; and the next human action or decision.
-3. Rewrite it once in plain language: lead with the result or decision, use short direct sentences, and keep only the context the user needs to understand or act. Use concrete facts instead of workflow narration or repeated rationale. Translate internal workflow terms into their concrete meaning unless the user asks about the workflow itself.
-4. Send only the rewrite.
+3. When structure, sequence, state, interaction, or a before-and-after view carries the main point, and an inline visual would materially reduce prose or likely misunderstanding, load `show-me` and use its smallest useful visual. Keep simple messages prose-only.
+4. Rewrite the surrounding prose once in plain language: lead with the result or decision, use short direct sentences, and keep only the context the user needs to understand or act. Use concrete facts instead of workflow narration or repeated rationale. Translate internal workflow terms into their concrete meaning unless the user asks about the workflow itself.
+5. After an inline `show-me` visual, append exactly: `Say “create HTML” for a richer visual.` This invitation does not belong inside a PR body. When the user explicitly accepts it, create and open one renderer-owned temporary HTML file outside the project; do not treat it as product code or Durable State.
+6. Send only the rewrite.
 
 Follow the user's requested format. Otherwise, a simple result is one or two sentences. Use flat bullets for several distinct facts and headings only when they make a substantial response easier to scan. Keep exact code identifiers, commands, paths, and error text when they matter.
 
@@ -25,7 +27,7 @@ Examples:
 - Blocked result: `I left the code unchanged because the failure depends on production data I cannot inspect. I need a redacted example to continue.`
 - No-change result: `The existing timeout already covers this failure. Another timer would duplicate behavior without improving recovery, so I recommend leaving the code unchanged.`
 
-**Complete when:** the message reads like one human talking to another, makes sense without knowledge of this workflow, and contains no detail that can be removed without losing a needed fact.
+**Complete when:** the message reads like one human talking to another, makes sense without knowledge of this workflow, contains no detail that can be removed without losing a needed fact, and any inline visual is the smallest useful view followed by the fixed invitation.
 
 Use this language internally:
 
@@ -73,7 +75,7 @@ After compaction or on Recall/Pickup, reload `computa-please` once before contin
 
 ### Discuss
 
-Research to a recommendation, tradeoff, or decision. Satisfy the Design Gate when the discussion could become a feature, architecture, or consequential redesign. Mutation or persistence promotes the work to another Mode.
+Research to a recommendation, tradeoff, or decision. Satisfy the Design Gate when the discussion could become a feature, architecture, or consequential redesign. An explicitly requested temporary `show-me` HTML visual may be created outside the project while production code remains read-only; any other mutation or persistence promotes the work to another Mode.
 
 **Complete when:** the user has a recommendation, decision, or explicit promotion path without unapproved mutation or persistence.
 
