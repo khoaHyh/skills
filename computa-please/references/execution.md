@@ -2,7 +2,7 @@
 
 Use for Implement, Debug fixes, and Finish Loop implementation. Spec uses only Work Frame and Subtraction; its production code stays read-only. The request or accepted artifacts supply the contract; load only context that can change the implementation, compatibility posture, or proof.
 
-Use `coding-standards` for TypeScript engineering, `codebase-design` for a nontrivial seam change, and relevant technology skills when their guidance applies. Consult canonical upstream sources when external semantics matter. For Debug, diagnose before choosing a fix; use `feedback-loop`, `motel-debug`, or `observability-logging` when the observed failure requires them.
+Use `coding-standards` for TypeScript engineering, `codebase-design` for a nontrivial seam change, and relevant technology skills when their guidance applies. Consult canonical upstream sources when external semantics matter. For Debug, diagnose before choosing a fix; use `motel-debug` or `observability-logging` when the observed failure requires them.
 
 ## Work Frame
 
@@ -36,7 +36,7 @@ Complete one vertical Slice and verify the observable result, not just successfu
 
 Choose the smallest independent check that exposes the named production failure. Prefer a real end-to-end or integration path; use a focused unit, contract, or property test for a consequential local invariant broader proof cannot expose or diagnose. For behavior-preserving refactors, add a characterization or equivalence pin only when existing proof cannot expose drift. Typecheck and lint alone do not pin behavior.
 
-Use `tdd` when a new test earns its cost and Red-Green-Refactor is the selected loop. For configuration, migrations, generated output, runtime-only failures, or a refactor with a pin, use the applicable repository command, repro, equivalence check, trace query, or safe observed run. Cover cases separately when they have distinct repository-owned behavior or consequences, rather than duplicating a shared path.
+For configuration, migrations, generated output, runtime-only failures, or a refactor with a pin, use the applicable repository command, repro, equivalence check, trace query, or safe observed run. Cover cases separately when they have distinct repository-owned behavior or consequences, rather than duplicating a shared path.
 
 Run focused checks and repository-required final checks. When the environment establishes that local checks use disposable fixtures with no production access, run them, fix attributable failures, and rerun affected checks without asking at each step. Other checks remain subject to their actual access and side-effect boundaries. Remove temporary debug probes unless the user retains them as production telemetry.
 
