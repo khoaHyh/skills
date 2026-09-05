@@ -1,70 +1,33 @@
 ---
 name: tech-spec
-description: Write an implementation-ready typed call-stack architecture handoff. Use when the user requests a tech spec, durable implementation plan, API design, module design, or phased engineering plan.
+description: Write a tech spec or implementation plan with typed contracts, call stacks, file ownership, and verification.
 ---
 
 # Tech Spec
 
-A tech spec makes implementation decisions reviewable before code changes. Prefer typed contracts and call stacks over broad prose. This skill is design-only: do not implement.
+A tech spec makes implementation decisions reviewable before code changes. This skill is design-only: keep production files read-only and return the spec inline unless the user or calling workflow authorizes writing it.
 
-Return the spec inline unless the user requests a file or the calling workflow provides an artifact path.
+## Frame The Change
 
-## 1. Establish evidence
+Use the accepted request and any confirmed Feature Contract as behavioral authority. Inspect the repository instructions and only the code, tests, docs, and runtime constraints needed to design the affected path. Reuse project vocabulary and established patterns where they fit.
 
-Inspect the request, repository instructions, relevant code, tests, docs, and runtime constraints. Reuse the project's vocabulary and existing patterns for types, errors, adapters, telemetry, and tests.
+Resolve routine engineering choices and explain consequential tradeoffs. Ask when a missing product, public-contract, trust, data-lifecycle, deployment, ownership, or scope decision changes the intended result. Keep unresolved decisions visible; a `Confirmed - Blocked` Feature Contract cannot yield an implementation-ready spec while its blocker still affects the change.
 
-Record:
+State the current behavior, target outcome, callers, goals, non-goals, invariants, constraints, affected entrypoints and side effects, operational risks, and smallest independently shippable slice. Ground claims in accepted input or inspected evidence rather than repeating broad discovery.
 
-- current behavior and problem;
-- users or callers;
-- goals and non-goals;
-- invariants and constraints;
-- affected entrypoints and side effects;
-- Compatibility posture and its evidence;
-- operational risks and open decisions.
+## Subtract First
 
-Inspect discoverable facts instead of asking. Keep unresolved product or architecture decisions as open questions rather than inventing them.
+Before adding structure, identify what the slice can delete, collapse, inline, or narrow. A behavior-preserving refactor should pin current behavior and reduce reader load; separate any behavior change as a feature or fix.
 
-Choose **Direct cutover** when no observed external behavior, retained data, deployment constraint, or user requirement must survive; the spec must leave one path. Choose **Protected evolution** only for a named obligation and keep its compatibility mechanism at the narrowest seam with a permanent status or removal condition.
+Choose **Direct cutover** when no observed consumer, retained data, deployment constraint, or user requirement needs the old path, and leave one path. Choose **Protected evolution** only for a named obligation; place the compatibility mechanism at the narrowest seam and give temporary support a removal condition.
 
-**Complete when:** every requirement and constraint is grounded in user input, code, docs, runtime evidence, or an explicit open question.
+## Specify The Design
 
-## 2. Name the smallest complete slice
+Prefer typed contracts and call stacks over broad prose. Present materially different alternatives only when an important interface, ownership seam, or runtime topology remains unsettled; otherwise state the locally coherent design and rationale.
 
-Define one end-to-end behavior from ingress to observable result. State what is intentionally outside the slice and give it a rough file/concept budget.
+Show every added, changed, or deleted boundary a caller must understand. Use the project's implementation language or typed pseudocode for domain values and states, application inputs and outcomes, expected failures, public APIs or messages, parsers and projections, owned ports and adapters, and persistence or protocol records. Name what each seam hides. A hypothetical second implementation does not justify a new abstraction.
 
-For an addition, refactor, or rewrite, inspect what can be deleted, collapsed, inlined, or narrowed before proposing new structure. For a refactor, pin current behavior and require a measurable reduction in reader load. A refactor that changes behavior must be split or renamed as a feature or fix.
-
-**Complete when:** the slice can ship and be verified independently, and speculative infrastructure is excluded.
-
-## 3. Compare designs when the seam matters
-
-Generate materially different alternatives only when interface shape, ownership, runtime topology, or module seams are genuinely unsettled. Small or locally conventional changes may state one chosen design and why alternatives would add no useful information.
-
-Compare applicable options on caller burden, reader load, module depth, locality, boundary translation, failures, cancellation, operational fit, and implementation cost.
-
-**Complete when:** the recommendation follows from observed constraints rather than a mandatory option count.
-
-## 4. Specify contracts
-
-Show every added, changed, or deleted contract that callers must understand, using TypeScript pseudocode where useful:
-
-- domain values, refined types, and lifecycle states;
-- application inputs and outcomes;
-- expected tagged failures;
-- public functions, modules, routes, or messages;
-- boundary parsers and projections;
-- application-owned ports and concrete adapters;
-- persistence or protocol records;
-- compatibility mechanism and removal condition, when required.
-
-Name what each seam hides. Do not add a port, adapter, wrapper, or configuration point for a hypothetical second implementation.
-
-**Complete when:** each changed boundary has a concrete contract or an explicit reason none is needed.
-
-## 5. Trace call stacks
-
-Trace each changed behavior from public entrypoint to side effects and response:
+Trace each changed behavior from its public entrypoint through ownership and side effects to its observable result:
 
 ```text
 raw input
@@ -77,68 +40,27 @@ raw input
   -> observable result
 ```
 
-Include current versus proposed flow when behavior moves. Add failure, authorization, transaction, idempotency, retry, cancellation, and resource-lifecycle branches only when reachable.
+Show current versus proposed flow when behavior or ownership moves. Include only reachable failure, authorization, transaction, idempotency, retry, cancellation, concurrency, and resource-lifecycle branches.
 
-For observability, state what operational question must become answerable. Specify spans, events/logs, metrics, and safe fields only when existing signals cannot distinguish the relevant outcome. Use `observability-logging` for detailed policy.
+Map files or modules to add, change, and delete, giving each one responsibility for a contract or call-stack step. Sequence safe deletion before construction and remove superseded paths in the same Direct cutover slice.
 
-**Complete when:** no affected behavior disappears between the contract sketch and an unnamed side effect.
+For observability, first state the operational question that must become answerable. Add signals and safe fields only when existing evidence cannot distinguish the relevant outcomes. Use `observability-logging` when detailed signal policy is part of the design.
 
-## 6. Map files
+## Plan Risk-Matched Proof
 
-List files or modules to add, change, and delete. Give each one a single responsibility in the proposed call stack. Prefer deleting superseded files and APIs in the same slice over leaving old and new paths.
-
-**Complete when:** every contract and call-stack step has an owner, and every proposed file earns its existence.
-
-## 7. Plan risk-matched verification
-
-Choose the strongest practical evidence in this order:
+Choose the smallest set of meaningful evidence that discriminates the material risks. Prefer:
 
 1. End-to-end through the affected public entrypoint.
 2. Integration through the real boundary or adapter.
 3. Focused contract or property tests for isolated domain behavior.
 4. Unit tests for meaningful behavior not covered by a stronger seam.
 
-Use Red-Green-Refactor when a useful failing test can express the risk at a stable seam. Do not manufacture red unit tests for configuration, migrations, generated output, behavior-preserving refactors with an existing pin, or runtime-only failures. Use an executable repro, characterization test, replay, equivalence harness, trace query, contract check, or repository-native command as appropriate.
+A useful pre-change failure at a stable seam is strong evidence, but do not manufacture one. For configuration, migrations, generated output, behavior-preserving refactors with an existing pin, or runtime-only failures, choose a characterization test, repro, replay, equivalence harness, trace query, contract check, or repository-native command instead.
 
-For each risk, name:
+For each material risk, name the proving surface, expected evidence, and any gap that needs manual, runtime, migration, or deployment evidence. Cite an already-thorough suite when it proves the unchanged contract; add broader or repeated verification only when a new risk or observed failure justifies it.
 
-- the command or test surface;
-- why it can fail before the change or otherwise prove the contract;
-- focused iteration check;
-- final repository-native checks;
-- any evidence that cannot be automated.
+## Deliver The Handoff
 
-**Complete when:** every changed public behavior, invariant, important failure path, and real boundary has a proof or a concrete reason it cannot be tested.
+Organize the spec for the affected path and omit empty ceremony. Another engineer should be able to identify the exact behavior, chosen shape, typed contract changes, call flow, file ownership, deletion order, risk-matched proof, and unresolved blockers without repeating discovery.
 
-## Required output
-
-Use this shape, compressing or omitting sections that do not apply:
-
-```md
-# <Title>
-
-## Summary
-## Current State
-## Goals and Non-Goals
-## Invariants and Constraints
-## Compatibility Posture
-## Reviewable Slice
-## Alternatives and Recommendation
-## Typed Contracts
-## Call Stacks and Data Flow
-## Files to Add / Change / Delete
-## Observability
-## Verification Plan
-## Risks and Open Questions
-```
-
-The result is implementation-ready when another engineer can identify the exact behavior, target shape, contract changes, call flow, file ownership, proof, and unresolved decisions without repeating discovery.
-
-## Writing rules
-
-- Types and call stacks define what; prose explains why.
-- Prefer one source of truth. Point to a section instead of restating it.
-- Use project vocabulary and direct file paths.
-- Keep unknowns visible.
-- Keep the design proportional to the changed behavior.
-- Sequence safe deletion before construction and leave one path after a Direct cutover.
+Use direct file paths and one source of truth. Types and call stacks define what; prose explains why. Keep the design proportional to the changed behavior. The spec authorizes neither implementation nor unrequested durable mutation.

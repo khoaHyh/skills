@@ -1,101 +1,50 @@
 ---
 name: observability-logging
-description: Add or review production logs, OpenTelemetry spans/events, metrics, request middleware, and error telemetry. Use for structured logging, trace correlation, cardinality, redaction, and operational diagnostics in TypeScript, Node, or Effect code.
+description: Design, add, or review production logs, traces, and metrics for operational questions, safe fields, and error ownership.
 ---
 
 # Observability Logging
 
-Add the least telemetry that answers a defined operational question. Prefer a small stable schema over scattered logs. This skill governs production observability; use `motel-debug` for temporary hypothesis probes and remove those probes after diagnosis.
+Use the least production telemetry that answers a defined operational question. If existing signals answer it, add nothing. Use `motel-debug` for temporary diagnostic probes rather than retaining them as production instrumentation.
 
-## 1. State the question
+## Signal And Scope
 
-Before adding telemetry, name the query or incident question it must answer, such as:
-
-- Which dependency and typed failure ended this checkout?
-- Did this job finish, retry, cancel, or exhaust retries?
-- Which lifecycle transition produced the invalid state?
-
-If existing telemetry already answers it, add nothing.
-
-## 2. Choose the signal
-
-| Need | Signal |
+| Operational need | Signal |
 | --- | --- |
 | Duration and causal operation boundary | Span |
-| Meaningful occurrence or state transition | Named event or structured log record |
+| Meaningful occurrence or state transition | Named event or structured log |
 | Aggregate rate, count, or distribution | Metric |
-| Temporary evidence for one hypothesis | Bounded debug probe via `motel-debug` |
 
-A wide completion event is useful when one context-rich summary answers known queries. It is not a blanket replacement for spans or meaningful point-in-time events.
+A context-rich completion event can answer several known queries; it does not replace useful spans or point-in-time events by default.
 
-## 3. Keep names stable
+Use static names such as `checkout.completed` or HTTP route templates. Put dynamic values in attributes, with bounded metric dimensions. Resource attributes describe the service and deployment, not individual requests. Use SDK trace/span correlation; an application request ID complements it.
 
-Use static names such as `checkout.completed`, `payment.retry_exhausted`, or the framework's low-cardinality HTTP route template. Put dynamic values in attributes.
+Inbound middleware owns request lifecycle fields; application modules own business outcomes; outbound adapters classify dependency failures. Configure resources, exporters, sampling, and structured logging at the composition root. For Effect programs, use the installed version's span and scoped logging APIs rather than ad hoc global loggers.
 
-- Never put IDs, raw URLs, messages, or user values in span, event, or metric names.
-- Never use high-cardinality values as metric dimensions or resource attributes.
-- Use trace and span correlation supplied by the telemetry SDK. An application request ID complements but does not replace `TraceId` and `SpanId`.
+## Safe Fields
 
-## 4. Put data in the right scope
+Allowlist fields by operational need. Prefer operation, route template, state or typed error tag, dependency, retry count, and bounded numeric summaries. Opaque non-PII domain IDs belong only where an established allowlist permits them and incident lookup requires them.
 
-- **Resource:** service name/version, deployment environment, region, instance identity. Configure once at bootstrap.
-- **Span:** operation identity, outcome, and attributes shared across the operation.
-- **Event/log:** occurrence-specific details.
-- **Metric:** bounded dimensions suitable for aggregation.
+Keep secrets, credentials, tokens, cookies, sessions, raw PII, payment data, bodies, SQL parameters, prompts/completions, arbitrary objects, and raw signed URLs out of telemetry. Capture headers or sanitized URL components only through an explicit allowlist. Bound and sanitize untrusted strings; preserve `Redacted` values through adapters without recording them.
 
-Prefer approved attributes: operation, route template, state tag, typed error tag, dependency/provider, retries performed, bounded numeric summary, and an opaque non-PII domain ID only when an established telemetry allowlist permits it and incident lookup requires it.
+## Error Ownership
 
-## 5. Allowlist data
+Record a terminal failure once at the outermost owning boundary that classifies the final operational outcome, correlated with the active span. Include a stable typed error tag and safe context. Lower adapters translate failures rather than duplicating the terminal record at every catch and rethrow.
 
-Telemetry fields are denied by default. Never record secrets, credentials, bearer tokens, cookies, session values, raw PII, payment data, request/response bodies, SQL parameters, prompts/completions, arbitrary objects, or raw signed URLs. Record a sanitized URL component only when an explicit allowlist permits it.
+Handled retries and fallbacks do not make a successful enclosing operation fail. Intentional cancellation is an outcome, not an error. Use `WARN` for conditions needing operational attention and fatal severity only for process-ending failures.
 
-- Capture headers only through an explicit allowlist.
-- Bound and sanitize untrusted strings.
-- Preserve `Redacted` values through adapters; safe formatting is not permission to record them.
-- Prefer counts, tags, and safe IDs over payload snapshots.
+## Completion
 
-## 6. Record errors once
+For a design or review, identify the operational question, needed signal or existing coverage, ownership, safe fields, and any evidence gaps. For implementation, continue through focused checks of emitted telemetry and fix attributable issues within scope.
 
-Record a terminal failure once at the outermost owning boundary that classifies the final operational outcome, associated with the active span. Lower adapters translate dependency failures but do not log them when a caller will classify the terminal outcome. Include a stable typed error tag and safe structured context.
+The relevant boundary should demonstrate stable names, trace correlation, one terminal error record, accurate handled outcomes, safe fields, and bounded metric dimensions. Use an existing test collector or runtime query that can answer the original question; avoid building a telemetry test framework for a small edit. Report unavailable runtime evidence instead of claiming emission was verified. Repeat or broaden checks only when changes, failures, or unresolved risks warrant it.
 
-- Do not log the same error at every catch and rethrow.
-- Do not mark a successful enclosing operation as failed because a handled fallback or retry occurred.
-- Use `WARN` only when a handled or exhausted condition needs operational attention.
-- Intentional cancellation is an outcome, not an error.
-- Reserve fatal severity for process-ending failures.
+## Conditional References
 
-## 7. Keep ownership local
+Consult version-matched SDK documentation when API behavior is uncertain, and the relevant standard when deciding schema, error, or data-handling policy:
 
-Inbound middleware or adapters own common request lifecycle fields. Application modules add business-safe state and outcome context. Outbound adapters classify dependency failures. The composition root configures exporters, resource attributes, sampling, and the structured logger.
-
-For Effect codebases:
-
-- use `Effect.withSpan` for duration-bearing operations;
-- use `Effect.annotateCurrentSpan` for operation-wide span attributes;
-- use `Effect.annotateLogs` for scoped safe log context;
-- configure structured logging and OpenTelemetry layers at the composition root;
-- keep `console.log` and ad hoc global loggers outside Effect programs.
-
-Confirm APIs against the repository's installed Effect and OpenTelemetry versions before editing.
-
-## Verification
-
-Exercise the real boundary and inspect emitted telemetry. Confirm:
-
-- stable names and expected trace correlation;
-- one terminal error record, not duplicates;
-- handled outcomes do not inflate errors;
-- no prohibited data appears;
-- metric dimensions remain bounded;
-- the original operational question is answerable.
-
-If telemetry cannot be observed in tests, name the runtime query or local collector check used instead.
-
-## References
-
-- Boris Tane's wide-event skill: <https://github.com/boristane/agent-skills/tree/main/skills/logging-best-practices>
-- OpenTelemetry logs data model: <https://opentelemetry.io/docs/specs/otel/logs/data-model/>
-- OpenTelemetry events: <https://opentelemetry.io/docs/specs/semconv/general/events/>
-- OpenTelemetry error recording: <https://opentelemetry.io/docs/specs/semconv/general/recording-errors/>
-- OpenTelemetry sensitive data: <https://opentelemetry.io/docs/security/handling-sensitive-data/>
-- OWASP logging guidance: <https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html>
+- [OpenTelemetry logs data model](https://opentelemetry.io/docs/specs/otel/logs/data-model/)
+- [OpenTelemetry events](https://opentelemetry.io/docs/specs/semconv/general/events/)
+- [OpenTelemetry error recording](https://opentelemetry.io/docs/specs/semconv/general/recording-errors/)
+- [OpenTelemetry sensitive data](https://opentelemetry.io/docs/security/handling-sensitive-data/)
+- [OWASP logging guidance](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)

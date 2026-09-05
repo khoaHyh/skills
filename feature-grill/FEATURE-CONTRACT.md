@@ -1,25 +1,21 @@
 # Feature Contract Template
 
-Use this template only after the grilling frontier is empty. Compress sections that are genuinely small; preserve explicit non-goals, invariants, failure behavior, evidence, and open decisions.
+Draft the contract after every applicable decision is resolved or explicitly deferred. Delete inapplicable rows and compress small sections, but preserve non-goals, invariants, reachable failure behavior, compatibility obligations, evidence gaps, and blockers.
 
 ```md
 # <Feature Name>
 
 Status: Draft | Confirmed - Blocked | Confirmed - Ready for Spec
 
-## Outcome
+## Outcome And Scope
 
 - Actor or caller:
 - Trigger:
 - Observable result:
 - Current behavior:
 - Success signal:
-
-## Goals and Non-Goals
-
-### Goals
-
-### Non-Goals
+- Goals:
+- Explicit non-goals:
 
 ## Domain Model
 
@@ -27,34 +23,28 @@ Status: Draft | Confirmed - Blocked | Confirmed - Ready for Spec
 - States and transitions:
 - Invariants:
 - Ownership, permissions, and visibility:
+- Calculations, ordering, and time semantics:
 
-## Scenarios
+## Reachable Behavior
 
-### Happy Path
+| Scenario | Preconditions or trigger | Observable result | Rejection, failure, or recovery behavior |
+| --- | --- | --- | --- |
 
-### Boundaries and Rejections
+Include the happy path and applicable boundaries, rejection, interruption, partial or duplicate work, delay, retry, cancellation, expiry, concurrency, authorization, recovery, and abuse cases.
 
-### Failure, Retry, and Recovery
-
-### Concurrency and Ordering
-
-## System Fit
+## System Fit And Operations
 
 - Affected callers and interfaces:
 - Source of truth, persisted state, schema evolution, and backfills:
 - Dependencies and protocol assumptions:
-- Compatibility obligations:
+- Compatibility posture: Direct cutover | Protected evolution - <named obligation; permanent support or removal condition>
 - Security, privacy, and data lifecycle:
-
-## Operations
-
-- Rollout and enablement:
-- Recovery or rollback:
+- Rollout, mixed-version behavior, migration, and recovery:
 - Operational questions and existing evidence:
 - New telemetry needed, if any:
 - Performance or resource limits:
 
-## Evidence
+## Proof
 
 | Risk or behavior | Proving surface | Expected evidence | Remaining gap |
 | --- | --- | --- | --- |
