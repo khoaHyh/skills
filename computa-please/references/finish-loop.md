@@ -19,7 +19,7 @@ Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree b
 
 Load only the skills needed by the observed path:
 
-- `coding-standards` and `codebase-design` for accepted-spec implementation; `tdd` only when RGR is the selected verification loop.
+- Follow [Execution](execution.md) for implementation context and risk-matched verification; load its skills only when their conditions apply.
 - `autoreview` for Local Review; `thermo-nuclear-code-quality-review` only when its structural exception is selected.
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
@@ -72,8 +72,8 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 ### 3. Implemented
 
 1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For a completed change or existing PR, diagnose only the observed residue.
-2. Use parallel subagents for independent exploration or deterministic verification when their work is isolated and their output can be checked. Ask for observed facts or check results, not findings or readiness judgments; those belong to Local Review.
-3. Before each additive commit, inspect the diff, form its Conventional Commit subject under the VCS Actions contract, and run the repository's available format, lint, typecheck, tests, and feature-specific verification. Use the smallest sound targeted subset during remediation, then run the full required local suite before first publication and final handoff. Cache each exact command, exit status, and justified omission.
+2. Use the router's [Delegation](../SKILL.md#delegation) guidance for bounded independent work.
+3. Before each additive commit, inspect the diff, form its Conventional Commit subject under the VCS Actions contract, and run focused checks affected by that slice. Satisfy the [Execution Gate](execution.md#execution-gate) against the complete candidate before first publication and final handoff; reuse passing evidence when its relevant inputs are unchanged.
 4. Before Local Review, record the candidate commit and tree and bind the cached Proof to those exact bytes. Changed implementation bytes make prior Proof stale.
 5. Append implementation decisions and verification evidence to the ledger.
 

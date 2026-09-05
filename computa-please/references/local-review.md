@@ -17,7 +17,7 @@ Non-PR Implement and Debug work is exempt unless the user requests independent r
 
 1. Finish the complete implementation slice and deterministic Proof.
 2. Resolve the intended PR base to a commit. Under the existing VCS authority, commit the candidate, record the target commit and tree, and require a clean worktree with a non-empty branch diff. Local Review grants no commit, push, or publication authority.
-3. Bind the cached focused and final checks, exit statuses, and justified omissions to that target and tree. Changed implementation bytes make the Proof stale and return the work to the Execution Gate.
+3. Bind the cached focused and final checks, exit statuses, and justified omissions to that target and tree. Changed implementation bytes make the Proof stale and return the work to the [Execution Gate](execution.md#execution-gate).
 
 **Complete when:** the base, target commit, target tree, complete branch diff, and target-bound Proof are explicit.
 
@@ -55,7 +55,7 @@ Apply it to the same frozen target and merge its candidates into the same dispos
 ## Disposition
 
 1. Verify every candidate through its owning path and strongest practical reproducer. Reject unsupported, speculative, duplicate, stale-target, style-only, and out-of-scope claims.
-2. Apply one bounded remediation pass for accepted findings, rerun affected focused checks and required final checks, and create an additive remediation commit.
+2. Apply one bounded remediation pass for accepted findings, refresh affected Proof under the [Execution Gate](execution.md#execution-gate), and create an additive remediation commit.
 3. Do not rerun Autoreview merely because remediation changed the target. Finding, CI, and external-review remediation do not trigger another local pass. New product scope or unreviewed behavior makes the receipt stale and returns the changed scope to this gate.
 4. Record one Review Receipt in the active handoff or Finish Loop ledger: base commit, reviewed target commit and tree, command and selected priority, terminal status, candidate dispositions, remediation commit when present, verification outcomes, and stale reason when applicable.
 

@@ -11,6 +11,19 @@ Establish one task-owned checkout for mutation, durable state, delegation, and V
 5. Before commit, synchronization, push, or publication, inspect the complete intended diff and relevant commit subjects. Before PR publication, inspect every subject between the intended base and `HEAD`.
 6. Confirm the action is authorized. An active Finish Loop authorizes its scoped Task Worktree bootstrap and ledger initialization; afterward it authorizes only actions permitted by its recorded delivery ceiling and pre-recorded in its external-action journal. Otherwise obtain explicit approval before commit, push, or PR publication. Stage only intended files and preserve unrelated changes.
 
+## Durable State
+
+Persist only for a user request, cross-session recovery, coordination, or a Finish Loop ledger. Establish the Task Worktree first, then use its `.computa-please/` directory with only these files:
+
+```text
+<task-slug>-tech-spec-YYYY-MM-DD.md
+handoff.md
+```
+
+Reuse the tech spec. Keep the handoff append-only: add a dated section after material changes with the spec path, state, decisions, rejected approaches, Compatibility, Proof, external actions, residual risk, and next action. A Finish Loop owns its ledger schema inside this handoff. Store renderer-owned maps elsewhere and link them. Keep secrets, customer data, and private transcripts out of artifacts.
+
+Account for `.computa-please/` in status checks, but keep this workflow-owned local state out of product diffs, commits, and PRs.
+
 ## Commits
 
 - Give every agent-authored commit a Conventional Commit subject in the exact shape `<type>(<scope>): <description>`. Choose the type and scope from the diff and repository vocabulary; use a repository-mandated stricter format when one exists.
