@@ -88,7 +88,7 @@ Completion: the Review Receipt is complete, every actionable finding is fixed or
 
 ### 5. Published
 
-1. Submit only the current diff with the repository-supported Graphite command, or push the current Git branch. Do not use stack-wide submission.
+1. Publish through the workflow established by [VCS Actions](vcs.md#branches-and-publication): submit the current Graphite diff, or push the current branch for a Git workflow. Follow that contract's guard-resolution and fallback approval rules. Do not use stack-wide submission.
 2. Create or update the PR description by following [the PR Description contract](pr-description.md) through **Verify**.
 3. Create or retain the PR as a draft and record the pushed SHA before monitoring checks.
 
