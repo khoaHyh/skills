@@ -39,6 +39,12 @@ Default evaluative or genuinely ambiguous requests to Discuss; explicit change r
 
 After compaction or pickup, reload this router once, recover the active step and live constraints, and re-evaluate the route and applicable references. Reuse a reference read recorded in working context or a durable handoff; reload when its content or the applicable authority changes.
 
+## Browser Tools
+
+For general browser automation and UI smoke tests, default to `playwright-cli` and load its skill before use. Use Chrome DevTools MCP through Executor for Chrome performance analysis or DevTools-specific diagnostics. Choose by task capability and session needs, independently of whether a tool is exposed through Executor.
+
+Continue with an existing browser session when its tabs, authentication, or state matter. Use an alternative when the selected tool is unavailable, fails for a tool-specific reason, or lacks a required capability. When switching, establish the target session's state and check the outcome of any uncertain action before repeating it.
+
 ## Review Gate
 
 - **Requested review:** follow the named review skill and its target, authority, and completion contract.
