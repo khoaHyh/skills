@@ -21,11 +21,13 @@ Ground removals in callers, tests, specifications, and actual consumers. Preserv
 Look for dead paths, duplicate representations, pass-through wrappers, speculative flexibility, round-trip conversions, and behavior scattered across owners. Prefer, in order:
 
 1. **Delete** behavior and artifacts no longer required.
-2. **Collapse** duplicates into one source of truth.
-3. **Inline** indirection that hides no meaningful behavior.
-4. **Narrow** flexibility to observed requirements.
-5. **Deepen** necessary complexity behind a smaller interface. Use `codebase-design` when this needs an interface decision.
-6. **Add** only what the reduced design still requires.
+2. **Delete** overly defensive tests.
+3. **Delete** unnecessary and meaningless tests.
+4. **Delete** tests for reversible, low-impact changes that mirror the implementation.
+5. **Collapse** duplicates into one source of truth.
+6. **Inline** indirection that hides no meaningful behavior.
+7. **Narrow** flexibility to observed requirements.
+8. **Deepen** necessary complexity behind a smaller interface. Use `codebase-design` when this needs an interface decision.
 
 A **subtraction proof** shows that required behavior survives and burden disappears rather than moving into callers. Name the evidence and the dimensions reduced: concepts, paths, exports, dependencies, branches, representations, indirection, or files. Retain complexity whose removal would weaken the contract.
 
