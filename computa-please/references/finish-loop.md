@@ -1,17 +1,21 @@
 # Finish Loop
 
-This runbook is the bounded supervisor around Implement, the Task Worktree and diff, its PR, CI, one frozen set of external review feedback per delivery cycle, and an optional merge and post-merge repair loop. When Graphite tracks the current branch, use its parent and stack position as context without taking ownership of the stack.
+This runbook supervises delivery of the Task Worktree's diff or an explicitly requested Graphite stack, CI, external review, merge, and post-merge repair. Single-PR scope is the default; for a requested stack merge, read [Graphite Stack Merge](graphite-merge.md).
 
-A run owns one Entry Gate choice and one or more delivery cycles. A delivery cycle owns one PR goal from Bound through its Authority Boundary. Only an attributable post-merge repair may create another cycle; it inherits the run's delivery ceiling but receives its own review plan, at-most-once actions, frozen feedback set, CI state, and one `review-remediation` invocation.
+A run owns one recorded delivery ceiling and one or more delivery cycles. A delivery cycle owns one PR or selected stack goal from Bound through its Authority Boundary. Only an attributable post-merge repair may create another cycle; it inherits the run's delivery ceiling but receives its own review plan, at-most-once actions, frozen feedback set, CI state, and one `review-remediation` invocation.
 
 ## Entry Gate
 
-For every fresh Finish Loop run, before worktree bootstrap, persistence, polling, mutation, or external action, use the environment's question tool to ask `How far may this Finish Loop go?` with exactly these choices:
+Resolve the delivery ceiling from the user's request and prior context before mutation or external action:
 
 - `stop-before-merge`: complete all agent-owned pre-merge work, mark the PR ready, run final CI, then stop before merge or auto-merge is armed.
-- `merge-and-verify`: complete the same gates, then merge; use admin bypass only when branch protection is the sole remaining blocker, monitor the relevant post-merge workflows, and deliver attributable fixes through focused follow-up PRs until green or blocked.
+- `merge-and-verify`: complete applicable gates, merge, monitor relevant post-merge workflows, and deliver attributable fixes through focused follow-up PRs until green or blocked.
 
-Explicit prose such as `ship it`, a standing preference, or a custom answer does not substitute for one of these tool choices. If the question tool is unavailable or neither choice is selected, stop. A pickup of the same nonterminal ledger entry reuses its recorded answer; a closed run requires a new question. A post-merge repair cycle remains inside the same run and inherits `merge-and-verify` without another question.
+An explicit request to merge, including natural-language or custom question answers, supplies merge authority for the named scope. Ask `How far may this Finish Loop go?` with the two choices only when context leaves the ceiling unresolved, after authorized read-only preparation. Reuse authority already supplied; a closed run supplies no authority for new work. A post-merge repair cycle inherits the active run's ceiling.
+
+### CI Policy
+
+Required CI is a gate by default. Honor an explicit instruction to skip CI or merge without successful per-PR checks: record the waived checks or PR scope and the user's instruction, then continue without waiting for or repairing that waived CI. Unless the user also waives post-merge verification, retain it. A waiver changes every CI gate and completion criterion below to require passing evidence or a recorded waiver; report waived checks as skipped, never green. It does not waive local verification, review, conflicts, permissions, or head/base consistency, nor authorize cancelling runs or changing repository protections. Apply later user instructions to the active ledger without restarting the run or requiring an opt-out from this skill.
 
 Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree before initializing the Run Ledger.
 
@@ -35,7 +39,7 @@ After VCS Preflight establishes the Task Worktree, create `.computa-please/` and
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
 - Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
 - Review Receipt: base, reviewed target commit and tree, selected priority, command outcome, candidate dispositions, remediation commit, verification, stale reason, and remaining actionable finding count.
-- CI state and the SHA it describes.
+- CI state and the SHA it describes, plus any explicit waiver and its scope.
 - PR additions plus deletions.
 - Review plan: `existing-only`, `request-once`, or explicit `skip`; reviewer selectors; delivery surfaces; expected revision or time window; completion evidence; named request actions and the selectors each covers; and an absolute result deadline for `request-once`.
 - Per-selector disposition, request-action attempts and times, completed artifact identifiers, frozen feedback payload, remaining actionable count, and per-item response or addressed-state action attempts.
@@ -62,8 +66,8 @@ Completion: the goal, blast radius, verifier, PR target, review plan, delivery c
 ### 2. Synchronized
 
 1. Use the Git or Graphite workflow established by the VCS Actions preflight.
-2. Inspect enough Graphite context to identify the current diff's intended parent and base. Do not switch to, edit, submit, or otherwise advance sibling diffs.
-3. If the current diff's parent has changed, synchronize only the current diff before editing. If the required Graphite operation would mutate another diff, stop and ask the user.
+2. Inspect enough Graphite context to identify the current diff's intended parent and base. For an authorized stack merge, use the selected chain from [Graphite Stack Merge](graphite-merge.md); otherwise keep scope to the current diff.
+3. If the intended parent has changed, synchronize within the authorized scope before editing. Ask only if the required operation would mutate a diff outside that scope.
 4. Resolve mechanical conflicts with `fix-merge-conflicts`; stop when resolution requires product intent or changes outside the declared slice.
 5. Reinspect the current diff against its intended parent.
 
@@ -143,9 +147,9 @@ Completion: required CI is green for the final SHA, `check-pr-body` exits 0 on t
 1. For `stop-before-merge`, record `merge-ready`, proceed to Human Gate, and perform no merge or auto-merge action.
 2. For `merge-and-verify`, reconfirm that the PR still points at the final-CI SHA, targets the recorded base, is conflict-free, and has complete review and CI gates. Use the provider's expected-head precondition when available.
 3. Freeze the final post-merge watch plan against the current workflow configuration and expected merge lineage before any merge action.
-4. Stop if the PR targets an unmerged Graphite parent or merging would mutate a sibling diff or stack topology. The Finish Loop owns only its current diff.
+4. For single-PR scope, stop if the PR targets an unmerged Graphite parent or merging would mutate an unowned diff. For an authorized stack, use [Graphite Stack Merge](graphite-merge.md) for merge selection, execution, and reconciliation instead of the single-PR merge procedure in steps 5 through 7.
 5. Record and attempt the repository's normal merge mechanism. An accepted, queued, pending, or ambiguous normal action is not permission for admin bypass; reconcile or wait.
-6. Admin bypass is authorized at most once for that head only when the provider conclusively rejects normal merge and live state names branch protection as the sole remaining blocker. It never bypasses failed or pending CI, unresolved frozen feedback, a conflict, stale head or base, an outage, missing permission, or an unowned stack.
+6. Admin bypass is authorized at most once for that head only when the provider conclusively rejects normal merge and live state names branch protection as the sole remaining blocker. A recorded CI waiver permits bypass of the waived checks. Unwaived CI, unresolved frozen feedback, conflicts, stale head or base, outages, missing permission, and unowned diffs remain blockers.
 7. Treat every ambiguous merge attempt as spent. Reconcile live PR and target-branch state without replaying it. Record the merged commit and time only after the provider reports merged and the target branch contains the result.
 8. `merge-and-verify` does not authorize deploy approval, release, data migration, customer communication, destructive rollback, or history rewriting.
 
