@@ -12,7 +12,7 @@ Deliver the requested outcome through the least process that can prove it. Subtr
 
 Establish the intended result, scope, success evidence, and authority from the request and accepted artifacts. Choose the route by the requested terminal outcome, not by the presence of a PR. Keep this framing in the conversation unless [Durable State](#durable-state) is needed.
 
-An implementation request includes completing the change, running or inspecting the result where relevant, and fixing attributable failures within scope. Continue authorized local work through verification without pausing for approval of each edit or safe check. A first implementation, plan, or passing intermediate check is not the endpoint when the requested outcome still has a gap.
+Carry the agreed outcome through implementation and proportionate verification without asking permission for routine edits or safe checks. Autonomy operates within the agreed scope; a newly discovered dependency or a comprehensive spec does not automatically enlarge it. Use the [Work Frame](references/execution.md#work-frame) to distinguish this delivery from rollout prerequisites and follow-up work, including when preparing a spec or handoff prompt.
 
 Resolve inspectable facts yourself. Ask only when a missing decision changes the outcome, consequential behavior, scope, or authority. For unresolved product, public-contract, domain, security, money, data-lifecycle, deployment, ownership, or architectural choices, use [Design Readiness](references/design-readiness.md). A clear, bounded request needs no ceremonial approval or separate spec.
 
@@ -57,7 +57,11 @@ New product scope or unreviewed behavior makes a Local Review receipt stale. Fin
 
 ## Delegation
 
-Delegate bounded, independent work when it materially improves speed, coverage, or evidence quality. Parallelize only independent questions or disjoint file surfaces; keep dependent work sequential. Give each delegate the task-owned path and revision, goal, relevant facts, authority, and expected evidence. The main agent owns synthesis, the final diff, and Durable State.
+Default to one implementation owner. Delegate when the expected benefit exceeds briefing, coordination, and integration cost: independent evidence questions or isolated deliverables with stable interfaces. Keep at most two delegates active unless the user requests broader parallelism. Delegate authority stays inside the agreed scope; spare agent capacity is not a reason to open another workstream.
+
+Give each delegate the task-owned path and revision, bounded outcome, relevant contracts, exclusive file ownership, and expected evidence. Prove the first vertical slice before distributing dependent implementation. Shared contracts, migrations, and test databases need one owner; disjoint filenames alone do not establish independence. While a delegate owns a surface, work elsewhere and inspect its changes after handoff.
+
+Request one concise result with changes or sourced facts, checks, and blockers. Resume for a concrete correction or new bounded deliverable, not status polling or repeated requests to restate a report. Batch necessary contract corrections; repeated coordination means the split is too coupled and should return to one owner. The primary owns integration, scope reconciliation, the final diff, and Durable State.
 
 Research and implementation delegates return scoped changes, facts with sources, or observed check results. Independent defect finding and readiness judgment belong to the Review Gate. Resolve unsupported or conflicting claims before relying on them.
 
@@ -87,6 +91,6 @@ Before drafting, returning, creating, or updating a PR body, follow [PR Descript
 
 ## Stop Cleanly
 
-The **Human Gate** is the final handoff, not a checkpoint after the first implementation. Reach it when the requested outcome has its evidence and applicable review or delivery conditions are satisfied, or when no authorized path remains past a named blocker. Stop expanding once further work cannot change the result, risk assessment, or required evidence.
+The **Human Gate** is the final handoff: the agreed outcome has its evidence and applicable review or delivery conditions, or a named blocker prevents completion. Scope checkpoints can occur earlier without reopening settled decisions or pausing independent authorized work. Once focused and required checks pass, finish; adjacent improvements belong to follow-up work.
 
 Report the result, changed artifacts or no change, strongest relevant check and outcome, any omitted required check, residual risk or blocker, and any next human decision. For a Finish Loop, use its terminal report and delivery ceiling. Then stop; a new outcome needs new authority.
