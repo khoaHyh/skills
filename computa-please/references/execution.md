@@ -9,11 +9,21 @@ Use `coding-standards` for TypeScript engineering, `codebase-design` for a nontr
 For nontrivial work, make these fields explicit in working context, reusing accepted artifacts rather than creating another document:
 
 - **Intent:** requested outcome and observable change.
-- **Scope:** allowed surface and non-goals.
+- **Scope:** this delivery's allowed systems and behavior, rollout prerequisites that can be separate, follow-up work, and non-goals.
 - **Compatibility:** Direct cutover or Protected evolution, with evidence below.
 - **Slice:** changed contract, owning module, seam, and effects.
-- **Budget:** boundaries on change size and investigation justified by this task; no speculative abstractions.
+- **Budget:** expected owning modules, new public interfaces or storage, and approximate review surface, including tests. Use a rough file/line range when useful, not a quota or permission to pad the diff.
 - **Proof:** important risk, proving seam, focused command, required final checks, and `pending` or observed result.
+
+Before writing, state the smallest complete delivery and its expected footprint briefly to the user; continue without approval when it matches the request. Specs and handoff prompts preserve that boundary. Separate accepted product rules from proposed implementation mechanisms: accepting a rule does not establish that every suggested controller, endpoint, migration tool, or compatibility layer is necessary. If an accepted spec explicitly requires a larger delivery, surface the mismatch and recommend a smaller option rather than silently dropping requirements or implementing the whole program.
+
+### Scope Checkpoints
+
+Reconcile the actual diff with Scope and Budget after the first working vertical slice and before opening another workstream. Check earlier when adding an unplanned app, public interface, persistence mechanism, operator workflow, or descendant-PR feature. Inspect aggregate additions/deletions and changed surfaces, separating inherited changes, moves/generated output, production code, and tests. Review size signals a decision; passing checks do not justify size.
+
+When the footprint materially exceeds the forecast (roughly twice a stated range is an alarm), first look for deletion, reuse, or consolidation that preserves the agreed outcome. If the remaining expansion changes the delivery boundary, present the concrete dependency, added cost/surface, and smallest viable alternative; ask before implementing that expansion. Continue useful work inside the boundary. Do not treat a refactor's need to adapt callers as permission to import their entire feature or descendant PR. PR splitting improves packaging but does not justify unnecessary implementation.
+
+A newly discovered risk earns investigation when it threatens the agreed outcome. It earns implementation only when the remedy belongs to that outcome. Preserve security and data integrity; if they require a larger mechanism, make that a scope decision rather than silently relaxing the invariant or building the mechanism.
 
 ### Compatibility
 
@@ -38,7 +48,9 @@ Choose the smallest independent check that exposes the named production failure.
 
 For configuration, migrations, generated output, runtime-only failures, or a refactor with a pin, use the applicable repository command, repro, equivalence check, trace query, or safe observed run. Cover cases separately when they have distinct repository-owned behavior or consequences, rather than duplicating a shared path.
 
-Run focused checks and repository-required final checks. When the environment establishes that local checks use disposable fixtures with no production access, run them, fix attributable failures, and rerun affected checks without asking at each step. Other checks remain subject to their actual access and side-effect boundaries. Remove temporary debug probes unless the user retains them as production telemetry.
+Verify in order: focused behavior on the working slice, affected workspace checks after its interfaces stabilize, then repository-required final checks against the integrated candidate. Finish delegate writes before combined checks; one owner runs shared-database verification. Keep a failed run as evidence and diagnose its first causal failure before rerunning a broad suite or distributing repairs.
+
+Fix failures caused by the requested change and necessary for its agreed outcome autonomously, including broken fixtures and supported scale regressions. Establish attribution from the failing path or baseline, not proximity alone. Pre-existing failures and adjacent improvements remain reported follow-ups; if they block required proof, report the blocker or request scope for the smallest repair. A failing check does not itself authorize a subsystem rewrite. When local checks use disposable fixtures without production access, safe fixes and affected reruns need no additional approval. Other checks retain their actual access and side-effect boundaries. Remove temporary debug probes unless retained as production telemetry by the user.
 
 Cache each exact command, exit status, and justified omission. Once focused and required checks pass, broaden or repeat only when relevant inputs change, a failure appears, or an unresolved concern justifies it. Documentation-only and low-impact changes need their relevant validation, not an automatic full application test run; repository-required checks still apply.
 
