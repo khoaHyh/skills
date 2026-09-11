@@ -37,6 +37,8 @@ Use only the selected route and references whose conditions apply. A matched ref
 
 Default evaluative or genuinely ambiguous requests to Discuss; explicit change requests to Implement. A discussion becomes persistent or mutating only with the corresponding authority. An explicitly requested temporary `show-me` HTML visual may be created outside the project without authorizing production changes.
 
+For a bounded operation such as restacking, syncing, submitting existing work, or updating a PR description, use only the applicable VCS, verification, and description procedures. Finish when the requested state transition is observed, intended changes are preserved, and relevant checks pass or a blocker is named. Existing PRs do not select Finish Loop. An authorized semantic repair expands scope only by that repair; readiness, CI monitoring, and landing remain separate outcomes unless already requested.
+
 After compaction or pickup, reload this router once, recover the active step and live constraints, and re-evaluate the route and applicable references. Reuse a reference read recorded in working context or a durable handoff; reload when its content or the applicable authority changes.
 
 ## Browser Tools
@@ -51,15 +53,15 @@ Continue with an existing browser session when its tabs, authentication, or stat
 - **Normal review:** use the repository's review workflow, or inspect every changed hunk and confirm or reject each candidate defect through its owning call path and relevant evidence. Verification commands are not independent review.
 - **Local Review:** Finish Loop and PR-bound Implement or Debug work follow [Local Review](references/local-review.md) once after deterministic Proof passes and before draft publication. It owns the frozen target, Codex Autoreview, disposition, remediation, and Review Receipt.
 
-Non-PR Implement and Debug work is exempt unless independent review is requested. Review mode uses Requested or Normal review. A worktree review needs no commit unless its selected tool requires one and the user authorizes it. Use `review-remediation` for a frozen feedback set; keep CI repair in its own workflow.
+Non-PR Implement and Debug work is exempt unless independent review is requested. Mechanical maintenance of existing work follows the exemption in Local Review; substantive repairs retain its gate. Review mode uses Requested or Normal review. A worktree review needs no commit unless its selected tool requires one and the user authorizes it. Use `review-remediation` for a frozen feedback set; keep CI repair in its own workflow.
 
 New product scope or unreviewed behavior makes a Local Review receipt stale. Finding, CI, and external-review remediation do not trigger another local pass. Independent remote review remains a later delivery layer.
 
 ## Delegation
 
-Default to one implementation owner. Delegate when the expected benefit exceeds briefing, coordination, and integration cost: independent evidence questions or isolated deliverables with stable interfaces. Keep at most two delegates active unless the user requests broader parallelism. Delegate authority stays inside the agreed scope; spare agent capacity is not a reason to open another workstream.
+Delegate an independent investigation or isolated deliverable when it can shorten the critical path or resolve an uncertainty while the primary continues useful work. Keep tightly coupled work with one implementation owner. Keep at most two delegates active across the task unless the user requests broader parallelism; the primary owns delegation decisions. Delegate authority stays inside the agreed scope; spare agent capacity is not a reason to open another workstream.
 
-Give each delegate the task-owned path and revision, bounded outcome, relevant contracts, exclusive file ownership, and expected evidence. Prove the first vertical slice before distributing dependent implementation. Shared contracts, migrations, and test databases need one owner; disjoint filenames alone do not establish independence. While a delegate owns a surface, work elsewhere and inspect its changes after handoff.
+Give each delegate the task-owned path and revision, bounded outcome, necessary context, read-only or exclusive write ownership, and expected evidence. Prove the first vertical slice before distributing dependent implementation. Shared contracts, migrations, test databases, and Git/Graphite mutations need one owner; disjoint filenames alone do not establish independence. While a delegate owns a surface, work elsewhere and inspect its changes after handoff.
 
 Request one concise result with changes or sourced facts, checks, and blockers. Resume for a concrete correction or new bounded deliverable, not status polling or repeated requests to restate a report. Batch necessary contract corrections; repeated coordination means the split is too coupled and should return to one owner. The primary owns integration, scope reconciliation, the final diff, and Durable State.
 

@@ -11,13 +11,15 @@ Run this gate for:
 
 Non-PR Implement and Debug work is exempt unless the user requests independent review. Review mode follows its explicitly requested review workflow or the repository's normal review path.
 
+Outside Finish Loop, mechanical restacks, synchronization, submission of existing work, and PR-description updates are exempt when they introduce no substantive implementation change and no review gate is already pending for agent-authored work. Inspect the operation's changes to establish that exemption. A substantive conflict repair or port retains the normal gate; maintenance does not waive repository-required review or an explicit review request.
+
 **Complete when:** the work is exempt for a named reason or enters Freeze.
 
 ## Freeze
 
 1. Finish the complete implementation slice and deterministic Proof.
 2. Resolve the intended PR base to a commit. Under the existing VCS authority, commit the candidate, record the target commit and tree, and require a clean worktree with a non-empty branch diff. Local Review grants no commit, push, or publication authority.
-3. Bind the cached focused and final checks, exit statuses, and justified omissions to that target and tree. Changed implementation bytes make the Proof stale and return the work to the [Execution Gate](execution.md#execution-gate).
+3. Bind the cached checks, exit statuses, and justified omissions to that target and tree. Reuse evidence whose relevant inputs are unchanged; refresh affected checks through the [Execution Gate](execution.md#execution-gate) before binding Proof to a changed candidate. This reuse does not establish that a changed semantic diff has been reviewed.
 
 **Complete when:** the base, target commit, target tree, complete branch diff, and target-bound Proof are explicit.
 
