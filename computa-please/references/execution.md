@@ -4,6 +4,12 @@ Use for Implement, Debug fixes, and Finish Loop implementation. Spec uses only W
 
 Use `coding-standards` for TypeScript engineering, `codebase-design` for a nontrivial seam change, and relevant technology skills when their guidance applies. Consult canonical upstream sources when external semantics matter. For Debug, diagnose before choosing a fix; use `motel-debug` or `observability-logging` when the observed failure requires them.
 
+## Browser Tools
+
+For general browser automation and UI smoke tests, default to `playwright-cli` and load its skill before use. Use Chrome DevTools MCP through Executor for Chrome performance analysis or DevTools-specific diagnostics. Choose by task capability and session needs.
+
+Continue with an existing browser session when its tabs, authentication, or state matter. Switch only when the selected tool is unavailable, fails for a tool-specific reason, or lacks a required capability. Establish the target session's state and check the outcome of any uncertain action before repeating it.
+
 ## Work Frame
 
 For nontrivial work, make these fields explicit in working context, reusing accepted artifacts rather than creating another document:

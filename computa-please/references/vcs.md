@@ -22,6 +22,8 @@ handoff.md
 
 Reuse the tech spec. Keep the handoff append-only: add a dated section after material changes with the spec path, state, decisions, rejected approaches, Compatibility, Proof, external actions, residual risk, and next action. A Finish Loop owns its ledger schema inside this handoff. Store renderer-owned maps elsewhere and link them. Keep secrets, customer data, and private transcripts out of artifacts.
 
+For a Computa run, this Task Worktree handoff is the authoritative recovery record. A requested temporary handoff export links to it instead of creating a second authoritative record.
+
 Account for `.computa-please/` in status checks, but keep this workflow-owned local state out of product diffs, commits, and PRs.
 
 ## Commits

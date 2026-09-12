@@ -43,9 +43,7 @@ After compaction or pickup, reload this router once, recover the active step and
 
 ## Browser Tools
 
-For general browser automation and UI smoke tests, default to `playwright-cli` and load its skill before use. Use Chrome DevTools MCP through Executor for Chrome performance analysis or DevTools-specific diagnostics. Choose by task capability and session needs, independently of whether a tool is exposed through Executor.
-
-Continue with an existing browser session when its tabs, authentication, or state matter. Use an alternative when the selected tool is unavailable, fails for a tool-specific reason, or lacks a required capability. When switching, establish the target session's state and check the outcome of any uncertain action before repeating it.
+When browser automation or UI inspection is required, follow [Browser Tools](references/execution.md#browser-tools).
 
 ## Review Gate
 
@@ -67,23 +65,21 @@ Request one concise result with changes or sourced facts, checks, and blockers. 
 
 Research and implementation delegates return scoped changes, facts with sources, or observed check results. Independent defect finding and readiness judgment belong to the Review Gate. Resolve unsupported or conflicting claims before relying on them.
 
+### Oracle Advisor
+
+Research delegates return evidence and unresolved decisions to the primary. The primary resolves routine design through established project patterns and consults `oracle` for a read-only second opinion only when evidence leaves a consequential invariant or costly-to-reverse cross-system decision unresolved, after two evidence-producing attempts leave the next mechanism unclear, or when the user explicitly requests it.
+
+Do not consult `oracle` for code location, documentation lookup, routine design, mechanical changes, a clear failure, or a first unsuccessful attempt. Give it the exact decision, task path and revision, settled constraints and authority, decisive evidence and unknowns, and the primary's proposed path with its strongest alternative. Missing product intent, risk acceptance, or action authority goes to the user through the primary.
+
+The primary verifies pivotal claims and owns the decision, implementation, Proof, and user interaction. Oracle advice does not expand scope, grant authority, or replace review or verification.
+
 ## Durable State
 
 Keep state conversational unless the user requests persistence, work must survive sessions, agents or people must coordinate, or a Finish Loop needs its external-action ledger. Then follow [VCS Actions: Durable State](references/vcs.md#durable-state) for the local spec and handoff. Keep workflow state out of product diffs, commits, and PRs.
 
-## Personality And Writing Style
+## Response Style
 
-Apply these defaults to user-facing responses, subject to the user's requested format and required artifact schemas. Source: [OpenAI's personality and writing style prompts](https://developers.openai.com/api/docs/guides/latest-model#personality-and-writing-style).
-
-Default to using clear, concise paragraphs, each developing one main idea. Use lists only when the information is genuinely parallel, sequential, or easier to compare, and avoid nested lists unless the hierarchy cannot be expressed clearly in prose. Use plain, simple language: familiar words, concrete examples, and precise verbs. Prefer active voice and direct statements.
-
-Make sure to state the main point clearly and early, then develop it with the explanation and detail the reader needs. Let each sentence build on what came before. Develop the points that matter and provide enough support to be useful.
-
-Use plain language over jargon, and reference technical details only to the degree that it helps illustrate an idea or your work to the user. Communicate complex concepts in a clear and cohesive manner, and calibrate your writing to the level of background knowledge assumed from the user's prompt and context.
-
-Avoid using slop words or phrases like "Bottom Line:" in conclusions, "delve," "foster," "leverage," "it's worth noting," "importantly," "Question? Answer." or "This isn't about X. It's about Y.", "genuinely" or hyphenated compound descriptions and adjectives. Do not use concluding summary statements such as "In short:..", "The simplest mental model is:...".
-
-State the intended action directly. Avoid adding what you won't do, what will remain unchanged, or how you'll separate or categorize results. Do not use contrastive framing such as "X, not Y" or "X—not Y" that introduces an unprompted alternative that the user didn't ask about. Avoid invented compound labels like "exact-head checks" and "editorial-row layouts", vague qualifiers, and canned transitions; use plain verbs and prepositions to state the actual relationship directly.
+Lead with the result. Preserve the evidence needed to support it, any material caveat, and the next action; remove repetition and optional background first. Use concise, concrete language unless the user or an artifact contract requires another style.
 
 ## Visuals And PR Bodies
 
