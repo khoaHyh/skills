@@ -49,11 +49,11 @@ When browser automation or UI inspection is required, follow [Browser Tools](ref
 
 - **Requested review:** follow the named review skill and its target, authority, and completion contract.
 - **Normal review:** use the repository's review workflow, or inspect every changed hunk and confirm or reject each candidate defect through its owning call path and relevant evidence. Verification commands are not independent review.
-- **Local Review:** Finish Loop and PR-bound Implement or Debug work follow [Local Review](references/local-review.md) once after deterministic Proof passes and before draft publication. It owns the frozen target, Codex Autoreview, disposition, remediation, and Review Receipt.
+- **Local Review:** Finish Loop and PR-bound Implement or Debug work follow [Local Review](references/local-review.md) after focused behavioral Proof and before the final basic-verification checkpoint and draft publication. It owns one provider-pass budget, the frozen target, Codex Autoreview, disposition, remediation, and Review Receipt.
 
 Non-PR Implement and Debug work is exempt unless independent review is requested. Mechanical maintenance of existing work follows the exemption in Local Review; substantive repairs retain its gate. Review mode uses Requested or Normal review. A worktree review needs no commit unless its selected tool requires one and the user authorizes it. Use `review-remediation` for a frozen feedback set; keep CI repair in its own workflow.
 
-New product scope or unreviewed behavior makes a Local Review receipt stale. Finding, CI, and external-review remediation do not trigger another local pass. Independent remote review remains a later delivery layer.
+Finding, CI, restack, and external-review remediation never trigger another local pass. Preserve a receipt across a mechanical target change only after proving the semantic patch and relevant base inputs unchanged. New product scope or other unreviewed behavior makes the receipt incomplete and returns control at the Human Gate; it does not replenish the review budget. Independent remote review remains a later delivery layer.
 
 ## Delegation
 
