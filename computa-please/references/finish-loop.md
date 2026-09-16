@@ -24,7 +24,7 @@ Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree b
 Load only the skills needed by the observed path:
 
 - Follow [Execution](execution.md) for implementation context and risk-matched verification; load its skills only when their conditions apply.
-- `autoreview` for Local Review; `thermo-nuclear-code-quality-review` only when its structural exception is selected.
+- `autoreview` for the single-pass Local Review.
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
@@ -38,7 +38,7 @@ After VCS Preflight establishes the Task Worktree, create `.computa-please/` and
 - Accepted spec path, completed-change delivery goal, or existing PR goal.
 - PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
 - Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
-- Review Receipt: base, reviewed target commit and tree, selected priority, command outcome, candidate dispositions, remediation commit, verification, stale reason, and remaining actionable finding count.
+- Review Receipt: base, reviewed target commit and tree, provider-pass budget and count, selected priority, command outcome, candidate dispositions, resulting commit, final verification coverage, incomplete reason, and remaining actionable finding count.
 - CI state and the SHA it describes, plus any explicit waiver and its scope.
 - PR additions plus deletions.
 - Review plan: `existing-only`, `request-once`, or explicit `skip`; reviewer selectors; delivery surfaces; expected revision or time window; completion evidence; named request actions and the selectors each covers; and an absolute result deadline for `request-once`.
@@ -77,18 +77,18 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 
 1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For a completed change or existing PR, diagnose only the observed residue.
 2. Use the router's [Delegation](../SKILL.md#delegation) guidance for bounded independent work.
-3. Before each additive commit, inspect the diff, form its Conventional Commit subject under the VCS Actions contract, and run focused checks affected by that slice. Satisfy the [Execution Gate](execution.md#execution-gate) against the complete candidate before first publication and final handoff; reuse passing evidence when its relevant inputs are unchanged.
-4. Before Local Review, record the candidate commit and tree and bind the cached Proof to those exact bytes. Refresh checks whose relevant inputs changed under the Execution Gate; retain unaffected evidence.
+3. Before each additive commit, inspect the diff and form its Conventional Commit subject under the VCS Actions contract. A commit is not a verification checkpoint; run a focused check only for a live uncertainty or changed behavioral seam.
+4. Before Local Review, record the candidate commit and tree and bind focused behavioral Proof to those exact bytes. Refresh only checks whose relevant inputs changed; leave the one final basic-verification checkpoint until Local Review disposition is complete.
 5. Append implementation decisions and verification evidence to the ledger.
 
-Completion: the intended behavior is implemented, local checks pass, the diff remains within the accepted slice, and every agent-authored commit has a verified Conventional Commit subject.
+Completion: the intended behavior and focused behavioral Proof are complete, the diff remains within the accepted slice, every agent-authored commit has a verified Conventional Commit subject, and broad basic verification has not been redundantly spent before Local Review.
 
 ### 4. Local Review
 
-1. Follow [Local Review](local-review.md) against the complete committed candidate. For new work, finish this state before draft publication. For an existing PR, review the current semantic diff before readiness or the Human Gate when no valid Review Receipt covers it.
+1. Follow [Local Review](local-review.md) against the complete committed candidate, spending at most one provider pass for the delivery cycle. For new work, finish its disposition and final basic-verification checkpoint before draft publication. For an existing PR, review the current semantic diff before readiness or the Human Gate when no valid Review Receipt covers it.
 2. Append its Review Receipt and resulting verified commit to the ledger.
 
-Completion: the Review Receipt is complete, every actionable finding is fixed or rejected with evidence, and the resulting local diff is committed and verified.
+Completion: the Review Receipt is complete, every actionable finding is fixed or rejected with evidence, the resulting local diff is committed, and the single final basic-verification checkpoint is recorded.
 
 ### 5. Published
 
@@ -113,7 +113,7 @@ Immediately after publication and before waiting for CI, execute the fixed revie
 Then monitor required checks while any requested reviews run in parallel:
 
 1. Preserve each recorded review disposition. A named request action is attempted at most once during the delivery cycle, including after CI fixes, timeouts, ambiguous delivery, context recovery, or a new pushed SHA.
-2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, run risk-matched local verification, create an additive commit, publish, record the new SHA, and wait again without changing the review plan or request attempts.
+2. If an attributable check fails, invoke `fix-ci`, apply the smallest root-cause fix, refresh only affected local Proof, create an additive commit, publish, record the new SHA, and wait again without rerunning the local aggregate, Autoreview, or review request.
 3. Retain feedback that targets an earlier SHA; `review-remediation` will compare every finding with the current diff.
 4. Treat external outages and unavailable required infrastructure as blockers.
 5. Stop for no-progress when two consecutive CI-fix iterations for the same failure produce no new evidence, diagnosis, code change, reviewer state, or check-state change. Passive pending states follow their recorded or provider deadline and do not count as iterations.

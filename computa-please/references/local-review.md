@@ -1,6 +1,6 @@
 # Local Review
 
-Use one independent Codex Autoreview to challenge a complete PR candidate before publication. Keep implementation, review, remediation, and external review as separate stages.
+Use at most one independent Codex provider pass to challenge a complete PR candidate before publication. Keep implementation, local review, remediation, final basic verification, and external review as separate stages.
 
 ## Entry
 
@@ -17,15 +17,19 @@ Outside Finish Loop, mechanical restacks, synchronization, submission of existin
 
 ## Freeze
 
-1. Finish the complete implementation slice and deterministic Proof.
+1. Finish the complete implementation slice and its focused behavioral Proof. Complete known synchronization or restacking before review; defer the [final basic-verification checkpoint](execution.md#verification-budget) until disposition and remediation finish.
 2. Resolve the intended PR base to a commit. Under the existing VCS authority, commit the candidate, record the target commit and tree, and require a clean worktree with a non-empty branch diff. Local Review grants no commit, push, or publication authority.
-3. Bind the cached checks, exit statuses, and justified omissions to that target and tree. Reuse evidence whose relevant inputs are unchanged; refresh affected checks through the [Execution Gate](execution.md#execution-gate) before binding Proof to a changed candidate. This reuse does not establish that a changed semantic diff has been reviewed.
+3. Bind the cached behavioral checks, exit statuses, and justified omissions to that target and tree. Reuse evidence whose relevant inputs are unchanged; refresh only affected checks through the [Execution Gate](execution.md#execution-gate) before binding Proof to a changed candidate.
 
 **Complete when:** the base, target commit, target tree, complete branch diff, and target-bound Proof are explicit.
 
 ## Run
 
-Load `autoreview` and follow its contract. Invoke its helper once against the committed branch diff with Codex and an explicit P1 threshold:
+The Local Review budget is one Autoreview provider pass per delivery cycle. The budget is spent when a provider call begins and is never replenished by findings, remediation, restacking, target drift, CI repair, publication, or context recovery.
+
+Load `autoreview` and follow its contract. First run the same invocation with `--dry-run` and record its predicted provider-pass count. If preparation predicts more than one provider pass, do not start Autoreview: record `review-budget-exceeded` and return the blocker at the Human Gate. Do not narrow the semantic target or omit authoritative artifacts merely to fit the budget.
+
+Invoke the helper once against the committed branch diff with Codex and an explicit P1 threshold:
 
 ```bash
 "$AUTOREVIEW" \
@@ -38,27 +42,16 @@ Load `autoreview` and follow its contract. Invoke its helper once against the co
 
 Add one concise `--prompt` only when an observed compatibility, reliability, security, or other production risk needs emphasis. The prompt names the concrete failure surface; it does not add reviewers or expand the target.
 
-Treat `scoped-clean`, `filtered`, or validated `findings` as terminal outcomes for the selected P0-P1 scope. Preserve the exact status: `filtered` is not a general correctness certificate. Treat `incomplete`, target mismatch, malformed output, scanner refusal, provider failure, or target drift as a blocker rather than a clean review.
+Treat `scoped-clean`, `filtered`, or validated `findings` as terminal outcomes for the selected P0-P1 scope. Preserve the exact status: `filtered` is not a general correctness certificate. Treat `incomplete`, target mismatch, malformed output, scanner refusal, provider failure, target drift, or a multi-pass requirement as a blocker rather than a clean review. Do not add a structural review to this stage; an explicitly requested named review follows the router's Requested Review path instead of silently spending another local pass.
 
-### Structural Exception
-
-Load `thermo-nuclear-code-quality-review` in the same Local Review stage only when the diff presents a concrete structural-maintainability risk:
-
-- A file crosses its 1,000-line threshold.
-- A broad seam or ownership move increases coupling.
-- New branching or state-model complexity materially raises reader load.
-- A large behavior-preserving refactor may be moving rather than deleting complexity.
-- Policy, helpers, or architectural decisions are duplicated across owners.
-
-Apply it to the same frozen target and merge its candidates into the same disposition pass. Security, IAM, migration, deployment, and reliability risk alone do not select this code-quality review; emphasize those risks in Codex Autoreview and preserve the independent remote-review layer.
-
-**Complete when:** the Codex result is terminal and any selected structural review has returned candidates against the same target.
+**Complete when:** the Codex result is terminal after one provider pass, or the unspent review is blocked before a provider call. A blocked outcome skips Disposition and terminates at the Human Gate.
 
 ## Disposition
 
 1. Verify every candidate through its owning path and strongest practical reproducer. Reject unsupported, speculative, duplicate, stale-target, style-only, and out-of-scope claims.
-2. Apply one bounded remediation pass for accepted findings, refresh affected Proof under the [Execution Gate](execution.md#execution-gate), and create an additive remediation commit.
-3. Do not rerun Autoreview merely because remediation changed the target. Finding, CI, and external-review remediation do not trigger another local pass. New product scope or unreviewed behavior makes the receipt stale and returns the changed scope to this gate.
-4. Record one Review Receipt in the active handoff or Finish Loop ledger: base commit, reviewed target commit and tree, command and selected priority, terminal status, candidate dispositions, remediation commit when present, verification outcomes, and stale reason when applicable.
+2. Apply one bounded remediation pass for accepted findings and refresh only affected behavioral Proof under the [Execution Gate](execution.md#execution-gate).
+3. Run the Execution Gate's single final basic-verification checkpoint against the resulting local candidate, then create the additive remediation or finalization commit when files changed.
+4. Never rerun Autoreview in the delivery cycle. For a later mechanical target change, prove the semantic patch and relevant base inputs unchanged and carry the receipt forward. New product scope or any other unreviewed behavior makes the receipt incomplete and blocks publication pending a new human-authorized outcome; it does not return to Run.
+5. Record one Review Receipt in the active handoff or Finish Loop ledger: base commit, reviewed target commit and tree, provider-pass count, command and selected priority, terminal status, candidate dispositions, resulting commit, final verification coverage and outcomes, and incomplete reason when applicable.
 
-**Complete when:** every candidate is fixed or rejected with evidence, remediation is verified, and the Review Receipt accounts for the reviewed and resulting heads.
+**Complete when:** every candidate is fixed or rejected with evidence, affected behavioral Proof and the one final basic-verification checkpoint pass, and the Review Receipt accounts for the reviewed and resulting heads without spending another provider pass.
