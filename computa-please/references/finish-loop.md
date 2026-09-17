@@ -93,10 +93,10 @@ Completion: the Review Receipt is complete, every actionable finding is fixed or
 ### 5. Published
 
 1. Publish through the workflow established by [VCS Actions](vcs.md#branches-and-publication): submit the current Graphite diff, or push the current branch for a Git workflow. Follow that contract's guard-resolution and fallback approval rules. Do not use stack-wide submission.
-2. Create or update the PR description by following [the PR Description contract](pr-description.md) through **Verify**.
+2. Create or update the PR description through `visual-pr`.
 3. Create or retain the PR as a draft and record the pushed SHA before monitoring checks.
 
-Completion: the draft PR points at the recorded SHA, targets the intended parent or base, and `check-pr-body` exits 0 on that description.
+Completion: the draft PR points at the recorded SHA, targets the intended parent or base, and `visual-pr` confirms the description update.
 
 ### 6. Collect External Review and Monitor CI
 
@@ -138,9 +138,9 @@ Completion: the plan was explicitly skipped; every `existing-only` selector had 
 
 ### 8. Final CI
 
-Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the review plan or frozen set and without returning to Remediate Review Feedback. Refresh the PR description from the final diff using [the PR Description contract](pr-description.md) through **Verify**, then reconfirm that the PR is conflict-free and points at that SHA.
+Wait for every required check on the final recorded SHA. Remediate attributable failures through the CI loop without changing the review plan or frozen set and without returning to Remediate Review Feedback. Refresh the PR description from the final diff through `visual-pr`, then reconfirm that the PR is conflict-free and points at that SHA.
 
-Completion: required CI is green for the final SHA, `check-pr-body` exits 0 on the final description, the PR is conflict-free and ready for delivery, and Remediate Review Feedback remains complete.
+Completion: required CI is green for the final SHA, `visual-pr` confirms the refreshed description, the PR is conflict-free and ready for delivery, and Remediate Review Feedback remains complete.
 
 ### 9. Authority Boundary
 
