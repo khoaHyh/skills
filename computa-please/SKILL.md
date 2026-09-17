@@ -85,7 +85,7 @@ Lead with the result. Preserve the evidence needed to support it, any material c
 
 When an inline visual would materially clarify structure, sequence, state, interaction, or a before-and-after change, load `show-me` and use its smallest useful view. Follow it with exactly: `Say “create HTML” for a richer visual.` On explicit acceptance, create and open one renderer-owned temporary HTML file outside the project, not product code or Durable State.
 
-Before drafting, returning, creating, or updating a PR body, follow [PR Description](references/pr-description.md) through **Verify** (`check-pr-body` exits 0). Keep its schema and omit the HTML invitation.
+Before drafting, returning, creating, or updating a PR body, use `visual-pr`. It owns the PR body template, visual outline, publication, and final response; do not maintain a competing local PR-description contract.
 
 ## Stop Cleanly
 

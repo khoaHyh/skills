@@ -39,7 +39,7 @@ Account for `.computa-please/` in status checks, but keep this workflow-owned lo
 - When Graphite tracks the branch, mutate or submit only the current diff unless the user explicitly authorizes a stack-wide action. Account for automatic descendant restacking before mutation; ask for scope approval if the operation would change another diff.
 - If a Graphite tracking or remote-update guard refuses an operation, inspect local, remote, and tracking state and resolve the cause within existing authority before retrying. If resolution requires a guard override, history rewrite, broader stack mutation, or fallback to `git push`, report the evidence and request explicit approval for that action. A successful Git push alone does not resolve a Graphite guard.
 - Publish every new PR as a draft. After the Finish Loop's local review and publication gates pass, either recorded delivery ceiling authorizes marking its active PR ready. Outside a Finish Loop, mark it ready only when the user explicitly requests that state.
-- Before drafting, creating, or updating a PR body, satisfy the router's PR Description gate through **Verify** (`check-pr-body` exits 0).
+- Before drafting, creating, or updating a PR body, use `visual-pr` for the description workflow.
 
 ## Completion
 
