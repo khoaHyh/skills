@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Computa Please
 
-Deliver the requested outcome through the least process that can prove it. Subtract before adding, preserve real compatibility obligations, and spend verification in proportion to risk.
+Deliver the requested outcome through the least process that can prove it. Subtract before adding, preserve real compatibility obligations, and spend verification in proportion to risk. Let deterministic mechanisms own known transitions, side-effect guards, retries, and compact evidence; use the model for decisions that require interpretation.
 
 ## Outcome And Authority
 
@@ -29,17 +29,17 @@ Use only the selected route and references whose conditions apply. A matched ref
 | Discuss | Compare, evaluate, or decide. Read-only and ephemeral by default; finish with a recommendation, tradeoff, or decision. |
 | Spec | A durable implementation plan. Use the [Work Frame and Subtraction](references/execution.md#work-frame), then `tech-spec` for contracts, call stacks, file ownership, and pending Proof. Production code stays read-only. A requested comprehension map selects or resumes Spec; use [Comprehension Map](references/comprehension-map.md) at its checkpoint. |
 | Implement | Verified local changes or draft-only publication. Use the accepted request, spec, Feature Contract, and handoff where present, then follow [Execution](references/execution.md). A Feature Contract alone routes to Spec when implementation boundaries remain unresolved. |
-| Finish Loop | Drive accepted work, a PR, or an explicitly scoped stack through delivery: get it green, make it merge-ready, ship, land, merge, or verify post-merge workflows. Follow [Finish Loop](references/finish-loop.md) from its Entry Gate. Resolve merge authority from the user's request and prior context. |
+| Finish Loop | Drive accepted work, a PR, or an explicitly scoped stack through delivery: get it green, make it merge-ready, ship, land, merge, or verify post-merge workflows. Follow [Finish Loop](references/finish-loop.md) from its Entry Gate; its executable runtime owns transitions and external-action replay protection. Resolve merge authority from the user's request and prior context. |
 | Debug | Diagnose a failure, regression, flake, or performance problem with `diagnosing-bugs`. Finish diagnosis with the symptom reproduced or bounded and root cause or remaining uncertainty explicit. For an authorized fix, follow [Execution](references/execution.md) and rerun the original repro. Load telemetry skills only when the observed path needs them. |
 | Review | Find defects, independently of author confidence or prior conclusions. Follow the [Review Gate](#review-gate); report findings first with severity and file/line references. A one-pass PR status check is Discuss, not delivery. |
-| Recall/Pickup | Recover artifacts and live state in the Task Worktree, distinguish inherited claims from reverified facts, and route the remainder. Resume a Finish Loop only from a nonterminal ledger entry with a recorded Entry Gate choice. A closed run provides no authority. |
-| Reflect | Use observed corrections, retries, churn, and successful recipes to improve the workflow. Prefer deleting or replacing instructions; propose changes and how to evaluate them before editing unless implementation is already authorized. |
+| Recall/Pickup | Recover artifacts and live state in the Task Worktree, distinguish inherited claims from reverified facts, and route the remainder. Resume a Finish Loop only from a nonterminal reduced runtime state with a recorded Entry Gate choice. A closed run provides no authority. |
+| Reflect | Use observed corrections, retries, churn, successful recipes, and the [behavior evaluation harness](scripts/agent-runtime/README.md#behavior-evaluation) to improve the workflow. Capture a baseline, change one policy or mechanism, compare the candidate, and inspect every regression. Prefer deleting or replacing instructions; propose changes and their evaluation before editing unless implementation is already authorized. |
 
 Default evaluative or genuinely ambiguous requests to Discuss; explicit change requests to Implement. A discussion becomes persistent or mutating only with the corresponding authority. An explicitly requested temporary `show-me` HTML visual may be created outside the project without authorizing production changes.
 
 For a bounded operation such as restacking, syncing, submitting existing work, or updating a PR description, use only the applicable VCS, verification, and description procedures. Finish when the requested state transition is observed, intended changes are preserved, and relevant checks pass or a blocker is named. Existing PRs do not select Finish Loop. An authorized semantic repair expands scope only by that repair; readiness, CI monitoring, and landing remain separate outcomes unless already requested.
 
-After compaction or pickup, reload this router once, recover the active step and live constraints, and re-evaluate the route and applicable references. Reuse a reference read recorded in working context or a durable handoff; reload when its content or the applicable authority changes.
+Compact at a real phase boundary when exploration, planning, implementation, review, or delivery has produced context that no longer changes the next step. Retain the goal, authority, decisions, compact evidence, unresolved risks, and next action; leave raw logs and superseded attempts behind pointers. After compaction or pickup, reload this router once, recover the active step and live constraints, and re-evaluate the route and applicable references. Reuse a reference read recorded in working context or a durable handoff; reload when its content or the applicable authority changes.
 
 ## Browser Tools
 
@@ -57,7 +57,7 @@ Finding, CI, restack, and external-review remediation never trigger another loca
 
 ## Delegation
 
-Delegate an independent investigation or isolated deliverable when it can shorten the critical path or resolve an uncertainty while the primary continues useful work. Keep tightly coupled work with one implementation owner. Keep no more than two delegates running concurrently unless the user explicitly requests broader parallelism. The cap limits concurrency, not total delegation: queue additional work, start the next delegate when a slot opens, and continue useful primary work while both slots are occupied. Wait only when the active delegates are on the critical path and no independent work remains. The primary owns delegation decisions. Delegate authority stays inside the agreed scope; spare agent capacity is not a reason to open another workstream.
+Delegate an independent investigation or isolated deliverable when it can shorten the critical path, resolve an uncertainty, or keep noisy exploration, documentation lookup, log analysis, or broad search out of the primary context. Split by context cost and ownership, not simulated job titles. Keep tightly coupled work with one implementation owner. Keep no more than two delegates running concurrently unless the user explicitly requests broader parallelism. The cap limits concurrency, not total delegation: queue additional work, start the next delegate when a slot opens, and continue useful primary work while both slots are occupied. Wait only when the active delegates are on the critical path and no independent work remains. The primary owns delegation decisions. Delegate authority stays inside the agreed scope; spare agent capacity is not a reason to open another workstream.
 
 Give each delegate the task-owned path and revision, bounded outcome, necessary context, read-only or exclusive write ownership, and expected evidence. Prove the first vertical slice before distributing dependent implementation. Shared contracts, migrations, test databases, and Git/Graphite mutations need one owner; disjoint filenames alone do not establish independence. While a delegate owns a surface, work elsewhere and inspect its changes after handoff.
 
@@ -75,7 +75,7 @@ The primary verifies pivotal claims and owns the decision, implementation, Proof
 
 ## Durable State
 
-Keep state conversational unless the user requests persistence, work must survive sessions, agents or people must coordinate, or a Finish Loop needs its external-action ledger. Then follow [VCS Actions: Durable State](references/vcs.md#durable-state) for the local spec and handoff. Keep workflow state out of product diffs, commits, and PRs.
+Keep state conversational unless the user requests persistence, work must survive sessions, agents or people must coordinate, or a Finish Loop needs its event log. Then follow [VCS Actions: Durable State](references/vcs.md#durable-state). Finish Loop state is reduced from its runtime-owned event log; prose handoffs summarize it but do not replace it. Keep workflow state out of product diffs, commits, and PRs.
 
 ## Response Style
 
