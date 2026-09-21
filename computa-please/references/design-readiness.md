@@ -8,7 +8,7 @@ Separate facts you can inspect from choices the user owns. Determine what is mis
 
 Ask when an unresolved choice changes product direction, public contracts, domain rules, security, money, retained data, deployment, ownership, architecture, or the authority to create durable artifacts. Choose routine implementation details within the accepted boundary yourself. Review, recovery, and evidence-gathering Debug do not require design approval; a fix returns here only when it exposes such a choice.
 
-When the request and evidence settle these decisions, continue the selected mode. Otherwise name the blocking decision, recommend the smallest defensible option, and ask only what is needed to resolve it. Keep the affected design or implementation read-only until answered; continue independent authorized work when useful. Record explicitly accepted defaults or risks rather than silently assuming them.
+When the request and evidence settle these decisions, continue the selected mode. Otherwise make one structured decision request with the question, why inspection cannot answer it, the recommended option, alternatives and their consequences, and the event that resumes work. Use the structured question tool when available. In a Finish Loop, append `HumanRequested` before contacting the user and resume only with the matching `HumanResponded` event. Keep the affected design or implementation read-only until answered; continue independent authorized work when useful. Record explicitly accepted defaults or risks rather than silently assuming them.
 
 ## Route Unresolved Design
 

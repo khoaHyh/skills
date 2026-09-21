@@ -15,9 +15,9 @@ An explicit request to merge, including natural-language or custom question answ
 
 ### CI Policy
 
-Required CI is a gate by default. Honor an explicit instruction to skip CI or merge without successful per-PR checks: record the waived checks or PR scope and the user's instruction, then continue without waiting for or repairing that waived CI. Unless the user also waives post-merge verification, retain it. A waiver changes every CI gate and completion criterion below to require passing evidence or a recorded waiver; report waived checks as skipped, never green. It does not waive local verification, review, conflicts, permissions, or head/base consistency, nor authorize cancelling runs or changing repository protections. Apply later user instructions to the active ledger without restarting the run or requiring an opt-out from this skill.
+Required CI is a gate by default. Honor an explicit instruction to skip CI or merge without successful per-PR checks: record the waived checks or PR scope and the user's instruction, then continue without waiting for or repairing that waived CI. Unless the user also waives post-merge verification, retain it. A waiver changes every CI gate and completion criterion below to require passing evidence or a recorded waiver; report waived checks as skipped, never green. It does not waive local verification, review, conflicts, permissions, or head/base consistency, nor authorize cancelling runs or changing repository protections. Apply later user instructions to the active runtime state and handoff without restarting the run or requiring an opt-out from this skill.
 
-Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree before initializing the Run Ledger.
+Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree before launching the Runtime-Owned Event Log.
 
 ## Load
 
@@ -30,25 +30,23 @@ Load only the skills needed by the observed path:
 - `fix-ci` for failing required checks.
 - `review-remediation` after the delivery cycle's external feedback set has been frozen.
 
-## Run Ledger
+## Runtime-Owned Event Log
 
-After VCS Preflight establishes the Task Worktree, create `.computa-please/` and `handoff.md` when absent, then append the run entry below. Worktree bootstrap is the sole permitted earlier mutation; perform no repository-content mutation or external action until the entry exists:
+After VCS Preflight establishes the Task Worktree, resolve [`scripts/agent-runtime/cli.mjs`](../scripts/agent-runtime/README.md#finish-loop-runtime) from the loaded `computa-please` skill base and use it to launch `.computa-please/run-events.jsonl` in the Task Worktree. Do not assume the consuming repository contains the script. `RunLaunched` records the delivery goal, Task Worktree, branch and base, scope, verifier, terminal predicate, ceiling, review plan, and explicitly authorized external-action kinds. Worktree bootstrap is the sole permitted earlier mutation; perform no repository-content mutation or external action until launch succeeds.
 
-- Run identifier, active owner, current state, Entry Gate answer and timestamps, active cycle, terminal predicate, no-progress counter, and terminal reason.
-- Accepted spec path, completed-change delivery goal, or existing PR goal.
-- PR, base branch, current branch, Graphite parent when tracked, and VCS workflow.
-- Initial and current commit SHA, additive commits created by the run, and any amend exception reason.
-- Review Receipt: base, reviewed target commit and tree, provider-pass budget and count, selected priority, command outcome, candidate dispositions, resulting commit, final verification coverage, incomplete reason, and remaining actionable finding count.
-- CI state and the SHA it describes, plus any explicit waiver and its scope.
-- PR additions plus deletions.
-- Review plan: `existing-only`, `request-once`, or explicit `skip`; reviewer selectors; delivery surfaces; expected revision or time window; completion evidence; named request actions and the selectors each covers; and an absolute result deadline for `request-once`.
-- Per-selector disposition, request-action attempts and times, completed artifact identifiers, frozen feedback payload, remaining actionable count, and per-item response or addressed-state action attempts.
-- For `merge-and-verify`, the per-cycle expected head and base, merge mechanism and attempts, admin-bypass evidence and attempt, merged SHA and time, and post-merge workflow watch plan and results.
-- An append-only external-action journal. Each entry records a stable action key, cycle, action type, target object, expected head or revision, exact payload or payload hash, prerequisite snapshot, attempted time, actor or tool, provider action ID, observed result, reconciliation result, and spent status.
+The runtime is the transition authority:
 
-Update the entry before every state transition. Before every external action, append its journal entry with `spent: true`, then act. Key review requests by cycle and named request action rather than SHA; key replies and addressed-state changes by frozen feedback ID; key PR creation by cycle; key normal or admin merge by cycle and expected head; key workflow reruns by provider run ID; and key pushes by commit SHA. A new action after a terminal failure requires a recorded changed precondition.
+1. Reduce state with `state` before acting, including after pickup or compaction.
+2. Append every event through `apply`; never hand-edit the log.
+3. Complete only the phase named by current state. Append `PhaseCompleted` with a compact summary and evidence pointers; continue only when the runtime advances the phase.
+4. When `PhaseCompleted` emits `compact-context`, retain only the goal, authority, decisions, compact evidence, unresolved risks, and next action. Append `ContextCompacted` after doing so.
+5. Compact command results through `compact-check`, then append `CheckRecorded`. Keep full output behind its pointer.
+6. Append `HumanRequested` before contacting a person. It must name the decision, recommendation, alternatives and consequences, and resume event. Resume only with the matching `HumanResponded` event. When the answer changes delivery authority, append `AuthorityUpdated` with the answer's source reference before relying on it.
+7. Before a runtime-guarded action such as commit, push, publication, review mutation, workflow rerun, readiness, or merge, append `ExternalActionRequested` with a stable action key, target, and payload hash. Execute only the `execute-external-action` effect returned by that call, then append `ExternalActionObserved`. The requested event is durably flushed before the effect is emitted; a failed or ambiguous action remains spent and cannot be replayed.
+8. Append `RunBlocked` with the required resume event for a concrete blocker. Resume only when changed evidence supports the matching `RunResumed` event.
+9. Start an attributable post-merge repair only with `RepairCycleStarted` during post-merge verification. Its progress fingerprint drives the no-progress guard and returns the runtime to Bound with inherited authority.
 
-On pickup, reconcile the ledger with live state and trust observed state except for recorded external-action attempts and the frozen feedback payload. Every ambiguous attempt remains spent and may be reconciled but not replayed. The recorded IDs, authors, bodies, source surfaces, and revision or timestamps remain authoritative after a feedback set freezes; live state can update only delivery and addressed status.
+Keep detailed design decisions, Review Receipts, frozen feedback payloads, provider identifiers, CI observations, and post-merge watch results in `handoff.md`, referenced from compact phase evidence. On pickup, reduce the event log, reconcile referenced live state, and trust observed provider state except for spent external actions and frozen feedback. The runtime controls what may happen next; the handoff explains why.
 
 ## State Machine
 
@@ -79,14 +77,14 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 2. Use the router's [Delegation](../SKILL.md#delegation) guidance for bounded independent work.
 3. Before each additive commit, inspect the diff and form its Conventional Commit subject under the VCS Actions contract. A commit is not a verification checkpoint; run a focused check only for a live uncertainty or changed behavioral seam.
 4. Before Local Review, record the candidate commit and tree and bind focused behavioral Proof to those exact bytes. Refresh only checks whose relevant inputs changed; leave the one final basic-verification checkpoint until Local Review disposition is complete.
-5. Append implementation decisions and verification evidence to the ledger.
+5. Append implementation decisions and detailed verification evidence to the handoff; reference their compact form from the phase event.
 
 Completion: the intended behavior and focused behavioral Proof are complete, the diff remains within the accepted slice, every agent-authored commit has a verified Conventional Commit subject, and broad basic verification has not been redundantly spent before Local Review.
 
 ### 4. Local Review
 
 1. Follow [Local Review](local-review.md) against the complete committed candidate, spending at most one provider pass for the delivery cycle. For new work, finish its disposition and final basic-verification checkpoint before draft publication. For an existing PR, review the current semantic diff before readiness or the Human Gate when no valid Review Receipt covers it.
-2. Append its Review Receipt and resulting verified commit to the ledger.
+2. Append its Review Receipt and resulting verified commit to the handoff; reference it from the phase event.
 
 Completion: the Review Receipt is complete, every actionable finding is fixed or rejected with evidence, the resulting local diff is committed, and the single final basic-verification checkpoint is recorded.
 
@@ -102,7 +100,7 @@ Completion: the draft PR points at the recorded SHA, targets the intended parent
 
 Immediately after publication and before waiting for CI, execute the fixed review plan:
 
-1. Mark the draft PR ready under the recorded delivery ceiling. When readiness is a named automatic-review request action, append its action journal entry before the transition and treat that transition as its sole request attempt.
+1. Mark the draft PR ready under the recorded delivery ceiling. When readiness is a named automatic-review request action, request it through the runtime before the transition and treat that transition as its sole request attempt.
 2. Resolve each reviewer selector against the provider's current review surfaces. A selector may name one reviewer, several reviewers, or all current external feedback.
 3. Discover submitted reviews, review bodies, inline comments, issue comments, check runs, annotations, or equivalent provider objects relevant to those selectors.
 4. Apply the plan's provider-specific attribution and positive completion evidence. Author identity alone, progress notices, eligibility notices, duplicate summaries, and other artifacts without completed feedback do not qualify.
@@ -126,12 +124,12 @@ Use the review plan and dispositions fixed before the initial CI wait:
 
 1. For explicit `skip`, or when every `existing-only` selector has `no-existing-feedback`, skip to Final CI.
 2. For `request-once`, wait for every configured reviewer selector to produce an attributable completed result until its recorded absolute deadline. At the deadline, an absent or ambiguous result is a blocker and every covering request action remains spent.
-3. Build one feedback set from every claim, requested change, question, and informational item requiring acknowledgement in the completed results. Freeze each item's stable ID or URL, reviewer, delivery surface, body, and reviewed SHA or observed timestamp in the ledger. Record completed results with zero feedback items as `completed-no-feedback`.
-4. Treat the frozen ledger payload as the source of truth on recovery. A live edit to an object with the same ID does not change the finding under remediation; re-fetch only to observe delivery, deletion, and addressed state.
+3. Build one feedback set from every claim, requested change, question, and informational item requiring acknowledgement in the completed results. Freeze each item's stable ID or URL, reviewer, delivery surface, body, and reviewed SHA or observed timestamp in the handoff, then reference that payload from phase evidence. Record completed results with zero feedback items as `completed-no-feedback`.
+4. Treat the frozen handoff payload as the source of truth on recovery. A live edit to an object with the same ID does not change the finding under remediation; re-fetch only to observe delivery, deletion, and addressed state.
 5. Run exactly one `review-remediation` pass against the frozen records. Complete classification, primary-source research, minimum, durable, robust implementation, and verification, but defer provider replies and addressed-state changes until the remediation is published.
 6. Treat every blocked item as a Finish Loop blocker. Scores, severity summaries, and approval labels remain metadata.
 7. When files changed, create an additive remediation commit, publish it, confirm the PR head contains it, and record the new SHA.
-8. After publication, complete `review-remediation` responses and provider-native addressed-state changes through per-item external-action journal entries. Attempt each once and record the observed result. An ambiguous attempt is a blocker rather than permission to replay it. A deleted item receives terminal `delivery-unavailable: deleted` status instead of a reply or state mutation. When no files changed, respond after verification and classification.
+8. After publication, complete `review-remediation` responses and provider-native addressed-state changes through per-item runtime external actions. Attempt each once and record the observed result. An ambiguous attempt is a blocker rather than permission to replay it. A deleted item receives terminal `delivery-unavailable: deleted` status instead of a reply or state mutation. When no files changed, respond after verification and classification.
 9. Treat feedback arriving after the set freezes as a separate run. Never transition back to this state.
 
 Completion: the plan was explicitly skipped; every `existing-only` selector had `no-existing-feedback`; or every selector has a terminal disposition, every completed result is represented by frozen items or `completed-no-feedback`, every item is accounted for with no blocker, and changed remediation was published before its response or addressed-state update.
@@ -162,7 +160,7 @@ Run this state only for `merge-and-verify`:
 1. Discover runs from the frozen watch plan by workflow identity, target branch, merged commit lineage, and causal run IDs. Squash or rebase merges may require the observed merge commit rather than the former PR head.
 2. Wait through the discovery and terminal deadlines. Green means every expected relevant run for the latest merged cycle reaches an accepted terminal conclusion. An expected run that never appears is a blocker, not success. If no applicable post-merge workflow exists, record `none-configured` from repository and provider evidence and verify the target branch contains the merged result.
 3. Classify every failure from its exact logs and changed path. Temporal proximity alone is not attribution. Retry only a proven flake or infrastructure failure under the provider's safe retry policy.
-4. For a failure attributable to the landed change, append a focused follow-up cycle from the current protected target branch. Inherit `merge-and-verify` and the review plan kind and selectors, but give the new PR fresh per-cycle request actions, deadlines, frozen feedback, CI state, and merge actions. Execute states 1 through 9 for that cycle, then return here for its merged result.
+4. For a failure attributable to the landed change, append `RepairCycleStarted` and create a focused follow-up cycle from the current protected target branch. Inherit `merge-and-verify` and the review plan kind and selectors, but give the new PR fresh per-cycle request actions, deadlines, frozen feedback, CI state, and merge actions. Execute states 1 through 9 for that cycle, then return here for its merged result.
 5. Keep the run's no-progress counter across cycles. Stop after two consecutive repair cycles that do not change the failure evidence, root-cause diagnosis, or terminal workflow state; code churn alone is not progress. Stop sooner for an external blocker or a real user decision.
 6. A repair is a new PR, never a direct target-branch edit, force-push, or history rewrite.
 

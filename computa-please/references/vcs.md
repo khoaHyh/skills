@@ -9,20 +9,21 @@ Establish one task-owned checkout for mutation, durable state, delegation, and V
 3. When the local layout applies, follow `worktrees` to establish or reuse exactly one Task Worktree before any repository-content or Durable State write.
 4. In the local layout, use the canonical checkout only to bootstrap the Task Worktree, and leave it on `main`. If it already contains task changes, preserve them and stop for a migration decision. Re-anchor every later tool working directory, repository path, artifact path, and delegated local agent to the Task Worktree.
 5. Before commit, synchronization, push, or publication, inspect the complete intended diff and relevant commit subjects. Before PR publication, inspect every subject between the intended base and `HEAD`.
-6. Confirm the action is authorized. An active Finish Loop authorizes its scoped Task Worktree bootstrap and ledger initialization; afterward it authorizes only actions permitted by its recorded delivery ceiling and pre-recorded in its external-action journal. Otherwise obtain explicit approval before commit, push, or PR publication. Stage only intended files and preserve unrelated changes.
+6. Confirm the action is authorized. An active Finish Loop authorizes scoped local investigation, edits, checks, and synchronization through its current phase. Its commits and provider-side effects must also be permitted by the recorded delivery ceiling and emitted by a pre-recorded `ExternalActionRequested` event. Otherwise obtain explicit approval before commit, push, or PR publication. Stage only intended files and preserve unrelated changes.
 
 ## Durable State
 
-Persist only for a user request, cross-session recovery, coordination, or a Finish Loop ledger. Establish the Task Worktree first, then use its `.computa-please/` directory with only these files:
+Persist only for a user request, cross-session recovery, coordination, or a Finish Loop event log. Establish the Task Worktree first, then use its `.computa-please/` directory with only these files:
 
 ```text
 <task-slug>-tech-spec-YYYY-MM-DD.md
 handoff.md
+run-events.jsonl
 ```
 
-Reuse the tech spec. Keep the handoff append-only: add a dated section after material changes with the spec path, state, decisions, rejected approaches, Compatibility, Proof, external actions, residual risk, and next action. A Finish Loop owns its ledger schema inside this handoff. Store renderer-owned maps elsewhere and link them. Keep secrets, customer data, and private transcripts out of artifacts.
+Reuse the tech spec. Keep the handoff append-only: add a dated section after material changes with the spec path, state, decisions, rejected approaches, Compatibility, Proof, external actions, residual risk, and next action. A Finish Loop owns `run-events.jsonl` through `scripts/agent-runtime/cli.mjs`; never hand-edit it. Store renderer-owned maps elsewhere and link them. Keep secrets, customer data, raw command output, and private transcripts out of artifacts.
 
-For a Computa run, this Task Worktree handoff is the authoritative recovery record. A requested temporary handoff export links to it instead of creating a second authoritative record.
+For a Finish Loop, the reduced event log is authoritative for transitions, authority, human pauses, compact checks, and spent external actions; reconcile its referenced live state on pickup. The handoff is the human-readable recovery summary for design and implementation context. A requested temporary handoff export links to these records instead of creating a second authority.
 
 Account for `.computa-please/` in status checks, but keep this workflow-owned local state out of product diffs, commits, and PRs.
 

@@ -4,6 +4,8 @@ Use for Implement, Debug fixes, and Finish Loop implementation. Spec uses only W
 
 Use `coding-standards` for TypeScript engineering, `codebase-design` for a nontrivial seam change, and relevant technology skills when their guidance applies. Consult canonical upstream sources when external semantics matter. For Debug, diagnose before choosing a fix; use `motel-debug` or `observability-logging` when the observed failure requires them.
 
+Pre-fetch route inputs that are deterministically required: repository instructions, accepted artifacts, current branch and diff, applicable scripts, and live PR or CI state. Do not spend a model turn deciding whether to obtain context the selected route always needs. Keep raw exploration and verbose output outside the primary context; delegate noisy retrieval when its compact, sourced result is sufficient.
+
 ## Browser Tools
 
 For general browser automation and UI smoke tests, default to `playwright-cli` and load its skill before use. Use Chrome DevTools MCP through Executor for Chrome performance analysis or DevTools-specific diagnostics. Choose by task capability and session needs.
@@ -65,6 +67,8 @@ After implementation, delegate writes, synchronization, and any Local Review rem
 Tests follow risk rather than cadence. Preserve focused behavioral Proof gathered before Local Review. Include broad tests in the final checkpoint only when the changed surface, repository policy, or unresolved interaction risk requires them. Do not rerun an unchanged focused test merely because a broader command also covers it, and do not add a broad suite after a sufficient aggregate has already passed.
 
 Keep a failed run as evidence and diagnose its first causal failure before rerunning a broad suite or distributing repairs.
+
+Compact verification before retaining it in agent context. A passing command becomes its command, affected surface, exit status, and `passed`. A failure retains the first causal diagnostic, affected surface, attempt count, whether its fingerprint changed, and a pointer to full output. In a Finish Loop, resolve `scripts/agent-runtime/cli.mjs` from the loaded `computa-please` skill base, run `compact-check`, and append its value as `CheckRecorded`; never put raw `stdout` or `stderr` in the event log. Escalate, reset, or restructure after repeated unchanged failures instead of accumulating attempts.
 
 For stack maintenance, inspect shared conflict causes and stabilize necessary ancestor repairs before processing descendants. Verify ancestry, preserved intent, and semantic resolutions; inherited features do not automatically require fresh local suites on every branch. Scope formatter and linter fixes to affected files during integration. Use repository-wide autofixes at their required checkpoint or for a demonstrated cross-cutting need, rather than on every intermediate branch.
 
