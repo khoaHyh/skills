@@ -10,3 +10,4 @@ My collection of markdown files and scripts that I give to agents to hopefully d
 - **observability-logging**: Add the least production telemetry needed using structured logs, OpenTelemetry spans/events, bounded metrics, safe fields, and exact-once error recording.
 - **tech-spec**: Write an implementation-ready typed call-stack architecture handoff with subtraction-first design and risk-matched verification.
 - **computa-please**: Route engineering work from decision through the final human gate.
+- **record-verification**: Record an honest end-to-end UI walkthrough with checks and timestamps for human product and visual review, on request.
