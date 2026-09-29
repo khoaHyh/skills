@@ -85,7 +85,17 @@ Use plain language over jargon, and reference technical details only to the degr
 
 When an inline visual would materially clarify structure, sequence, state, interaction, or a before-and-after change, load `show-me` and use its smallest useful view. Follow it with exactly: `Say “create HTML” for a richer visual.` On explicit acceptance, create and open one renderer-owned temporary HTML file outside the project, not product code or Durable State.
 
-Before drafting, returning, creating, or updating a PR body, use `visual-pr`. It owns the PR body template, visual outline, publication, and final response; do not maintain a competing local PR-description contract.
+### PR body gate (mandatory)
+
+Before drafting, returning, creating, or updating any PR body — including `gh pr create`, `gh pr edit --body-file`, `gt submit` description updates, or pasting a body into chat — invoke:
+
+```text
+skill({ name: 'visual-pr' })
+```
+
+Then follow that skill to completion. It owns the template (Why the change / Special things to note / Change outline), visual outline, publication, and final response.
+
+Do not write a PR body inline. Do not use Summary/Evidence/Test plan, Graphite Stack Context/What/Why, or any other local description contract. Loading `visual-pr` early during implementation does not satisfy this gate; invoke it at the moment of body draft or publish, against the final diff.
 
 ## Stop Cleanly
 
