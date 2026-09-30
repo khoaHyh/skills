@@ -1,6 +1,6 @@
 # Local Review
 
-Use at most one independent Codex provider pass to challenge a complete PR candidate before publication. Keep implementation, local review, remediation, final basic verification, and external review as separate stages.
+Unless Entry establishes an exemption, use at most one independent Codex provider pass to challenge a complete PR candidate before publication. Keep implementation, local review, remediation, final basic verification, and external review as separate stages.
 
 ## Entry
 
@@ -13,7 +13,9 @@ Non-PR Implement and Debug work is exempt unless the user requests independent r
 
 Outside Finish Loop, mechanical restacks, synchronization, submission of existing work, and PR-description updates are exempt when they introduce no substantive implementation change and no review gate is already pending for agent-authored work. Inspect the operation's changes to establish that exemption. A substantive conflict repair or port retains the normal gate; maintenance does not waive repository-required review or an explicit review request.
 
-**Complete when:** the work is exempt for a named reason or enters Freeze.
+Also exempt: PR-bound work with an established session contract naming remote reviewers, review completion criteria, required CI, and a human approval owner, unless repository policy requires local review or the user requests an independent local pass. Record `remote-review-contract` and the contract's source in working context or the active handoff. Bind focused behavioral Proof to the candidate commit and tree, and run the [final basic-verification checkpoint](execution.md#verification-budget) before publication or handoff. The exemption replaces the local provider pass and Review Receipt, not verification or the remote contract's remaining gates. A review request, bot approval, or green CI alone is not proof of correct behavior.
+
+**Complete when:** the work enters Freeze, or is exempt for a recorded reason with applicable local verification complete. For `remote-review-contract`, the source, candidate commit and tree, Proof, final checkpoint, and remaining remote gates are explicit; publication still follows `visual-pr` and the existing VCS authority.
 
 ## Freeze
 
