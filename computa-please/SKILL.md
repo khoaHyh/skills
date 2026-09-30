@@ -47,6 +47,22 @@ For a bounded operation such as restacking, syncing, draft publication, updating
 
 Compact at a real phase boundary when exploration, planning, implementation, review, or delivery has produced context that no longer changes the next step. Retain the goal, authority, decisions, compact evidence, unresolved risks, and next action; leave raw logs and superseded attempts behind pointers. After compaction or pickup, reload this router once, recover the active step and live constraints, and re-evaluate the route and applicable references. Reuse a reference read recorded in working context or a durable handoff; reload when its content or the applicable authority changes.
 
+## UI Craft
+
+For interface design, implementation, or review, identify the target platform and the project's owning components and design tokens. Load the smallest matching set of craft references before making visual or interaction choices:
+
+| Work | Skill |
+| --- | --- |
+| Interface polish, component feedback, and whether motion earns its place | `emil-design-eng` |
+| React Native or Expo animation, gestures, and native transitions | `animate-expo` |
+| Mobile-web touch, viewport, keyboard, scrolling, and safe-area behavior | `mobile-native` |
+
+Expo work is native, not mobile web. Add another reference only when the task crosses its scope; non-UI work needs none. If a skill is unavailable, report the gap and use the project's guidance rather than silently installing it.
+
+Reuse the project's components, tokens, and platform behavior. The selected route owns write authority and completion; craft guidance does not settle product requirements or authorize new dependencies, component replacements, or broader scope. Repository contracts remain authoritative for implementation and verification.
+
+Prove the changed interaction through the project's running-app verification path. Code inspection or desktop emulation alone does not establish touch feel, gesture interruptibility, or on-device performance; report unavailable device checks as pending rather than verified.
+
 ## Browser Tools
 
 When browser automation or UI inspection is required, follow [Browser Tools](references/execution.md#browser-tools).
