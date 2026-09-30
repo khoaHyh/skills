@@ -24,7 +24,7 @@ Use the router's [VCS Actions contract](vcs.md) to establish the Task Worktree b
 Load only the skills needed by the observed path:
 
 - Follow [Execution](execution.md) for implementation context and risk-matched verification; load its skills only when their conditions apply.
-- `autoreview` for the single-pass Local Review.
+- `autoreview` when Local Review Entry requires the single provider pass.
 - `graphite` when Graphite tracks the current branch.
 - `fix-merge-conflicts` when synchronization exposes conflicts.
 - `fix-ci` for failing required checks.
@@ -76,17 +76,17 @@ Completion: the current branch has the intended base, no unresolved conflicts, a
 1. For an accepted spec, execute Implement one tracer-bullet slice at a time. For a completed change or existing PR, diagnose only the observed residue.
 2. Use the router's [Delegation](../SKILL.md#delegation) guidance for bounded independent work.
 3. Before each additive commit, inspect the diff and form its Conventional Commit subject under the VCS Actions contract. A commit is not a verification checkpoint; run a focused check only for a live uncertainty or changed behavioral seam.
-4. Before Local Review, record the candidate commit and tree and bind focused behavioral Proof to those exact bytes. Refresh only checks whose relevant inputs changed; leave the one final basic-verification checkpoint until Local Review disposition is complete.
+4. Before Local Review, record the candidate commit and tree and bind focused behavioral Proof to those exact bytes. Refresh only checks whose relevant inputs changed; leave the one final basic-verification checkpoint until Local Review disposition or its exemption is established.
 5. Append implementation decisions and detailed verification evidence to the handoff; reference their compact form from the phase event.
 
 Completion: the intended behavior and focused behavioral Proof are complete, the diff remains within the accepted slice, every agent-authored commit has a verified Conventional Commit subject, and broad basic verification has not been redundantly spent before Local Review.
 
 ### 4. Local Review
 
-1. Follow [Local Review](local-review.md) against the complete committed candidate, spending at most one provider pass for the delivery cycle. For new work, finish its disposition and final basic-verification checkpoint before draft publication. For an existing PR, review the current semantic diff before readiness or the Human Gate when no valid Review Receipt covers it.
-2. Append its Review Receipt and resulting verified commit to the handoff; reference it from the phase event.
+1. Follow [Local Review Entry](local-review.md#entry) against the complete committed candidate. When exempt, complete its applicable local verification without a provider pass. Otherwise spend at most one provider pass for the delivery cycle and finish disposition and the final basic-verification checkpoint before draft publication. An existing PR requires review of its current semantic diff before readiness or the Human Gate unless a valid Review Receipt or Entry exemption covers it.
+2. Append the Review Receipt or named exemption and the resulting verified commit to the handoff; reference them from the phase event. For `remote-review-contract`, carry the recorded reviewers and completion criteria into the external review plan; the exemption does not waive external review or CI.
 
-Completion: the Review Receipt is complete, every actionable finding is fixed or rejected with evidence, the resulting local diff is committed, and the single final basic-verification checkpoint is recorded.
+Completion: a complete Review Receipt or Entry exemption covers the committed candidate, every applicable local finding is fixed or rejected with evidence, and the single final basic-verification checkpoint is recorded. An exemption completes this runtime phase without removing it from the sequence.
 
 ### 5. Published
 
@@ -144,7 +144,7 @@ Completion: required CI is green for the final SHA, `visual-pr` confirms the ref
 
 1. For `stop-before-merge`, record `merge-ready`, proceed to Human Gate, and perform no merge or auto-merge action.
 2. For `merge-and-verify`, reconfirm that the PR still points at the final-CI SHA, targets the recorded base, is conflict-free, and has complete review and CI gates. Use the provider's expected-head precondition when available.
-3. Freeze the final post-merge watch plan against the current workflow configuration and expected merge lineage before any merge action.
+3. Freeze the final post-merge watch plan against the current workflow configuration and expected merge lineage before any merge action. If the merge would trigger production operations, follow [Production and Ops](production-ops.md) and establish separate authority before attempting it.
 4. For single-PR scope, stop if the PR targets an unmerged Graphite parent or merging would mutate an unowned diff. For an authorized stack, use [Graphite Stack Merge](graphite-merge.md) for merge selection, execution, and reconciliation instead of the single-PR merge procedure in steps 5 through 7.
 5. Record and attempt the repository's normal merge mechanism. An accepted, queued, pending, or ambiguous normal action is not permission for admin bypass; reconcile or wait.
 6. Admin bypass is authorized at most once for that head only when the provider conclusively rejects normal merge and live state names branch protection as the sole remaining blocker. A recorded CI waiver permits bypass of the waived checks. Unwaived CI, unresolved frozen feedback, conflicts, stale head or base, outages, missing permission, and unowned diffs remain blockers.
@@ -168,4 +168,4 @@ Completion: every expected relevant post-merge workflow is green for the latest 
 
 ### 11. Human Gate
 
-Append the terminal state with every cycle and PR URL, the delivery ceiling, final PR or merged SHA, merge and admin-bypass outcomes, Review Receipt, local verification, required CI, review plan, per-selector dispositions, frozen feedback sets, addressed findings, post-merge workflow results, follow-up repairs, and any residual risk. In the user-facing message, report the relevant PR URLs and final SHA, whether review, required checks, merge, and post-merge verification succeeded, and only unresolved findings, risk, or human action. Stop and wait for the user.
+Append the terminal state with every cycle and PR URL, the delivery ceiling, final PR or merged SHA, merge and admin-bypass outcomes, Review Receipt or named exemption, local verification, required CI, review plan, per-selector dispositions, frozen feedback sets, addressed findings, post-merge workflow results, follow-up repairs, and any residual risk. In the user-facing message, report the relevant PR URLs and final SHA, whether review, required checks, merge, and post-merge verification succeeded, and only unresolved findings, risk, or human action. Stop and wait for the user.

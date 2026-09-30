@@ -12,13 +12,19 @@ Deliver the requested outcome through the least process that can prove it. Subtr
 
 Establish the intended result, scope, success evidence, and authority from the request and accepted artifacts. Choose the route by the requested terminal outcome, not by the presence of a PR. Keep this framing in the conversation unless [Durable State](#durable-state) is needed.
 
+When a supervising agent calls this skill for bounded work, it retains scope, authority, integration, and final human reporting. The worker owns technical decisions within the assigned scope and returns results, Proof, and blockers to the supervisor; it does not take over the full workflow.
+
 Carry the agreed outcome through implementation and proportionate verification without asking permission for routine edits or safe checks. Autonomy operates within the agreed scope; a newly discovered dependency or a comprehensive spec does not automatically enlarge it. Use the [Work Frame](references/execution.md#work-frame) to distinguish this delivery from rollout prerequisites and follow-up work, including when preparing a spec or handoff prompt.
 
 Resolve inspectable facts yourself. Ask only when a missing decision changes the outcome, consequential behavior, scope, or authority. For unresolved product, public-contract, domain, security, money, data-lifecycle, deployment, ownership, or architectural choices, use [Design Readiness](references/design-readiness.md). A clear, bounded request needs no ceremonial approval or separate spec.
 
-Before any repository-content or Durable State write, or Recall/Pickup artifact recovery, follow [VCS Actions](references/vcs.md) to establish the one task-owned checkout (the **Task Worktree**). Re-anchor tools, artifacts, and delegates there. Commit, push, publication, merge, deploy, destructive data changes, and external messages require explicit authority; authorized local work does not imply it. The Finish Loop runbook owns delivery authority, including explicitly requested stack merges and CI waivers.
+Before any repository-content or Durable State write, or Recall/Pickup artifact recovery, follow [VCS Actions](references/vcs.md) to establish the one task-owned checkout (the **Task Worktree**). Re-anchor tools, artifacts, and delegates there. Commit, push, publication, merge, deploy, destructive data changes, and external messages require explicit authority; authorized local work does not imply it. The Finish Loop runbook owns code-delivery authority, including explicitly requested stack merges and CI waivers.
 
 If an instruction forces a pause or conflicts with the intended outcome, identify the limiting instruction and distinguish it from your interpretation. Report the smallest decision or permission needed to continue.
+
+## Production And Ops Boundary
+
+Production deployments and operational changes follow the caller's project-specific contract, not Finish Loop. When requested work includes them, or a merge would trigger them, follow [Production and Ops](references/production-ops.md) for ownership, explicit authority, and evidence of the actual effect. PR review and green CI alone do not prove production delivery.
 
 ## Route
 
@@ -37,7 +43,7 @@ Use only the selected route and references whose conditions apply. A matched ref
 
 Default evaluative or genuinely ambiguous requests to Discuss; explicit change requests to Implement. A discussion becomes persistent or mutating only with the corresponding authority. An explicitly requested temporary `show-me` HTML visual may be created outside the project without authorizing production changes.
 
-For a bounded operation such as restacking, syncing, submitting existing work, or updating a PR description, use only the applicable VCS, verification, and description procedures. Finish when the requested state transition is observed, intended changes are preserved, and relevant checks pass or a blocker is named. Existing PRs do not select Finish Loop. An authorized semantic repair expands scope only by that repair; readiness, CI monitoring, and landing remain separate outcomes unless already requested.
+For a bounded operation such as restacking, syncing, draft publication, updating a PR description, or addressing selected feedback, use only the applicable VCS, verification, `visual-pr`, and `review-remediation` procedures. Finish when the requested state transition is observed, intended changes are preserved, and relevant checks pass or a blocker is named; remediation also accounts for every frozen feedback item. Existing PRs and remote review contracts do not select Finish Loop. An authorized semantic repair expands scope only by that repair; readiness, CI monitoring, and landing remain separate outcomes unless requested. Requested end-to-end delivery, including land/merge/stack delivery and delivery with CI waivers, follows Finish Loop.
 
 Compact at a real phase boundary when exploration, planning, implementation, review, or delivery has produced context that no longer changes the next step. Retain the goal, authority, decisions, compact evidence, unresolved risks, and next action; leave raw logs and superseded attempts behind pointers. After compaction or pickup, reload this router once, recover the active step and live constraints, and re-evaluate the route and applicable references. Reuse a reference read recorded in working context or a durable handoff; reload when its content or the applicable authority changes.
 
@@ -49,11 +55,11 @@ When browser automation or UI inspection is required, follow [Browser Tools](ref
 
 - **Requested review:** follow the named review skill and its target, authority, and completion contract.
 - **Normal review:** use the repository's review workflow, or inspect every changed hunk and confirm or reject each candidate defect through its owning call path and relevant evidence. Verification commands are not independent review.
-- **Local Review:** Finish Loop and PR-bound Implement or Debug work follow [Local Review](references/local-review.md) after focused behavioral Proof and before the final basic-verification checkpoint and draft publication. It owns one provider-pass budget, the frozen target, Codex Autoreview, disposition, remediation, and Review Receipt.
+- **Local Review:** Finish Loop and PR-bound Implement or Debug work follow [Local Review](references/local-review.md) after focused behavioral Proof and before the final basic-verification checkpoint and draft publication. Its Entry owns exemptions, including an established remote-review contract; otherwise it owns one provider-pass budget, the frozen target, Codex Autoreview, disposition, remediation, and Review Receipt. An exemption preserves local verification and the `visual-pr` PR body gate.
 
 Non-PR Implement and Debug work is exempt unless independent review is requested. Mechanical maintenance of existing work follows the exemption in Local Review; substantive repairs retain its gate. Review mode uses Requested or Normal review. A worktree review needs no commit unless its selected tool requires one and the user authorizes it. Use `review-remediation` for a frozen feedback set; keep CI repair in its own workflow.
 
-Finding, CI, restack, and external-review remediation never trigger another local pass. Preserve a receipt across a mechanical target change only after proving the semantic patch and relevant base inputs unchanged. New product scope or other unreviewed behavior makes the receipt incomplete and returns control at the Human Gate; it does not replenish the review budget. Independent remote review remains a later delivery layer.
+Finding, CI, restack, and external-review remediation never trigger another local pass. Preserve a receipt across a mechanical target change only after proving the semantic patch and relevant base inputs unchanged. New product scope or other unreviewed behavior makes the receipt incomplete and returns control at the Human Gate; it does not replenish the review budget. Remote review follows the established contract and does not replace behavioral Proof.
 
 ## Delegation
 
