@@ -9,7 +9,7 @@ Start with the problem, not the patch. The target is the smallest durable implem
 
 ## 1. Recover the boundary
 
-Find the accepted problem and observable result in the conversation, ticket, issue, Feature Contract, spec, or PR context. Separate agreed behavior from suggested mechanisms, and record the in-scope failure path, non-goals, real compatibility obligations, and proof needed to know the problem stays solved. If the boundary is missing or contradictory, ask for the decision that would change what can be removed; do not infer product intent from the implementation or its tests.
+Recover the accepted user outcome and later explicit decisions from the conversation and linked context. Use a Feature Contract, plan, or PR as evidence, not as independent authority to enlarge that outcome. Separate agreed behavior from suggested mechanisms, and record the in-scope failure path, non-goals, real compatibility obligations, and proof needed to know the problem stays solved. If the boundary is missing or contradictory, ask for the decision that would change what can be removed; do not infer product intent from the implementation or its tests.
 
 Establish the requested diff baseline before judging size. For a PR or branch, include commits since the intended base plus staged, unstaged, and relevant untracked work; distinguish inherited and unrelated changes. For a narrower target, follow the user's range. Use [`subtract`'s Change Scopes](../subtract/references/change-scopes.md) to protect the index and history when editing staged or committed work.
 

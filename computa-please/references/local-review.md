@@ -1,59 +1,24 @@
 # Local Review
 
-Unless Entry establishes an exemption, use at most one independent Codex provider pass to challenge a complete PR candidate before publication. Keep implementation, local review, remediation, final basic verification, and external review as separate stages.
+Use at most one independent Codex provider pass against the complete PR candidate, after focused behavioral proof and before the final required checks and publication. This review challenges defects; the author’s scope and necessity checks remain separate.
 
-## Entry
+## Applicability
 
-Run this gate for:
+Apply to substantive agent-authored PR work, or a PR entering end-to-end delivery without review covering its current semantic diff. Reuse existing valid evidence. Exempt:
 
-- Agent-authored work that will be published as a PR.
-- An existing PR or branch entering a Finish Loop without a valid Review Receipt for its current semantic diff.
+- Local-only work unless independent review was requested.
+- Mechanical maintenance or description-only updates introducing no substantive implementation change and carrying no pending review requirement.
+- An established remote-review contract naming reviewers, completion criteria, required CI, and human approval owner, unless repository policy or the user requires a local pass.
 
-Non-PR Implement and Debug work is exempt unless the user requests independent review. Review mode follows its explicitly requested review workflow or the repository's normal review path.
+Record the exemption and its source in working context. It replaces only the local pass, not behavioral proof, required checks, or remaining remote gates. A requested named review follows its own workflow.
 
-Outside Finish Loop, mechanical restacks, synchronization, submission of existing work, and PR-description updates are exempt when they introduce no substantive implementation change and no review gate is already pending for agent-authored work. Inspect the operation's changes to establish that exemption. A substantive conflict repair or port retains the normal gate; maintenance does not waive repository-required review or an explicit review request.
+## One Pass
 
-Also exempt: PR-bound work with an established session contract naming remote reviewers, review completion criteria, required CI, and a human approval owner, unless repository policy requires local review or the user requests an independent local pass. Record `remote-review-contract` and the contract's source in working context or the active handoff. Bind focused behavioral Proof to the candidate commit and tree, and run the [final basic-verification checkpoint](execution.md#verification-budget) before publication or handoff. The exemption replaces the local provider pass and Review Receipt, not verification or the remote contract's remaining gates. A review request, bot approval, or green CI alone is not proof of correct behavior.
+1. Stabilize the complete slice and any known synchronization. Pin the intended base and complete candidate, including dirty work when it belongs to the target. Choose `autoreview`’s matching target mode; review does not grant commit authority or require an otherwise unnecessary commit.
+2. Load `autoreview` and follow its preparation and result contract. Use Codex with explicit P0/P1 scope (`--max-priority P1`) and `--max-review-passes 1`. Its dry-run can establish whether the complete target fits. A multi-pass requirement or unavailable tool is a named blocker, not permission to omit evidence, narrow the diff, or install a replacement.
+3. Treat the provider call as spending the budget. Verify every candidate finding through its owning path; fix evidenced in-scope defects and reject unsupported, duplicate, speculative, or stale claims with evidence.
+4. Refresh affected behavioral proof and run the final checks under [Execution](execution.md#verification). Retain a compact receipt: base, reviewed target, exact result status, dispositions, resulting candidate, and verification. Use working context or the existing handoff, not a new document requirement.
 
-**Complete when:** the work enters Freeze, or is exempt for a recorded reason with applicable local verification complete. For `remote-review-contract`, the source, candidate commit and tree, Proof, final checkpoint, and remaining remote gates are explicit; publication still follows `visual-pr` and the existing VCS authority.
+An incomplete, malformed, or mismatched result is not a clean review. A filtered result makes only its stated severity claim. CI repairs, mechanical restacks, remediation, publication, and pickup do not replenish the pass budget. Carry evidence across mechanical changes only after confirming semantic content and relevant base inputs are unchanged. New product scope returns to the user; it does not silently earn another review campaign.
 
-## Freeze
-
-1. Finish the complete implementation slice and its focused behavioral Proof. Complete known synchronization or restacking before review; defer the [final basic-verification checkpoint](execution.md#verification-budget) until disposition and remediation finish.
-2. Resolve the intended PR base to a commit. Under the existing VCS authority, commit the candidate, record the target commit and tree, and require a clean worktree with a non-empty branch diff. Local Review grants no commit, push, or publication authority.
-3. Bind the cached behavioral checks, exit statuses, and justified omissions to that target and tree. Reuse evidence whose relevant inputs are unchanged; refresh only affected checks through the [Execution Gate](execution.md#execution-gate) before binding Proof to a changed candidate.
-
-**Complete when:** the base, target commit, target tree, complete branch diff, and target-bound Proof are explicit.
-
-## Run
-
-The Local Review budget is one Autoreview provider pass per delivery cycle. The budget is spent when a provider call begins and is never replenished by findings, remediation, restacking, target drift, CI repair, publication, or context recovery.
-
-Load `autoreview` and follow its contract. First run the same invocation with `--dry-run` and record its predicted provider-pass count. If preparation predicts more than one provider pass, do not start Autoreview: record `review-budget-exceeded` and return the blocker at the Human Gate. Do not narrow the semantic target or omit authoritative artifacts merely to fit the budget.
-
-Invoke the helper once against the committed branch diff with Codex and an explicit P1 threshold:
-
-```bash
-"$AUTOREVIEW" \
-  --mode branch \
-  --base "<resolved-pr-base>" \
-  --engine codex \
-  --max-priority P1 \
-  --json-output "<owner-only-temporary-path>"
-```
-
-Add one concise `--prompt` only when an observed compatibility, reliability, security, or other production risk needs emphasis. The prompt names the concrete failure surface; it does not add reviewers or expand the target.
-
-Treat `scoped-clean`, `filtered`, or validated `findings` as terminal outcomes for the selected P0-P1 scope. Preserve the exact status: `filtered` is not a general correctness certificate. Treat `incomplete`, target mismatch, malformed output, scanner refusal, provider failure, target drift, or a multi-pass requirement as a blocker rather than a clean review. Do not add a structural review to this stage; an explicitly requested named review follows the router's Requested Review path instead of silently spending another local pass.
-
-**Complete when:** the Codex result is terminal after one provider pass, or the unspent review is blocked before a provider call. A blocked outcome skips Disposition and terminates at the Human Gate.
-
-## Disposition
-
-1. Verify every candidate through its owning path and strongest practical reproducer. Reject unsupported, speculative, duplicate, stale-target, style-only, and out-of-scope claims.
-2. Apply one bounded remediation pass for accepted findings and refresh only affected behavioral Proof under the [Execution Gate](execution.md#execution-gate).
-3. Run the Execution Gate's single final basic-verification checkpoint against the resulting local candidate, then create the additive remediation or finalization commit when files changed.
-4. Never rerun Autoreview in the delivery cycle. For a later mechanical target change, prove the semantic patch and relevant base inputs unchanged and carry the receipt forward. New product scope or any other unreviewed behavior makes the receipt incomplete and blocks publication pending a new human-authorized outcome; it does not return to Run.
-5. Record one Review Receipt in the active handoff: base commit, reviewed target commit and tree, provider-pass count, command and selected priority, terminal status, candidate dispositions, resulting commit, final verification coverage and outcomes, and incomplete reason when applicable. A Finish Loop references it from compact phase evidence.
-
-**Complete when:** every candidate is fixed or rejected with evidence, affected behavioral Proof and the one final basic-verification checkpoint pass, and the Review Receipt accounts for the reviewed and resulting heads without spending another provider pass.
+Complete when the applicable pass or exemption is accounted for, every finding has an evidenced disposition, and current required proof passes or a concrete blocker is reported.

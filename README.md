@@ -4,11 +4,11 @@ My collection of markdown files and scripts that I give to agents to hopefully d
 
 ## Catalog
 
-- **feature-grill**: Grill a concrete feature into a user-confirmed contract covering behavior, non-goals, invariants, failures, trust, operability, evidence, and delivery slices before specification or implementation.
+- **feature-grill**: Settle only the product decisions blocking a selected feature delivery, then resume the authorized task.
 - **subtract**: Survey a codebase for removable complexity or simplify unstaged, staged, uncommitted, and committed changes while preserving required behavior.
 - **scope-prune**: Cut a completed implementation back to the minimum durable change for its agreed problem.
 - **review-remediation**: Resolve a frozen set of PR feedback with evidence-backed root-cause fixes and version-matched research where needed.
 - **observability-logging**: Add the least production telemetry needed using structured logs, OpenTelemetry spans/events, bounded metrics, safe fields, and exact-once error recording.
-- **tech-spec**: Write an implementation-ready typed call-stack architecture handoff with subtraction-first design and risk-matched verification.
-- **computa-please**: Route engineering work from decision through the final human gate.
+- **computa-please**: Deliver the accepted outcome with minimum durable scope, proportionate proof, and authorized completion.
 - **record-verification**: Record an honest end-to-end UI walkthrough with checks and timestamps for human product and visual review, on request.
+- **drive-opencode-sessions**: Use OpenCode as compute: pick box vs the user's Mac by capability, start visible titled sessions, steer them mid-flight, run slices in parallel, and keep publish and proof inside OpenCode.

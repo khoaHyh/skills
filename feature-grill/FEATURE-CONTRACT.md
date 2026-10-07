@@ -1,73 +1,34 @@
 # Feature Contract Template
 
-Draft the contract after every applicable decision is resolved or explicitly deferred. Delete inapplicable rows and compress small sections, but preserve non-goals, invariants, reachable failure behavior, compatibility obligations, evidence gaps, and blockers.
+Use only the sections needed for the selected delivery. Keep it inline unless persistence is authorized. Record accepted behavior, not a wishlist or an exhaustive risk inventory.
 
 ```md
 # <Feature Name>
 
-Status: Draft | Confirmed - Blocked | Confirmed - Ready for Spec
+Status: Ready | Blocked
 
-## Outcome And Scope
+## Outcome
 
-- Actor or caller:
-- Trigger:
-- Observable result:
-- Current behavior:
-- Success signal:
-- Goals:
-- Explicit non-goals:
+- <Actor/trigger, current gap, and observable result of this delivery.>
 
-## Domain Model
+## Required Behavior
 
-- Canonical terms:
-- States and transitions:
-- Invariants:
-- Ownership, permissions, and visibility:
-- Calculations, ordering, and time semantics:
+- <Accepted rules and supported paths, including affected safety or compatibility obligations.>
+- <Reachable failure behavior only where it changes the result or its safety.>
 
-## Reachable Behavior
+## Non-goals
 
-| Scenario | Preconditions or trigger | Observable result | Rejection, failure, or recovery behavior |
-| --- | --- | --- | --- |
-
-Include the happy path and applicable boundaries, rejection, interruption, partial or duplicate work, delay, retry, cancellation, expiry, concurrency, authorization, recovery, and abuse cases.
-
-## System Fit And Operations
-
-- Affected callers and interfaces:
-- Source of truth, persisted state, schema evolution, and backfills:
-- Dependencies and protocol assumptions:
-- Compatibility posture: Direct cutover | Protected evolution - <named obligation; permanent support or removal condition>
-- Security, privacy, and data lifecycle:
-- Rollout, mixed-version behavior, migration, and recovery:
-- Operational questions and existing evidence:
-- New telemetry needed, if any:
-- Performance or resource limits:
+- <Excluded capabilities and follow-ups.>
 
 ## Proof
 
-| Risk or behavior | Proving surface | Expected evidence | Remaining gap |
-| --- | --- | --- | --- |
+- <Observable success signal and existing or necessary proving surface.>
+- <Required evidence still unavailable, if any.>
 
-## Delivery Slices
+## Unsettled Decisions
 
-| Slice | Observable result or risk retired | Prerequisites | Verification | Depends on / Follow-up |
-| --- | --- | --- | --- | --- |
+- Blocking: <Exact choice or evidence needed, and who/what can settle it.>
+- Deferred: <Later decision that does not block this delivery.>
 
-Excluded cleanup or speculative infrastructure:
-
-## Deferred Decisions
-
-| Decision | Evidence needed | Owner or method | Blocks |
-| --- | --- | --- | --- |
-
-## Blockers
-
-| Blocker | Needed to unblock |
-| --- | --- |
-
-## Confirmation
-
-- User-confirmed shared understanding:
-- Confirmation date:
+Accepted decisions: <Reference to the request or user answers.>
 ```

@@ -1,126 +1,52 @@
 ---
 name: computa-please
-description: Route engineering work from decision through the final human gate.
+description: Deliver scoped engineering outcomes with proportionate proof and authorized completion.
 disable-model-invocation: true
 ---
 
 # Computa Please
 
-Deliver the requested outcome through the least process that can prove it. Subtract before adding, preserve real compatibility obligations, and spend verification in proportion to risk. Let deterministic mechanisms own known transitions, side-effect guards, retries, and compact evidence; use the model for decisions that require interpretation.
+Deliver the requested result through the least process that can prove it. Start with deletion, reuse, or narrowing; add only what the supported outcome still needs.
 
-## Outcome And Authority
+## Bound The Result
 
-Establish the intended result, scope, success evidence, and authority from the request and accepted artifacts. Choose the route by the requested terminal outcome, not by the presence of a PR. Keep this framing in the conversation unless [Durable State](#durable-state) is needed.
+Recover the user’s outcome, explicit decisions, non-goals, success evidence, and authority. Keep this boundary in working context. Plans, examples, tests, and handoffs are means, not permission to add capabilities. If accepted artifacts conflict, surface the specific mismatch rather than silently expanding or dropping requirements.
 
-When a supervising agent calls this skill for bounded work, it retains scope, authority, integration, and final human reporting. The worker owns technical decisions within the assigned scope and returns results, Proof, and blockers to the supervisor; it does not take over the full workflow.
+Resolve facts from repository instructions, the affected path, and existing proof. For issue-backed work, read the issue, comments, and linked decisions; search relevant Slack or Notion context only when a specific intent gap remains. Ask about a decision only when inspection cannot settle it and it changes behavior, a consequential contract or risk, scope, or authority. Recommend an answer through the question tool. Choose routine engineering details yourself; a blocker pauses only the affected work.
 
-Carry the agreed outcome through implementation and proportionate verification without asking permission for routine edits or safe checks. Autonomy operates within the agreed scope; a newly discovered dependency or a comprehensive spec does not automatically enlarge it. Use the [Work Frame](references/execution.md#work-frame) to distinguish this delivery from rollout prerequisites and follow-up work, including when preparing a spec or handoff prompt.
+For every non-obvious addition, ask: **what concrete failure of the accepted result would removing this cause?** Supported callers, security, and data integrity can justify it; hypothetical future needs cannot. Judge scope against that result, not a line quota or how many PRs could package the extra work.
 
-Resolve inspectable facts yourself. Ask only when a missing decision changes the outcome, consequential behavior, scope, or authority. For unresolved product, public-contract, domain, security, money, data-lifecycle, deployment, ownership, or architectural choices, use [Design Readiness](references/design-readiness.md). A clear, bounded request needs no ceremonial approval or separate spec.
+Before mutation, establish the task-owned checkout and [VCS authority](references/vcs.md). Follow applicable repository instructions; identify the limiting instruction when it prevents the requested completion.
 
-Before any repository-content or Durable State write, or Recall/Pickup artifact recovery, follow [VCS Actions](references/vcs.md) to establish the one task-owned checkout (the **Task Worktree**). Re-anchor tools, artifacts, and delegates there. Commit, push, publication, merge, deploy, destructive data changes, and external messages require explicit authority; authorized local work does not imply it. The Finish Loop runbook owns code-delivery authority, including explicitly requested stack merges and CI waivers.
+## Route Only What Is Needed
 
-If an instruction forces a pause or conflicts with the intended outcome, identify the limiting instruction and distinguish it from your interpretation. Report the smallest decision or permission needed to continue.
-
-## Production And Ops Boundary
-
-Production deployments and operational changes follow the caller's project-specific contract, not Finish Loop. When requested work includes them, or a merge would trigger them, follow [Production and Ops](references/production-ops.md) for ownership, explicit authority, and evidence of the actual effect. PR review and green CI alone do not prove production delivery.
-
-## Route
-
-Use only the selected route and references whose conditions apply. A matched reference owns its procedure and completion criterion; read it before the action it governs.
-
-| Mode          | Requested outcome and route                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discuss       | Compare, evaluate, or decide. Read-only and ephemeral by default; finish with a recommendation, tradeoff, or decision.                                                                                                                                                                                                                                                                                                                 |
-| Spec          | A durable implementation plan. Use the [Work Frame and Subtraction](references/execution.md#work-frame), then `tech-spec` for contracts, call stacks, file ownership, and pending Proof. Production code stays read-only. A requested comprehension map selects or resumes Spec; use [Comprehension Map](references/comprehension-map.md) at its checkpoint.                                                                           |
-| Implement     | Verified local changes or draft-only publication. Use the accepted request, spec, Feature Contract, and handoff where present, then follow [Execution](references/execution.md). A Feature Contract alone routes to Spec when implementation boundaries remain unresolved.                                                                                                                                                             |
-| Finish Loop   | Drive accepted work, a PR, or an explicitly scoped stack through delivery: get it green, make it merge-ready, ship, land, merge, or verify post-merge workflows. Follow [Finish Loop](references/finish-loop.md) from its Entry Gate; its executable runtime owns transitions and external-action replay protection. Resolve merge authority from the user's request and prior context.                                                |
-| Debug         | Diagnose a failure, regression, flake, or performance problem with `diagnosing-bugs`. Finish diagnosis with the symptom reproduced or bounded and root cause or remaining uncertainty explicit. For an authorized fix, follow [Execution](references/execution.md) and rerun the original repro. Load telemetry skills only when the observed path needs them.                                                                         |
-| Review        | Find defects, independently of author confidence or prior conclusions. Follow the [Review Gate](#review-gate); report findings first with severity and file/line references. A one-pass PR status check is Discuss, not delivery.                                                                                                                                                                                                      |
-| Recall/Pickup | Recover artifacts and live state in the Task Worktree, distinguish inherited claims from reverified facts, and route the remainder. Resume a Finish Loop only from a nonterminal reduced runtime state with a recorded Entry Gate choice. A closed run provides no authority.                                                                                                                                                          |
-| Reflect       | Use observed corrections, retries, churn, successful recipes, and the [behavior evaluation harness](scripts/agent-runtime/README.md#behavior-evaluation) to improve the workflow. Capture a baseline, change one policy or mechanism, compare the candidate, and inspect every regression. Prefer deleting or replacing instructions; propose changes and their evaluation before editing unless implementation is already authorized. |
-
-Default evaluative or genuinely ambiguous requests to Discuss; explicit change requests to Implement. A discussion becomes persistent or mutating only with the corresponding authority. An explicitly requested temporary `show-me` HTML visual may be created outside the project without authorizing production changes.
-
-For a bounded operation such as restacking, syncing, draft publication, updating a PR description, or addressing selected feedback, use only the applicable VCS, verification, `visual-pr`, and `review-remediation` procedures. Finish when the requested state transition is observed, intended changes are preserved, and relevant checks pass or a blocker is named; remediation also accounts for every frozen feedback item. Existing PRs and remote review contracts do not select Finish Loop. An authorized semantic repair expands scope only by that repair; readiness, CI monitoring, and landing remain separate outcomes unless requested. Requested end-to-end delivery, including land/merge/stack delivery and delivery with CI waivers, follows Finish Loop.
-
-Compact at a real phase boundary when exploration, planning, implementation, review, or delivery has produced context that no longer changes the next step. Retain the goal, authority, decisions, compact evidence, unresolved risks, and next action; leave raw logs and superseded attempts behind pointers. After compaction or pickup, reload this router once, recover the active step and live constraints, and re-evaluate the route and applicable references. Reuse a reference read recorded in working context or a durable handoff; reload when its content or the applicable authority changes.
-
-## UI Craft
-
-For interface design, implementation, or review, identify the target platform and the project's owning components and design tokens. Load the smallest matching set of craft references before making visual or interaction choices:
-
-| Work | Skill |
+| Request | Route |
 | --- | --- |
-| Interface polish, component feedback, and whether motion earns its place | `emil-design-eng` |
-| React Native or Expo animation, gestures, and native transitions | `animate-expo` |
-| Mobile-web touch, viewport, keyboard, scrolling, and safe-area behavior | `mobile-native` |
+| Discuss, compare, or plan | Read-only by default. Return the requested decision or proportional plan; persist only when authorized. |
+| Implement a clear change | Go directly to [Execution](references/execution.md). No interview, separate spec, or confirmation ritual is required. |
+| Feature with unsettled behavior | Use `feature-grill` for decisions blocking this delivery, then resume the already-authorized task. A single decision needs only a direct question. |
+| Bug or performance regression | Use `diagnosing-bugs`; reproduce or bound the failure before an authorized fix, then verify the original path. |
+| Optimize or search for a solution | Use [Measured Optimization](references/execution.md#measured-optimization) with a baseline, objective, fixed invariants, and stopping condition. |
+| Simplify | Use `subtract`; use `scope-prune` for drift in an existing implementation. |
+| Review or remediate feedback | Follow the requested review or repository workflow. Report evidenced findings first; use `review-remediation` for the selected feedback set. |
+| Get work green, merge-ready, landed, or verified after merge | Use [Finish Loop](references/finish-loop.md) only to the requested boundary. A PR’s existence does not select this route. |
 
-Expo work is native, not mobile web. Add another reference only when the task crosses its scope; non-UI work needs none. If a skill is unavailable, report the gap and use the project's guidance rather than silently installing it.
+Bounded restacks, publication, and description updates need only their applicable procedure, not an end-to-end delivery cycle. Improve workflow instructions from observed failures; prefer removing a competing rule over adding ceremony.
 
-Reuse the project's components, tokens, and platform behavior. The selected route owns write authority and completion; craft guidance does not settle product requirements or authorize new dependencies, component replacements, or broader scope. Repository contracts remain authoritative for implementation and verification.
+## Prove And Finish
 
-Prove the changed interaction through the project's running-app verification path. Code inspection or desktop emulation alone does not establish touch feel, gesture interruptibility, or on-device performance; report unavailable device checks as pending rather than verified.
+[Execution](references/execution.md) owns implementation, test selection, UI craft, and verification. For PR-bound work, [Local Review](references/local-review.md) owns the single independent pass and its exemptions. Inspect the complete final diff for necessity as well as defects; passing checks answer neither scope nor mechanism value.
 
-## Browser Tools
+Finish all authorized delivery, carrying same-task permission through fixes and resumes. Standing draft-publication permission is recorded under [Authority](references/vcs.md#authority); it grants neither readiness nor merge. PR bodies follow the repository’s workflow; use `visual-pr` when the user explicitly selects it, against the final diff.
 
-When browser automation or UI inspection is required, follow [Browser Tools](references/execution.md#browser-tools).
+Production effects, including merge-triggered deployment, follow the owning project’s operations contract and explicit authority for the action and target. Verify the actual effect; green CI alone does not establish production delivery.
 
-## Review Gate
+Use concise diagrams when helpful and `show-me` or Paper for requested visual explanations. Create richer visual artifacts only when requested.
 
-- **Requested review:** follow the named review skill and its target, authority, and completion contract.
-- **Normal review:** use the repository's review workflow, or inspect every changed hunk and confirm or reject each candidate defect through its owning call path and relevant evidence. Verification commands are not independent review.
-- **Local Review:** Finish Loop and PR-bound Implement or Debug work follow [Local Review](references/local-review.md) after focused behavioral Proof and before the final basic-verification checkpoint and draft publication. Its Entry owns exemptions, including an established remote-review contract; otherwise it owns one provider-pass budget, the frozen target, Codex Autoreview, disposition, remediation, and Review Receipt. An exemption preserves local verification and the `visual-pr` PR body gate.
+## Keep Context And Ownership Small
 
-Non-PR Implement and Debug work is exempt unless independent review is requested. Mechanical maintenance of existing work follows the exemption in Local Review; substantive repairs retain its gate. Review mode uses Requested or Normal review. A worktree review needs no commit unless its selected tool requires one and the user authorizes it. Use `review-remediation` for a frozen feedback set; keep CI repair in its own workflow.
+Delegate independent retrieval or isolated work when it shortens the critical path; keep coupled implementation with one owner. Give delegates the path, bounded result, write ownership, authority, and required evidence. Use at most two concurrently unless broader parallelism is requested. The primary verifies pivotal claims, integrates, and owns scope and human reporting; a supervised worker returns its result rather than assuming the whole workflow.
 
-Finding, CI, restack, and external-review remediation never trigger another local pass. Preserve a receipt across a mechanical target change only after proving the semantic patch and relevant base inputs unchanged. New product scope or other unreviewed behavior makes the receipt incomplete and returns control at the Human Gate; it does not replenish the review budget. Remote review follows the established contract and does not replace behavioral Proof.
+At a real context boundary, retain outcome, decisions, authority, compact evidence, blockers, and next action. Persist only for requested artifacts, recovery, or coordination. On pickup, reconcile live checkout and provider state, distinguish inherited claims from observations, and inspect uncertain external effects before retrying them.
 
-## Delegation
-
-Delegate an independent investigation or isolated deliverable when it can shorten the critical path, resolve an uncertainty, or keep noisy exploration, documentation lookup, log analysis, or broad search out of the primary context. Split by context cost and ownership, not simulated job titles. Keep tightly coupled work with one implementation owner. Keep no more than two delegates running concurrently unless the user explicitly requests broader parallelism. The cap limits concurrency, not total delegation: queue additional work, start the next delegate when a slot opens, and continue useful primary work while both slots are occupied. Wait only when the active delegates are on the critical path and no independent work remains. The primary owns delegation decisions. Delegate authority stays inside the agreed scope; spare agent capacity is not a reason to open another workstream.
-
-Give each delegate the task-owned path and revision, bounded outcome, necessary context, read-only or exclusive write ownership, and expected evidence. Prove the first vertical slice before distributing dependent implementation. Shared contracts, migrations, test databases, and Git/Graphite mutations need one owner; disjoint filenames alone do not establish independence. While a delegate owns a surface, work elsewhere and inspect its changes after handoff.
-
-Request one concise result with changes or sourced facts, checks, and blockers. Resume for a concrete correction or new bounded deliverable, not status polling or repeated requests to restate a report. Batch necessary contract corrections; repeated coordination means the split is too coupled and should return to one owner. The primary owns integration, scope reconciliation, the final diff, and Durable State.
-
-Research and implementation delegates return scoped changes, facts with sources, or observed check results. Independent defect finding and readiness judgment belong to the Review Gate. Resolve unsupported or conflicting claims before relying on them.
-
-### Oracle Advisor
-
-Research delegates return evidence and unresolved decisions to the primary. The primary resolves routine design through established project patterns and consults `oracle` for a read-only second opinion only when evidence leaves a consequential invariant or costly-to-reverse cross-system decision unresolved, after two evidence-producing attempts leave the next mechanism unclear, or when the user explicitly requests it.
-
-Do not consult `oracle` for code location, documentation lookup, routine design, mechanical changes, a clear failure, or a first unsuccessful attempt. Give it the exact decision, task path and revision, settled constraints and authority, decisive evidence and unknowns, and the primary's proposed path with its strongest alternative. Missing product intent, risk acceptance, or action authority goes to the user through the primary.
-
-The primary verifies pivotal claims and owns the decision, implementation, Proof, and user interaction. Oracle advice does not expand scope, grant authority, or replace review or verification.
-
-## Durable State
-
-Keep state conversational unless the user requests persistence, work must survive sessions, agents or people must coordinate, or a Finish Loop needs its event log. Then follow [VCS Actions: Durable State](references/vcs.md#durable-state). Finish Loop state is reduced from its runtime-owned event log; prose handoffs summarize it but do not replace it. Keep workflow state out of product diffs, commits, and PRs.
-
-## Response Style
-
-Use plain language over jargon, and reference technical details only to the degree that it helps illustrate an idea or your work to the user. Communicate complex concepts in a clear and cohesive manner, and calibrate your writing to the level of background knowledge assumed from the user's prompt and context.
-
-## Visuals And PR Bodies
-
-When an inline visual would materially clarify structure, sequence, state, interaction, or a before-and-after change, load `show-me` and use its smallest useful view. Follow it with exactly: `Say “create HTML” for a richer visual.` On explicit acceptance, create and open one renderer-owned temporary HTML file outside the project, not product code or Durable State.
-
-### PR body gate (mandatory)
-
-Before drafting, returning, creating, or updating any PR body — including `gh pr create`, `gh pr edit --body-file`, `gt submit` description updates, or pasting a body into chat — invoke:
-
-```text
-skill({ name: 'visual-pr' })
-```
-
-Then follow that skill to completion. It owns the template (Why the change / Special things to note / Change outline), visual outline, publication, and final response.
-
-Do not write a PR body inline. Do not use Summary/Evidence/Test plan, Graphite Stack Context/What/Why, or any other local description contract. Loading `visual-pr` early during implementation does not satisfy this gate; invoke it at the moment of body draft or publish, against the final diff.
-
-## Stop Cleanly
-
-The **Human Gate** is the final handoff: the agreed outcome has its evidence and applicable review or delivery conditions, or a named blocker prevents completion. Scope checkpoints can occur earlier without reopening settled decisions or pausing independent authorized work. Once focused and required checks pass, finish; adjacent improvements belong to follow-up work.
-
-Report the result, changed artifacts or no change, strongest relevant check and outcome, any omitted required check, residual risk or blocker, and any next human decision. For a Finish Loop, use its terminal report and delivery ceiling. Then stop; a new outcome needs new authority.
+Stop when the accepted result has applicable proof and authorized delivery, or report the concrete blocker. Lead with the outcome, checks actually run, missing required evidence, and any human decision. Adjacent improvements remain follow-ups.
