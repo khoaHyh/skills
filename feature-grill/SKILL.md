@@ -1,33 +1,28 @@
 ---
 name: feature-grill
-description: Shape a bounded feature's unresolved product and behavioral decisions into a user-confirmed Feature Contract.
+description: Settle unresolved product behavior for a bounded feature, stopping when the selected delivery can be implemented and proved.
 ---
 
 # Feature Grill
 
-Agree on a feature's observable behavior before technical design. This skill is design-only: keep the repository read-only and return the contract inline unless the user or calling workflow authorizes writing the design artifact.
+Settle the product choices needed for the selected delivery. A clear request needs no interview. Keep the affected implementation read-only while a blocking choice remains; continue independent authorized work.
 
-Load `grilling` for the conversation. Resolve inspectable facts yourself; reserve questions for consequential product or behavioral choices, and recommend a concrete answer with each question. Inspect only the code, tests, docs, and runtime facts needed to settle the active decision or challenge an assumption.
+## Inspect Before Asking
 
-## Frame The Feature
+Recover the actor, trigger, requested result, explicit decisions, non-goals, and success signal. Read the relevant issue, comments, linked decisions, affected code, and existing proof. Search available Slack or Notion context only for a specific remaining intent gap. Facts and routine implementation choices are the agent’s work.
 
-Bound the feature by its actor or caller, trigger, observable outcome, current gap, goals, explicit non-goals, and success evidence. If the request is broader than one capability, narrow only the decisions needed to name a coherent feature rather than implying the whole direction is resolved.
+Ask through the question tool only about unsettled choices that change this delivery’s observable behavior, domain rules, public contract, trust, retained data, or consequential risk. Explain why inspection cannot settle the choice, recommend a concrete answer, and give meaningful alternatives. Reuse answered decisions rather than asking for confirmation again.
 
-Use [FEATURE-CONTRACT.md](FEATURE-CONTRACT.md) as a risk map, not a questionnaire. Follow only branches reachable from the agreed behavior and known dependencies, and let settled answers reshape what remains. Surface contradictions between the requested model and the current system; resolve them with the user or retain them as blockers.
+## Bound The Interview
 
-Choose direct cutover when no current consumer, retained data, deployment constraint, or user requirement needs the old path. Preserve compatibility only for a named obligation, with a removal condition when temporary. Match proof to important risks and real boundaries; existing thorough evidence may be enough. Prefer the smallest vertical slice with an independently observable result or a named risk retired, excluding adjacent cleanup and speculative infrastructure.
+Choose the smallest complete delivery with an independently observable result. Challenge contradictions and missing behavior on that supported path. Examine permissions, failure handling, concurrency, compatibility, rollout, or operations only when an actual affected obligation makes them relevant. A product rule does not mandate a proposed controller, recovery system, or migration tool.
 
-Load `codebase-design` only when an interface or ownership seam is genuinely unsettled. Load `observability-logging` only when detailed signal design is needed. When authorized durable glossary or ADR changes are part of the requested artifact, let `domain-modeling` own them.
+Stop asking when the selected delivery can be implemented and verified without another product decision. Later capabilities stay deferred; they do not keep this interview open. Use exhaustive `grilling` only when the user explicitly requests a broader stress test.
 
-## Keep Unknowns Visible
+If a blocker needs empirical evidence, name the exact uncertainty and the smallest useful repository-native repro, experiment, or research step. Run it only within existing authority. Use `codebase-design` for a genuinely unsettled seam and `domain-modeling` for requested glossary or ADR work, not to create additional stages.
 
-When conversation cannot settle a decision, record the exact uncertainty, needed evidence, owner or method, and downstream decisions it blocks. A bounded `prototype` may answer state-model, business-rule, or UI uncertainty; protocol, migration, deployment, concurrency, or performance questions usually need a repository-native repro, experiment, benchmark, or research task. Recommend the follow-up without running it unless separately authorized.
+## Return And Resume
 
-## Confirm The Contract
+Summarize the accepted boundary inline using [FEATURE-CONTRACT.md](FEATURE-CONTRACT.md), omitting empty sections. Ask for acceptance only of choices or a proposed boundary the user has not yet accepted. Mark it **Ready** when no decision or evidence gap blocks this delivery, otherwise **Blocked** with what would unblock it. A ready delivery can still have deferred later decisions.
 
-Once every applicable branch is resolved or explicitly deferred, render a `Draft` from the template and ask the user to correct or confirm the shared understanding. Explain omissions only when they carry risk. After confirmation, date the contract and use exactly one terminal status:
-
-- `Confirmed - Ready for Spec`: no unresolved decision changes observable behavior, trust, retained data, operability, proof, or the first delivery slice.
-- `Confirmed - Blocked`: at least one such decision still needs evidence or a user choice.
-
-The first slice must remain independently observable and verifiable. Return a blocked contract with its evidence needs; hand only `Confirmed - Ready for Spec` to `tech-spec` or the repository's specification flow. Confirmation authorizes neither specification, implementation, nor another durable mutation.
+Write a durable contract only when requested or authorized for recovery/coordination. A standalone design request ends here. When the calling task already authorized implementation, resume it within the accepted boundary; this checkpoint neither cancels that authority nor grants new publication or operational permission.

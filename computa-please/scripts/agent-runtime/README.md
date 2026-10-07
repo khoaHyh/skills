@@ -1,5 +1,11 @@
 # Agent Runtime And Evaluation
 
+## Optional Compatibility Tools
+
+These scripts are retained for existing delivery records and explicitly requested tooling use. Ordinary work follows [Finish Loop](../../references/finish-loop.md) without a second runtime or event log. The reducer still implements its original phase sequence; it does not infer the [standing draft-publication grant](../../references/vcs.md#authority) or define the current router’s completion rules.
+
+For recovery, inspect an existing log with `state` and reconcile its recorded actions with live provider state before mutation. Preserve spent-action evidence. Continue the legacy event protocol only when the caller explicitly retains it; a recorded ceiling alone supplies no new authority.
+
 ## Finish Loop Runtime
 
 `runtime.mjs` is a pure reducer for Finish Loop state. `cli.mjs` is its filesystem adapter: it owns an append-only event log, serializes writers with a lock, adds event IDs and timestamps, and durably records guarded actions before returning an execution effect.
@@ -81,7 +87,9 @@ Successful output drops command noise. Failed output retains a bounded first dia
 
 ## Behavior Evaluation
 
-The dependency-free Node ESM harness measures prompt or runtime behavior changes. It does not call a model or train one. A separate runner must execute each scenario with a fixed model and settings, normalize the observed agent trace, and write `responses.jsonl`.
+The dependency-free Node ESM harness scores supplied traces. It does not call a model or train one. A separate runner must execute each scenario with a fixed model and settings, normalize the observed agent trace, and write `responses.jsonl`.
+
+The bundled scenarios are historical contracts for the original router/runtime, including then-required phase events and skill invocations. They are not acceptance criteria for the current pruned router. Passing helper tests or scoring synthetic traces does not establish better agent behavior, scope, or human review cost. Workflow improvement needs observed task evidence; it does not require building a new runner or evaluation service.
 
 Use the harness to capture a baseline, change the prompt or runtime, capture a candidate with the same runner, model, and settings, score both captures, and compare them. Inspect the comparison's per-scenario regressions before accepting an aggregate score improvement.
 
