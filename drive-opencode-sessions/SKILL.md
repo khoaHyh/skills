@@ -11,15 +11,15 @@ OpenCode is client/server. The Grok chat is the coordinator; OpenCode sessions a
 
 ## 1. Pick where it runs (by capability, not habit)
 
-- **Box (default):** pure repo, `gh`, CI/CD, web flows, headless checks. Run `opencode2 run --agent computa …` (or the lane's configured primary agent) on the shared box. Wrap standalone runs in the lane's watchdog script when one exists (e.g. `/workspace/opencode-lane/bin/opencode-run-watchdog.sh`).
-- **User's Mac (capability-signaled only):** work needing Mac-only tools — Simulator, Paper MCP, Figma desktop MCP, aws CLI + SSO, Desktop-only Executor tools, local signed-in apps. Drive OpenCode **on the Mac** (headless against the Mac `opencode serve` is fine; TUI not required). Scope that session to the Mac-only slice, collect proof, then continue remaining work on the box.
+- **Box (default):** pure repo, `gh`, CI/CD, web flows, headless checks. Start each worker as a session on the box's OpenCode v2 server (`session.create` + `session.prompt`) and steer it by session id. Don't use `opencode2 run` clients for workers or wrap them in a bash watchdog; the server owns resume. Run at most about 4 coding sessions on the box at once, and only one heavy lint or test run at a time.
+- **User's Mac (capability-signaled only):** work needing Mac-only tools — Simulator, Paper MCP, Figma desktop MCP, aws CLI + SSO, Desktop-only Executor tools, local signed-in apps. Drive OpenCode **on the Mac** (headless sessions on the Mac's `opencode serve`, same server-API pattern; TUI not required). Scope that session to the Mac-only slice, collect proof, then continue remaining work on the box.
 - **Never** burn the Mac for box-capable work, and never use bare Grok `Shell` + `machineId` as a substitute for a Mac OpenCode session (only tiny diagnostics the user explicitly asked for outside OpenCode).
 
 ## 2. Start visible sessions
 
 - Open the session in the matching project directory/worktree so the user can see it in OpenCode `/sessions`.
 - Title every session you start `<Bot name>: <short title>` (e.g. `kewl-aid: invite accept QA`, `OpenCode Sr: aws SSO handoff`). Set/rename at session start.
-- Use the lane's locked model and primary agent from the bot's persona/config; don't launch disabled agents (e.g. build/plan) or other models.
+- Set the lane's locked primary agent and model explicitly on every session (e.g. `computa` + `openai/gpt-6.1-sol#high`); never rely on the server default, and don't launch disabled agents (e.g. build/plan, general) or other models or variants.
 - One task-owned worktree per independent accepted slice; workers on the same task share its checkout and ownership rules.
 
 ## 3. Prompt like an owner
@@ -42,8 +42,13 @@ Have workers retrieve missing facts and choose routine engineering details. Retu
 
 ## 4. Steer mid-flight, in parallel
 
-- Same task: `--continue` / `--session <id>` — supply inspected facts or the user's decision, redirect, and resume. Don't start a duplicate session for work already running.
+- Split each ask into independent slices and launch them all right away.
+- Same task: prompt the existing session by id — supply inspected facts or the user's decision, redirect, and resume. Don't start a duplicate session for work already running.
 - New independent accepted slice: start a sibling session + worktree. Never pause or back-burner an in-flight session to make room.
+- A gate on one slice pauses only that slice: prep its work up to the gate and keep the others moving. Never end a turn on "waiting" while any slice can still move.
+- "Server restarted" means the server auto-resumed the session, not that it died. Check the session's status before calling it dead; if it really died, resume or relaunch it in the same turn. Never do the worker's job yourself.
+- Answer worker questions through each session's question form; never cancel them.
+- Inside a slice, the worker agent may fan out with its own background subagents.
 - Track each live worker: title, session id, worktree/path, box vs Mac, linked PR/issue.
 - Don't fire-and-forget: check output, chase stalls, push back on first drafts.
 
