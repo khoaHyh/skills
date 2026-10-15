@@ -35,9 +35,11 @@ Bounded restacks, publication, and description updates need only their applicabl
 
 ## Prove And Finish
 
-[Execution](references/execution.md) owns implementation, test selection, UI craft, and verification. For PR-bound work, [Local Review](references/local-review.md) owns the single independent pass and its exemptions. Inspect the complete final diff for necessity as well as defects; passing checks answer neither scope nor mechanism value.
+[Execution](references/execution.md) owns implementation, test selection, UI craft, and verification. For PR-bound work or an explicit review request, [Review](references/review.md) owns risk-based reviewer selection, reuse, and repeat-review decisions. Inspect the complete final diff for necessity as well as defects; passing checks answer neither scope nor mechanism value.
 
 Finish all authorized delivery, carrying same-task permission through fixes and resumes. Standing draft-publication permission is recorded under [Authority](references/vcs.md#authority); it grants neither readiness nor merge. PR bodies follow the repository’s workflow; use `visual-pr` when the user explicitly selects it, against the final diff.
+
+Before opening or updating any PR, run `scope-prune` and `test-audit` on the session’s own diff. The PR body includes a **Locked decisions** block copied word for word from Khoa’s chat and a net-line budget sized to the slice (never a fixed number: a migration or UI piece runs larger, a pure function or config change smaller) with one line on why that budget. If the diff exceeds the budget or contradicts a locked decision, stop and ask Khoa instead of publishing.
 
 Production effects, including merge-triggered deployment, follow the owning project’s operations contract and explicit authority for the action and target. Verify the actual effect; green CI alone does not establish production delivery.
 

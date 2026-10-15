@@ -12,7 +12,7 @@ Keep a compact working record of the target, authority source, evidence, outstan
 
 ## Prepare And Publish
 
-Complete necessary implementation under [Execution](execution.md), follow [Local Review](local-review.md) or its exemption, and run current required local checks. Publish through [VCS](vcs.md#commits-and-publication) as a draft and confirm the intended head and base. Keep the description accurate against the final diff.
+Complete necessary implementation under [Execution](execution.md), select reviews under [Review](review.md), complete any selected local review, and run current required local checks. Publish through [VCS](vcs.md#commits-and-publication) as a draft and confirm the intended head and base. Keep the description accurate against the final diff.
 
 Mark ready only when the requested delivery includes readiness or merge. If that transition triggers a review or another external effect, reconcile it with the applicable contract before acting. Draft-publication permission does not itself authorize spending review quota.
 
@@ -22,7 +22,7 @@ Required checks gate delivery at the requested boundary. Observe provider result
 
 For attributable failures, diagnose the first causal error, make the smallest scoped repair, refresh affected local proof, and publish an additive update. Reuse unaffected evidence; honor exact-final-head checks required by the repository. Stop after two consecutive repair attempts for the same failure yield no new evidence or diagnosis. Pending runs follow a bounded provider or agreed deadline; external outages and unavailable required infrastructure are blockers.
 
-Use the existing review contract rather than inventing another reviewer stage. Resolve required reviewers and completion signals from live provider state. Progress notices, identity, eligibility notices, and summary scores are not completed feedback. Reuse attributable completed results. Request a review only when authorized, at most once per named action for this delivery; record the attempt before invoking it and retain it through timeout, ambiguous results, new commits, and pickup. An absent required result at its deadline is a blocker, not a reason to spend another request.
+Use the selected [Review](review.md) plan and its repeat-review rule rather than inventing another reviewer stage. Resolve required reviewers and completion signals from live provider state. Progress notices, identity, eligibility notices, and summary scores are not completed feedback. Request reviews only when authorized; record each attempt before invoking it and retain it through timeout, ambiguous results, new commits, and pickup. An absent required result at its deadline is a blocker, not a reason to spend another request.
 
 Once selected feedback is complete, freeze its IDs, bodies, and reviewed revision and use `review-remediation` once for that set. Verify every item against the current patch; account for zero findings explicitly. Publish fixes before any authorized reply or resolved-state update. Messages and provider state changes retain their separate authority. Reconcile ambiguous effects before retrying. Later feedback is a separate bounded set, not an automatic restart of local or external review.
 
