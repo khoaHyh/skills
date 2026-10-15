@@ -20,7 +20,7 @@ Size can raise scrutiny, never lower it. Classify documentation, configuration, 
 1. Reuse applicable completed reviews and wait for relevant reviews already running before spending another request. An automatic Greptile review can satisfy the selected Greptile review when its coverage and effort meet the plan.
 2. Preserve each contributor's automatic-review preferences and author exclusions. Selecting None means requesting nothing additional; it does not disable someone else's automation. Changing bot settings, buying credits, or configuring integrations is separate work.
 3. Stabilize the candidate and pin its base and complete diff, including dirty work for a selected local review. Give reviewers the requirements and applicable repository contracts, not just the author's explanation. Confirm access, author-filter behavior, supported triggers, and authority before requesting a review; this policy grants no publication, paid-request, reply, or merge permission.
-4. Request one initial review from each selected reviewer using the existing integrations. Hosted reviews require an existing PR; perform selected local review before publication. A requested named review follows its own workflow.
+4. Request one initial review from each selected reviewer using the existing integrations. Hosted reviews require an existing PR; perform any up-front local review before publication. A requested named review follows its own workflow.
 
 Documented PR comment triggers:
 
@@ -31,9 +31,17 @@ Documented PR comment triggers:
 | Bugbot | `bugbot run` |
 | Codex Security Review, when access and setup are verified | `@codex security review` |
 
-Greptile requests can raise configured effort, not lower it. Bugbot reads `.cursor/BUGBOT.md`, not Cursor's `.mdc` project rules. Ordinary Codex review with a security prompt is not the dedicated Security Review. Codex Security setup remains pending until verified; report the missing dedicated coverage rather than claiming it ran. An explicitly required unavailable review is a blocker.
+Greptile requests can raise configured effort, not lower it. Bugbot reads `.cursor/BUGBOT.md`, not Cursor's `.mdc` project rules.
 
 Use `autoreview` only when requested or selected up front as the local route, not as a mandatory pass beneath hosted reviews. Load its skill, select the complete target, and use explicit P0/P1 scope (`--max-priority P1`) with `--max-review-passes 1`. Preparation or isolation failures remain blockers, not permission to truncate scope or switch hosts after launch.
+
+### Dedicated Security Review Fallback
+
+When dedicated security review is selected and authorized, prefer `@codex security review`. On confirmed rejection or a failed run, use the separate open-source `@openai/codex-security` CLI once for the same candidate. Skip a GitHub route already known broken for this account/repository; reconcile ambiguous requests before switching rather than treating silence as failure.
+
+For the CLI fallback, prefer the installed `codex-security` executable. Read `codex-security scan --help` and the [official CLI guide](https://developers.openai.com/codex/security/cli) for version-current diff targeting, preflight, permissions, limits, and result handling. Use ChatGPT authentication (`--auth chatgpt`) rather than ambient API keys. Scan the same pinned PR diff, report-only, within existing authority and spending limits. Keep artifacts private outside Git worktrees and remove unrelated credentials from the scan environment.
+
+A completed CLI report supplies dedicated security coverage, not completion of a required GitHub check. Ordinary `codex review` with a security prompt is not the dedicated CLI. Report missing coverage as a blocker when explicitly required.
 
 Product contracts: [Greptile triggers and effort](https://www.greptile.com/docs/code-review/review-tiers), [Bugbot](https://cursor.com/docs/bugbot), [Codex Security Review](https://developers.openai.com/codex/security/security-review). Verify current documentation when setup or trigger behavior is uncertain.
 
