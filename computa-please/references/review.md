@@ -15,9 +15,11 @@ For PR-bound work, inspect the complete candidate, accepted requirements, affect
 
 Choose the combination before invoking reviewers; do not run Base as an automatic stepping stone to Plus. Money, state, deployment, shared-contract changes, size, and file count prompt closer risk assessment, not an automatic paid tier or reviewer bundle. Classify by actual effects and remaining uncertainty, not filenames. Security review can stand alone or accompany one justified general reviewer.
 
+For an authorized initial Greptile Base review, post `@greptileai review` once on the PR and observe the result. This is the normal GitHub route; it needs neither Greptile CLI authentication nor a dashboard/pricing audit. An unknown inherited tier or an unset `effort` field is not a reason to block or switch to the CLI.
+
 ### Premium Review Approval
 
-**Every request for Bugbot or a Greptile tier above Base requires Khoa's explicit approval.** A generic "run the appropriate reviews" request delegates the choices above, not premium spending. Verify the effective Greptile tier: configured higher tiers or Auto that could choose one require approval even when the trigger comment does not name a premium tier. If Base cannot be confirmed, ask before invocation.
+**Bugbot and explicit above-Base Greptile requests require Khoa's approval.** Also ask when concrete configuration or provider evidence shows the normal request would use a higher tier or Auto. Uncertainty alone is not that evidence. A generic "run the appropriate reviews" request delegates the ordinary choices above, not a deliberate premium request.
 
 For an unapproved premium proposal, use the question tool with Yes/No choices. Name the proposed reviewer/tier and scope, explain the concrete risk and why cheaper coverage is insufficient, and state the known credit/usage impact or uncertainty. Prefer one premium general reviewer; combining a premium Greptile tier with Bugbot is exceptional, needs distinct reasons for both, and requires explicit approval of the pair. Either approved reviewer may accompany Codex Security when security coverage is also needed.
 
@@ -34,20 +36,22 @@ Documented PR comment triggers:
 
 | Review | Comment |
 | --- | --- |
-| Greptile Base, with Base configured | `@greptileai review` |
+| Greptile initial standard review | `@greptileai review` |
 | Greptile Plus | `@greptileai effort: plus` |
 | Bugbot | `bugbot run` |
-| Codex Security Review, when access and setup are verified | `@codex security review` |
+| Codex Security GitHub route, only when explicitly requested or required | `@codex security review` |
 
-Greptile requests can raise configured effort, not lower it. If the provider actually rejects an authorized manual Greptile request because of a filter, report the missing coverage rather than silently skipping review or editing the configuration. Bugbot reads `.cursor/BUGBOT.md`, not Cursor's `.mdc` project rules.
+The plain Greptile comment inherits configured settings; it does not force Base or lower a higher configured tier. If the provider actually rejects an authorized manual Greptile request because of a filter, report the missing coverage rather than silently skipping review or editing the configuration. Bugbot reads `.cursor/BUGBOT.md`, not Cursor's `.mdc` project rules.
 
 Use `autoreview` only when requested or selected up front as the local route, not as a mandatory pass beneath hosted reviews. Load its skill, select the complete target, and use explicit P0/P1 scope (`--max-priority P1`) with `--max-review-passes 1`. Preparation or isolation failures remain blockers, not permission to truncate scope or switch hosts after launch.
 
-### Dedicated Security Review Fallback
+### Dedicated Security Review
 
-When dedicated security review is selected and authorized, prefer `@codex security review`. On confirmed rejection or a failed run, use the separate open-source `@openai/codex-security` CLI once for the same candidate. Skip a GitHub route already known broken for this account/repository; reconcile ambiguous requests before switching rather than treating silence as failure.
+When dedicated security review is selected and authorized, prefer the installed open-source `codex-security` CLI. Use the GitHub `@codex security review` route only when explicitly requested or required by the owning contract; an unavailable GitHub connector does not mean the CLI is unavailable. Reconcile existing requests before launching another route, and report the status of each route precisely.
 
-For the CLI fallback, prefer the installed `codex-security` executable. Read `codex-security scan --help` and the [official CLI guide](https://developers.openai.com/codex/security/cli) for version-current diff targeting, preflight, permissions, limits, and result handling. Use ChatGPT authentication (`--auth chatgpt`) rather than ambient API keys. Scan the same pinned PR diff, report-only, within existing authority and spending limits. Keep artifacts private outside Git worktrees and remove unrelated credentials from the scan environment.
+Read `codex-security scan --help` and the [official CLI guide](https://developers.openai.com/codex/security/cli) for version-current diff targeting, preflight, permissions, limits, and result handling. Use ChatGPT authentication (`--auth chatgpt`) rather than ambient API keys. Scan the pinned PR diff, report-only, within existing authority and applicable approved limits. Keep artifacts private outside Git worktrees and remove unrelated credentials from the scan environment.
+
+Do not invent a per-scan dollar ceiling for ChatGPT-authenticated scans. Apply user- or repository-approved limits that actually govern the run. CLI dollar estimates use API prices; they are not actual charges or a measure of ChatGPT subscription allowance.
 
 A completed CLI report supplies dedicated security coverage, not completion of a required GitHub check. Ordinary `codex review` with a security prompt is not the dedicated CLI. Report missing coverage as a blocker when explicitly required.
 
