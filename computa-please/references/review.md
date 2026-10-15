@@ -18,8 +18,8 @@ Size can raise scrutiny, never lower it. Classify documentation, configuration, 
 ## Run Only The Selected Reviews
 
 1. Reuse applicable completed reviews and wait for relevant reviews already running before spending another request. An automatic Greptile review can satisfy the selected Greptile review when its coverage and effort meet the plan.
-2. Preserve each contributor's automatic-review preferences and author exclusions. Selecting None means requesting nothing additional; it does not disable someone else's automation. Changing bot settings, buying credits, or configuring integrations is separate work.
-3. Finish implementation/iteration and applicable local verification, then pin the candidate's base and complete diff, including dirty work for a selected local review. Give reviewers the requirements and applicable repository contracts, not just the author's explanation. Confirm access, author-filter behavior, supported triggers, and authority before requesting a review; this policy grants no publication, paid-request, reply, or merge permission.
+2. **Khoa's Greptile `excludeAuthors` entry is not a manual-review waiver.** Its intent is to suppress unsolicited automatic reviews, not this skill's selected, authorized manual review. An automatic "author excluded/skipped" notice neither waives the rubric nor counts as completed review coverage. Preserve each contributor's automation settings and author exclusions. Selecting None means requesting nothing additional; it does not disable someone else's automation. Changing bot settings, buying credits, or configuring integrations is separate work.
+3. Finish implementation/iteration and applicable local verification, then pin the candidate's base and complete diff, including dirty work for a selected local review. Give reviewers the requirements and applicable repository contracts, not just the author's explanation. Confirm access, supported manual triggers, and authority before requesting a review; this policy grants no publication, paid-request, reply, or merge permission.
 4. Request one initial review from each selected reviewer using the existing integrations. Record each request before invocation and retain it through timeouts and resumes. Hosted reviews run on the draft PR; perform any up-front local review before publication. Keep the PR draft through review, finding remediation, and affected verification. If a reviewer requires a ready PR, report that constraint rather than promoting the PR to trigger it. A requested named review follows its own workflow.
 
 Documented PR comment triggers:
@@ -31,7 +31,7 @@ Documented PR comment triggers:
 | Bugbot | `bugbot run` |
 | Codex Security Review, when access and setup are verified | `@codex security review` |
 
-Greptile requests can raise configured effort, not lower it. Bugbot reads `.cursor/BUGBOT.md`, not Cursor's `.mdc` project rules.
+Greptile requests can raise configured effort, not lower it. If the provider actually rejects an authorized manual Greptile request because of a filter, report the missing coverage rather than silently skipping review or editing the configuration. Bugbot reads `.cursor/BUGBOT.md`, not Cursor's `.mdc` project rules.
 
 Use `autoreview` only when requested or selected up front as the local route, not as a mandatory pass beneath hosted reviews. Load its skill, select the complete target, and use explicit P0/P1 scope (`--max-priority P1`) with `--max-review-passes 1`. Preparation or isolation failures remain blockers, not permission to truncate scope or switch hosts after launch.
 
@@ -49,9 +49,15 @@ Product contracts: [Greptile triggers and effort](https://www.greptile.com/docs/
 
 For completed PR feedback, use `review-remediation` on the frozen finding IDs and reviewed revision. Verify findings against the supported caller path and requirements. Fix evidenced consequential defects; reject unsupported, duplicate, speculative, or stale findings with a short reason. Refresh affected behavioral proof and required checks after fixes. Publish any fixes before authorized replies or resolutions.
 
-**Default to no repeat review.** The agent may request another review only when it identifies a concrete unresolved risk that existing review, direct inspection, and focused verification do not adequately cover. Examples include a repair that changes a critical transaction or security boundary, newly introduced consequential behavior, or an incomplete assessment that still needs coverage. State the risk, why another reviewer pass is necessary, and the smallest useful reviewer/scope before invoking it, within existing authority and spending limits.
+**Default to no repeat review.** Compare the substantive diff and behavior against the last reviewed revision and scope. Commit count, branch age, or a newer SHA does not establish stale coverage. Lint/format fixes and minor edits that leave reviewed behavior intact normally reuse the existing assessment; fixing a finding, rebasing, repairing CI, or resuming a session is not by itself a reason to review again.
 
-Fixing a finding, pushing commits, rebasing, repairing CI, or resuming a session is not by itself a reason to review again. A newer SHA alone does not erase useful review evidence. Obey any repository requirement for exact-head review; otherwise record subsequent changes and their proof without presenting an older review as a review of the final head.
+**Greptile re-reviews require Khoa's explicit approval.** Once a completed Greptile review exists for the PR, another pass—including an effort upgrade—spends additional credits and needs approval before invocation. A generic request to "run the appropriate reviews" authorizes a missing initial review, not a Greptile re-review.
+
+When substantive changes leave material risk uncovered, recommend a Greptile re-review by identifying the reviewed revision, meaningful changes since it, coverage gap, and proposed scope/tier and credit impact. Wait for approval; do not invoke it merely because the branch changed substantially. Small changes to a critical boundary can justify a recommendation; many mechanically equivalent commits do not.
+
+For other reviewers, the agent may request another pass only for a concrete unresolved risk that existing review, direct inspection, and focused verification do not adequately cover. State the risk, why another pass is necessary, and the smallest useful reviewer/scope before invoking it within existing authority and spending limits.
+
+Honor repository requirements for exact-head review, but surface missing Greptile approval as a blocker rather than spending automatically. Otherwise record subsequent changes and their proof without presenting an older review as a review of the final head.
 
 Reconcile queued, timed-out, or ambiguous requests before considering another invocation. Silence, missing comments, summary scores, and failed or incomplete runs are not a clean review. Report unavailable coverage and resolve required missing evidence rather than spending repeated requests for a nicer verdict.
 
