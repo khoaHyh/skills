@@ -26,13 +26,13 @@ Each test needs an observable behavior or invariant, a credible regression, and 
 
 Exercise the real changed or failing path; lint and typecheck alone do not prove behavior. Use the appropriate integration test, domain test, safe runtime repro, migration/configuration command, or observed interaction. Preserve authorization, transaction, concurrency, and data-integrity proof where those obligations are affected.
 
-Inspect command definitions and choose the smallest set covering the relevant risks and repository-required checks. An aggregate replaces only phases it actually includes. Keep editing feedback focused; run the final required checks after the candidate and any local-review remediation stabilize. Scope mutating formatters/fixers to intended files and inspect their changes. Give shared test databases and verification resources one owner; choose a safe available task-owned resource rather than taking another task’s.
+Inspect command definitions and choose the smallest set covering the relevant risks and repository-required checks. An aggregate replaces only phases it actually includes. Keep editing feedback focused; run the final required checks after the candidate and any review remediation stabilize. Scope mutating formatters/fixers to intended files and inspect their changes. Give shared test databases and verification resources one owner; choose a safe available task-owned resource rather than taking another task’s.
 
 Record commands, covered inputs, exit status, and omissions compactly. Refresh evidence only when its relevant code, dependency, configuration, or base inputs change; a commit SHA alone does not invalidate local proof. Provider CI still needs its required head binding. Documentation-only changes need relevant validation, not automatic application suites.
 
 For failures, retain the first causal diagnostic and a pointer to full output. Establish attribution and fix task-caused failures within scope. A pre-existing failure or unavailable required environment is a reported blocker or bounded follow-up, not permission for a rewrite. Change the diagnosis or evidence before repeating failed attempts; stop a no-progress loop rather than accumulating reruns.
 
-Before handoff or publication, inspect status and the complete diff, including untracked contents. Follow [Local Review](local-review.md) when applicable. Required evidence must describe the current result; report skipped or blocked checks honestly.
+Before handoff or publication, inspect status and the complete diff, including untracked contents. Follow [Review](review.md) for selection and any reviews due at that delivery boundary. Required evidence must describe the current result; report skipped or blocked checks honestly.
 
 ## UI Craft And Browser Tools
 
