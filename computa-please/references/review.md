@@ -19,8 +19,8 @@ Size can raise scrutiny, never lower it. Classify documentation, configuration, 
 
 1. Reuse applicable completed reviews and wait for relevant reviews already running before spending another request. An automatic Greptile review can satisfy the selected Greptile review when its coverage and effort meet the plan.
 2. Preserve each contributor's automatic-review preferences and author exclusions. Selecting None means requesting nothing additional; it does not disable someone else's automation. Changing bot settings, buying credits, or configuring integrations is separate work.
-3. Stabilize the candidate and pin its base and complete diff, including dirty work for a selected local review. Give reviewers the requirements and applicable repository contracts, not just the author's explanation. Confirm access, author-filter behavior, supported triggers, and authority before requesting a review; this policy grants no publication, paid-request, reply, or merge permission.
-4. Request one initial review from each selected reviewer using the existing integrations. Hosted reviews require an existing PR; perform any up-front local review before publication. A requested named review follows its own workflow.
+3. Finish implementation/iteration and applicable local verification, then pin the candidate's base and complete diff, including dirty work for a selected local review. Give reviewers the requirements and applicable repository contracts, not just the author's explanation. Confirm access, author-filter behavior, supported triggers, and authority before requesting a review; this policy grants no publication, paid-request, reply, or merge permission.
+4. Request one initial review from each selected reviewer using the existing integrations. Record each request before invocation and retain it through timeouts and resumes. Hosted reviews run on the draft PR; perform any up-front local review before publication. Keep the PR draft through review, finding remediation, and affected verification. If a reviewer requires a ready PR, report that constraint rather than promoting the PR to trigger it. A requested named review follows its own workflow.
 
 Documented PR comment triggers:
 
@@ -47,7 +47,7 @@ Product contracts: [Greptile triggers and effort](https://www.greptile.com/docs/
 
 ## Findings And Repeat Reviews
 
-Verify findings against the supported caller path and requirements. Fix evidenced consequential defects; reject unsupported, duplicate, speculative, or stale findings with a short reason. Refresh affected behavioral proof and required checks after fixes. Follow the owning remediation workflow when one applies.
+For completed PR feedback, use `review-remediation` on the frozen finding IDs and reviewed revision. Verify findings against the supported caller path and requirements. Fix evidenced consequential defects; reject unsupported, duplicate, speculative, or stale findings with a short reason. Refresh affected behavioral proof and required checks after fixes. Publish any fixes before authorized replies or resolutions.
 
 **Default to no repeat review.** The agent may request another review only when it identifies a concrete unresolved risk that existing review, direct inspection, and focused verification do not adequately cover. Examples include a repair that changes a critical transaction or security boundary, newly introduced consequential behavior, or an incomplete assessment that still needs coverage. State the risk, why another reviewer pass is necessary, and the smallest useful reviewer/scope before invoking it, within existing authority and spending limits.
 

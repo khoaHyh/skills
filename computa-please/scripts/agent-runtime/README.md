@@ -2,7 +2,7 @@
 
 ## Optional Compatibility Tools
 
-These scripts are retained for existing delivery records and explicitly requested tooling use. Ordinary work follows [Finish Loop](../../references/finish-loop.md) without a second runtime or event log. The reducer still implements its original phase sequence; it does not infer the [standing draft-publication grant](../../references/vcs.md#authority) or define the current router’s completion rules.
+These scripts are retained for existing delivery records and explicitly requested tooling use. Ordinary work follows the [router](../../SKILL.md) without a second runtime or event log. The reducer still implements its original phase sequence; it does not infer the [standing draft-publication grant](../../references/vcs.md#authority) or define the current router’s completion rules.
 
 For recovery, inspect an existing log with `state` and reconcile its recorded actions with live provider state before mutation. Preserve spent-action evidence. Continue the legacy event protocol only when the caller explicitly retains it; a recorded ceiling alone supplies no new authority.
 

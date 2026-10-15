@@ -1,6 +1,6 @@
 # Graphite Stack Merge
 
-Use only for an explicitly requested Graphite stack merge. The grant covers the selected chain and its resulting topology changes, not unrelated diffs or stack-wide publication. Apply [Finish Loop](finish-loop.md)’s authority, review, CI/waiver, production, and post-merge gates to the selected PRs, reusing valid evidence.
+Use only for an explicitly requested Graphite stack merge. The grant covers the selected chain and its resulting topology changes, not unrelated diffs or stack-wide publication. Apply [VCS](vcs.md#readiness-and-final-ci)'s CI, merge, production, and post-merge gates and the selected [Review](review.md) plan to the chain, reusing valid evidence.
 
 ## Bound And Prepare
 

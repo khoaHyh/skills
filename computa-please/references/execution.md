@@ -6,7 +6,7 @@ Use for authorized implementation and fixes. The [router](../SKILL.md) owns the 
 
 For nontrivial work, briefly state the smallest complete delivery and its proving surface, then proceed within existing authority. Trace the affected entrypoint, owner, callers, and checks. Reuse the project’s vocabulary and established patterns.
 
-Load specialists only for the affected work: `coding-standards` for TypeScript, `effect` for Effect, `codebase-design` for an unsettled module seam, `find-docs` for library-specific contracts, and `observability-logging` for necessary production signal design. A design uncertainty may need a bounded repro or experiment; routine patterns need neither an interview nor a prototype.
+Load specialists only for the affected work: `effect` for Effect, `codebase-design` for an unsettled module seam, `find-docs` for library-specific contracts, and `observability-logging` for necessary production signal design. A design uncertainty may need a bounded repro or experiment; routine patterns need neither an interview nor a prototype.
 
 Delete, collapse, inline, or narrow before adding structure. An abstraction earns its place by hiding current complexity, not a hypothetical second implementation. A refactor should reduce concepts or paths without shifting the burden to callers. Remove temporary diagnostic probes when done.
 
@@ -28,9 +28,9 @@ Exercise the real changed or failing path; lint and typecheck alone do not prove
 
 Inspect command definitions and choose the smallest set covering the relevant risks and repository-required checks. An aggregate replaces only phases it actually includes. Keep editing feedback focused; run the final required checks after the candidate and any review remediation stabilize. Scope mutating formatters/fixers to intended files and inspect their changes. Give shared test databases and verification resources one owner; choose a safe available task-owned resource rather than taking another task’s.
 
-Record commands, covered inputs, exit status, and omissions compactly. Refresh evidence only when its relevant code, dependency, configuration, or base inputs change; a commit SHA alone does not invalidate local proof. Provider CI still needs its required head binding. Documentation-only changes need relevant validation, not automatic application suites.
+Record commands, covered inputs, exit status, and omissions compactly. Refresh evidence only when its relevant code, dependency, configuration, or base inputs change; a commit SHA alone does not invalidate local proof. Documentation-only changes need relevant validation, not automatic application suites.
 
-For failures, retain the first causal diagnostic and a pointer to full output. Establish attribution and fix task-caused failures within scope. A pre-existing failure or unavailable required environment is a reported blocker or bounded follow-up, not permission for a rewrite. Change the diagnosis or evidence before repeating failed attempts; stop a no-progress loop rather than accumulating reruns.
+For failures, retain the first causal diagnostic and a pointer to full output. Establish attribution, make the smallest scoped repair, and refresh affected proof. Stop after two consecutive attempts at the same failure yield no new evidence or diagnosis. Pending external checks follow a bounded provider or agreed deadline. Pre-existing failures and unavailable required environments are blockers or bounded follow-ups, not permission for a rewrite.
 
 Before handoff or publication, inspect status and the complete diff, including untracked contents. Follow [Review](review.md) for selection and any reviews due at that delivery boundary. Required evidence must describe the current result; report skipped or blocked checks honestly.
 
