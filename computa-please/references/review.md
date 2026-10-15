@@ -4,16 +4,24 @@ Spend review quota on consequential defects, not a fixed number of approval vote
 
 ## Select The Reviews
 
-For PR-bound work, inspect the complete candidate, accepted requirements, affected owners and callers, and existing review coverage. Record the category, one-line reason, and selected reviewers in working context or the existing PR. Local-only work needs no independent review unless requested.
+For PR-bound work, inspect the complete candidate, accepted requirements, affected owners and callers, existing review coverage, and direct verification. When reviews are authorized, choose the cheapest sufficient plan: None, Greptile Base, Codex Security, or Base + Security. Record the choice and one-line reason in working context or the existing PR. Local-only work needs no independent review unless requested.
 
-| Category | Criteria | Default reviews |
+| Choice | Criteria | Selection |
 | --- | --- | --- |
-| None | Presentation-only styling, ordinary copy/docs, or demonstrably mechanical edits without effects on business terms, security, retained data, CI, deployment, or agent behavior | Request no additional review |
-| Standard | Ordinary feature or bug fix confined to one domain, without the High or security conditions | Greptile Base |
-| High | Money or commercial calculations; durable state transitions, transactions or retries; destructive data changes; deployment controls; shared contracts affecting multiple apps; or more than 500 changed handwritten runtime lines or 15 runtime files, excluding formatting and generated output | Greptile Plus and Bugbot |
-| Security add-on | Authentication, authorization, account isolation, secrets, webhook verification, untrusted input reaching SQL/HTML/commands, or CI credential and trust boundaries | High reviews plus a configured dedicated security reviewer |
+| None | Focused, low-risk or mechanical changes whose behavior and failure cases are adequately established by direct inspection and verification; runtime code can qualify | No additional review; no approval or waiver needed unless an explicit external requirement applies |
+| General correctness | An independent pass would add meaningful coverage of changed behavior beyond existing proof | Greptile Base |
+| Security | Actual changes to authentication, authorization, account isolation, secrets, webhook verification, injection paths, or CI trust boundaries | Codex Security; add Base only for a distinct general-correctness gap |
+| Premium proposal | A specific, high-impact failure mode is not adequately addressed by direct proof or a cheaper planned review | Recommend either Greptile above Base or Bugbot; wait for approval |
 
-Size can raise scrutiny, never lower it. Classify documentation, configuration, tests, and agent instructions by their effects, not their file extension. Use the owning repository's vocabulary for the concrete risk rather than hard-coding one project's domains here.
+Choose the combination before invoking reviewers; do not run Base as an automatic stepping stone to Plus. Money, state, deployment, shared-contract changes, size, and file count prompt closer risk assessment, not an automatic paid tier or reviewer bundle. Classify by actual effects and remaining uncertainty, not filenames. Security review can stand alone or accompany one justified general reviewer.
+
+### Premium Review Approval
+
+**Every request for Bugbot or a Greptile tier above Base requires Khoa's explicit approval.** A generic "run the appropriate reviews" request delegates the choices above, not premium spending. Verify the effective Greptile tier: configured higher tiers or Auto that could choose one require approval even when the trigger comment does not name a premium tier. If Base cannot be confirmed, ask before invocation.
+
+For an unapproved premium proposal, use the question tool with Yes/No choices. Name the proposed reviewer/tier and scope, explain the concrete risk and why cheaper coverage is insufficient, and state the known credit/usage impact or uncertainty. Prefer one premium general reviewer; combining a premium Greptile tier with Bugbot is exceptional, needs distinct reasons for both, and requires explicit approval of the pair. Either approved reviewer may accompany Codex Security when security coverage is also needed.
+
+An optional premium proposal is not a new gate. If declined, use sufficient lower-cost coverage or report residual risk; do not invent a waiver requirement. Explicit repository or user-required gates still apply.
 
 ## Run Only The Selected Reviews
 
@@ -51,13 +59,13 @@ For completed PR feedback, use `review-remediation` on the frozen finding IDs an
 
 **Default to no repeat review.** Compare the substantive diff and behavior against the last reviewed revision and scope. Commit count, branch age, or a newer SHA does not establish stale coverage. Lint/format fixes and minor edits that leave reviewed behavior intact normally reuse the existing assessment; fixing a finding, rebasing, repairing CI, or resuming a session is not by itself a reason to review again.
 
-**Greptile re-reviews require Khoa's explicit approval.** Once a completed Greptile review exists for the PR, another pass—including an effort upgrade—spends additional credits and needs approval before invocation. A generic request to "run the appropriate reviews" authorizes a missing initial review, not a Greptile re-review.
+**Greptile re-reviews require Khoa's explicit approval.** Once a completed Greptile review exists for the PR, another pass—including an effort upgrade—spends additional credits and needs approval before invocation. A generic request to "run the appropriate reviews" does not authorize a Greptile re-review.
 
 When substantive changes leave material risk uncovered, recommend a Greptile re-review by identifying the reviewed revision, meaningful changes since it, coverage gap, and proposed scope/tier and credit impact. Wait for approval; do not invoke it merely because the branch changed substantially. Small changes to a critical boundary can justify a recommendation; many mechanically equivalent commits do not.
 
-For other reviewers, the agent may request another pass only for a concrete unresolved risk that existing review, direct inspection, and focused verification do not adequately cover. State the risk, why another pass is necessary, and the smallest useful reviewer/scope before invoking it within existing authority and spending limits.
+For reviewers not covered by an approval gate, the agent may request another pass only for a concrete unresolved risk that existing review, direct inspection, and focused verification do not adequately cover. State the risk, why another pass is necessary, and the smallest useful reviewer/scope before invoking it within existing authority and spending limits.
 
-Honor repository requirements for exact-head review, but surface missing Greptile approval as a blocker rather than spending automatically. Otherwise record subsequent changes and their proof without presenting an older review as a review of the final head.
+Honor repository requirements for exact-head review, but surface missing required review approval as a blocker rather than spending automatically. Otherwise record subsequent changes and their proof without presenting an older review as a review of the final head.
 
 Reconcile queued, timed-out, or ambiguous requests before considering another invocation. Silence, missing comments, summary scores, and failed or incomplete runs are not a clean review. Report unavailable coverage and resolve required missing evidence rather than spending repeated requests for a nicer verdict.
 
