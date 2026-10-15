@@ -29,7 +29,7 @@ Before mutation, establish the task-owned checkout and [VCS authority](reference
 | Optimize or search for a solution | Use [Measured Optimization](references/execution.md#measured-optimization) with a baseline, objective, fixed invariants, and stopping condition. |
 | Simplify | Use `subtract`; use `scope-prune` for drift in an existing implementation. |
 | Review or remediate feedback | Follow the requested review or repository workflow. Report evidenced findings first; use `review-remediation` for the selected feedback set. |
-| Get work green, merge-ready, landed, or verified after merge | Use [Finish Loop](references/finish-loop.md) only to the requested boundary. A PR’s existence does not select this route. |
+| Get work green, merge-ready, landed, or verified after merge | Use [VCS](references/vcs.md#readiness-and-final-ci) for final CI, readiness, merge, and post-merge proof, only to the requested boundary. |
 
 Bounded restacks, publication, and description updates need only their applicable procedure, not an end-to-end delivery cycle. Improve workflow instructions from observed failures; prefer removing a competing rule over adding ceremony.
 

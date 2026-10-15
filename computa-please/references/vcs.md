@@ -20,9 +20,23 @@ Inspect the intended diff, including staged, unstaged, untracked, and inherited 
 
 When Graphite tracks the branch, load `graphite` and use its workflow. Mutate or submit only the current diff unless a stack-wide action was authorized; account for automatic descendant changes. Resolve tracking or remote-update guards from live local, remote, and tracking evidence. A guard override, history rewrite, broader stack mutation, or fallback Git push still needs its specific approval; switching tools does not resolve the guard.
 
-New PRs start as drafts. Mark ready only within an authorized merge-ready or merge delivery; a draft grant alone is insufficient. Follow the repository’s description workflow and the [router’s PR-body rule](../SKILL.md#prove-and-finish).
+New PRs start as drafts. Confirm the intended head and base, and keep the description accurate against the complete diff using the repository’s workflow and the [router’s PR-body rule](../SKILL.md#prove-and-finish).
 
 After uncertain external actions, reconcile the observed branch, PR, or provider state before retrying. On completion, the remote head, base, draft/readiness state, and task-owned diff must match the requested action; report ambiguity instead of claiming success.
+
+## Readiness And Final CI
+
+After [reviews and remediation](review.md) and required local proof are complete, reconfirm the final head/base and conflicts. Mark ready only within an authorized readiness or merge delivery; a draft or review request alone is insufficient. Reconcile any readiness-triggered automatic reviews with existing coverage before acting.
+
+Defer discretionary CI requests until implementation and review fixes have settled. Reuse applicable CI already triggered during draft work; changing CI configuration or cancelling automatic runs needs separate authority. Required checks gate the requested delivery boundary: observe results for the current head, and record explicit, scoped CI waivers as skipped rather than green. A CI waiver waives only its named checks. Repair attributable failures under [Execution](execution.md#verification).
+
+## Merge And Verify
+
+With merge authority, reconfirm the target, final head/base, conflicts, completed reviews, and current required CI or scoped waivers. Check the [production boundary](../SKILL.md#prove-and-finish) before merge-triggered effects. Use the repository's normal merge mechanism with an expected-head precondition when supported. An unmerged parent or required mutation of unowned work blocks a single-PR merge; an explicitly selected stack follows [Graphite Stack Merge](graphite-merge.md).
+
+Before merging, identify the applicable post-merge workflows, expected commit lineage, discovery deadline, and accepted results. Confirm the PR is actually merged and the target lineage matches; accepted or queued is not merged, and bypasses retain separate authority. Verify workflows against the actual merged commit, not the former PR head. If no workflows apply, establish that from provider/repository evidence and verify the landed result itself.
+
+Repair task-caused post-merge failures under [Execution](execution.md#verification) within existing authority. Any follow-up PR follows the normal publication, review, and verification rules. Report missing required workflows or unavailable infrastructure as blockers rather than claiming merged-and-verified delivery.
 
 ## Durable State
 
