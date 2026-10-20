@@ -11,19 +11,19 @@ For PR-bound work, inspect the complete candidate, accepted requirements, affect
 | None | Focused, low-risk or mechanical changes whose behavior and failure cases are adequately established by direct inspection and verification; runtime code can qualify | No additional review; no approval or waiver needed unless an explicit external requirement applies |
 | General correctness | An independent pass would add meaningful coverage of changed behavior beyond existing proof | Greptile Base |
 | Security | Actual changes to authentication, authorization, account isolation, secrets, webhook verification, injection paths, or CI trust boundaries | Codex Security; add Base only for a distinct general-correctness gap |
-| Premium proposal | A specific, high-impact failure mode is not adequately addressed by direct proof or a cheaper planned review | Recommend either Greptile above Base or Bugbot; wait for approval |
+| Premium proposal | A specific, high-impact failure mode is not adequately addressed by direct proof or a cheaper planned review | Recommend Greptile above Base; wait for approval |
 
-Choose the combination before invoking reviewers; do not run Base as an automatic stepping stone to Plus. Money, state, deployment, shared-contract changes, size, and file count prompt closer risk assessment, not an automatic paid tier or reviewer bundle. Classify by actual effects and remaining uncertainty, not filenames. Security review can stand alone or accompany one justified general reviewer.
+Choose the combination before invoking reviewers; do not run Base as an automatic stepping stone to Plus. Money, state, deployment, shared-contract changes, size, and file count prompt closer risk assessment, not an automatic paid tier or reviewer bundle. Classify by actual effects and remaining uncertainty, not filenames.
 
 For an authorized initial Greptile Base review, post `@greptileai review` once on the PR and observe the result. This is the normal GitHub route; it needs neither Greptile CLI authentication nor a dashboard/pricing audit. An unknown inherited tier or an unset `effort` field is not a reason to block or switch to the CLI.
 
 ### Premium Review Approval
 
-**Bugbot and explicit above-Base Greptile requests require Khoa's approval.** Also ask when concrete configuration or provider evidence shows the normal request would use a higher tier or Auto. Uncertainty alone is not that evidence. A generic "run the appropriate reviews" request delegates the ordinary choices above, not a deliberate premium request.
+**Explicit above-Base Greptile requests require Khoa's approval.** Also ask when concrete configuration or provider evidence shows the normal request would use a higher tier or Auto. Uncertainty alone is not that evidence. A generic "run the appropriate reviews" request delegates the ordinary choices above, not a deliberate premium request.
 
-For an unapproved premium proposal, use the question tool with Yes/No choices. Name the proposed reviewer/tier and scope, explain the concrete risk and why cheaper coverage is insufficient, and state the known credit/usage impact or uncertainty. Prefer one premium general reviewer; combining a premium Greptile tier with Bugbot is exceptional, needs distinct reasons for both, and requires explicit approval of the pair. Either approved reviewer may accompany Codex Security when security coverage is also needed.
+For an unapproved premium proposal, use the question tool with Yes/No choices. Name the proposed tier and scope, explain the concrete risk and why cheaper coverage is insufficient, and state the known credit/usage impact or uncertainty.
 
-An optional premium proposal is not a new gate. If declined, use sufficient lower-cost coverage or report residual risk; do not invent a waiver requirement. Explicit repository or user-required gates still apply.
+An optional premium proposal is not a new gate. If declined, use sufficient lower-cost coverage or report residual risk; do not invent a waiver requirement.
 
 ## Run Only The Selected Reviews
 
@@ -38,10 +38,9 @@ Documented PR comment triggers:
 | --- | --- |
 | Greptile initial standard review | `@greptileai review` |
 | Greptile Plus | `@greptileai effort: plus` |
-| Bugbot | `bugbot run` |
 | Codex Security GitHub route, only when explicitly requested or required | `@codex security review` |
 
-The plain Greptile comment inherits configured settings; it does not force Base or lower a higher configured tier. If the provider actually rejects an authorized manual Greptile request because of a filter, report the missing coverage rather than silently skipping review or editing the configuration. Bugbot reads `.cursor/BUGBOT.md`, not Cursor's `.mdc` project rules.
+The plain Greptile comment inherits configured settings; it does not force Base or lower a higher configured tier. If the provider actually rejects an authorized manual Greptile request because of a filter, report the missing coverage rather than silently skipping review or editing the configuration.
 
 Use `autoreview` only when requested or selected up front as the local route, not as a mandatory pass beneath hosted reviews. Load its skill, select the complete target, and use explicit P0/P1 scope (`--max-priority P1`) with `--max-review-passes 1`. Preparation or isolation failures remain blockers, not permission to truncate scope or switch hosts after launch.
 
@@ -55,7 +54,7 @@ Do not invent a per-scan dollar ceiling for ChatGPT-authenticated scans. Apply u
 
 A completed CLI report supplies dedicated security coverage, not completion of a required GitHub check. Ordinary `codex review` with a security prompt is not the dedicated CLI. Report missing coverage as a blocker when explicitly required.
 
-Product contracts: [Greptile triggers and effort](https://www.greptile.com/docs/code-review/review-tiers), [Bugbot](https://cursor.com/docs/bugbot), [Codex Security Review](https://developers.openai.com/codex/security/security-review). Verify current documentation when setup or trigger behavior is uncertain.
+Product contracts: [Greptile triggers and effort](https://www.greptile.com/docs/code-review/review-tiers), [Codex Security Review](https://developers.openai.com/codex/security/security-review). Verify current documentation when setup or trigger behavior is uncertain.
 
 ## Findings And Repeat Reviews
 
