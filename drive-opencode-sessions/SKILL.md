@@ -44,9 +44,9 @@ Authority: <standing repository grant, task-specific grant, or local-only>.
 Stop: <authorized delivery boundary; no implied merge/deploy>.
 ```
 
-Resolve authority from the user and [computa-please's policy](../computa-please/references/vcs.md#authority). Carry same-task grants across resumes; preserve explicit local-only constraints. Do not add an ask-before-publication pause where standing task-branch commit/push/draft permission applies. The coordinator cannot grant a new policy exception, operational action, or broader scope on the user's behalf.
+Resolve authority from the user and [computa-please's policy](../computa-please/SKILL.md#authority). Carry same-task grants across resumes; preserve explicit local-only constraints. Do not add an ask-before-publication pause where standing task-branch commit/push/draft permission applies. The coordinator cannot grant a new policy exception, operational action, or broader scope on the user's behalf.
 
-Have workers retrieve missing facts and choose routine engineering details. Return consequential product, risk, or authority decisions to the user; neither coordinator nor worker guesses them. Name a user-selected `visual-pr` workflow or an explicitly requested `record-verification` recording in the prompt; calibrate proof to the affected risk. Spare worker capacity is not scope.
+Have workers retrieve missing facts and choose routine engineering details. Return consequential product, risk, or authority decisions to the user. Carry explicit workflow and proof requests into the prompt. Spare worker capacity is not scope.
 
 ## 4. Steer mid-flight, in parallel
 
@@ -62,7 +62,7 @@ Have workers retrieve missing facts and choose routine engineering details. Retu
 
 ## 5. Keep publish and proof inside OpenCode
 
-- PR create/update happens inside the OpenCode session with the repo's description workflow (`visual-pr` when the user explicitly selected it). Never hand `gh pr create --body` to a bare Grok Task/Shell.
+- PR create/update happens inside the OpenCode session with the repo's description workflow. Never hand `gh pr create --body` to a bare Grok Task/Shell.
 - Proof is pasted commands/outputs, screenshots, or recordings from the session — never self-report alone. Green build alone is not proof.
 
 ## 6. Hand back
