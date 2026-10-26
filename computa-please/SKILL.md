@@ -16,6 +16,14 @@ Resolve remaining facts from repository instructions, canonical code, existing p
 
 Size complexity for the actual workload and concrete failure modes; synthetic valid bounds are boundary evidence, not expected scale. For each non-obvious addition, ask: **what concrete failure of the agreed outcome would removing this cause?** Preserve evidenced caller, data, security, and rollback obligations at their owning boundary. Surface necessary scope expansion before implementing it; splitting extra work into PRs does not justify it.
 
+## Tools And Access
+
+Prefer an existing authorized structured tool for external-service work. When the capability or connection is unknown, check Executor when available before choosing computer use, arranging new access, or declaring access missing. Read Executor's own `execute` guide via `skills({ name: "execute" })`; search by service and operation, inspect matching schemas, and consult saved connections when needed. Reuse a known suitable path without repeating discovery.
+
+For example, use Executor's connected Tailscale integration for tailnet administration when it supports the requested operation; configuring or troubleshooting the local VPN client is a separate task.
+
+Use computer use for UI-only operations, requested UI verification, or an evidenced gap in structured tooling. If Executor is absent or lacks the operation, use another authorized existing path. Preserve the intended account and scope across fallbacks; report permission failures rather than routing around them. A connected tool establishes capability, not authority to change state.
+
 ## Routing
 
 Load only the guidance that changes this task's approach. Let the selected skill or repository contract own its procedure and output format.
