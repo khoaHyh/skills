@@ -23,6 +23,11 @@ Load only the guidance that changes this task's approach. Let the selected skill
 | Request | Route |
 | --- | --- |
 | Unsettled product behavior | `feature-grill` for decisions blocking this delivery; a single decision needs only a direct question. |
+| Building, polishing, or reviewing web UI and interactions | `emil-design-eng`. |
+| Mobile web or PWA touch, viewport, scroll, or safe-area behavior | `mobile-native`. |
+| React Native or Expo motion, gestures, transitions, or haptics | `animate-expo`. |
+| Finding places that would benefit from animation | `find-animation-opportunities` for read-only recommendations. |
+| Naming a described web motion effect | `animation-vocabulary`. |
 | Bug or performance regression | `diagnosing-bugs`; verify the original failing path after an authorized fix. |
 | Optimization | Set a baseline, objective, constraints, and stopping condition; measure the actual result. |
 | Simplification | `subtract`, or `scope-prune` for implementation drift. |
@@ -30,6 +35,8 @@ Load only the guidance that changes this task's approach. Let the selected skill
 | PR-bound work or requested review | [Review](references/review.md) for reviewer selection and reuse. |
 | Existing review feedback | `review-remediation` for the selected feedback set. |
 | PR body | `pr-body` against the final diff. |
+
+For UI work, load only the matching guidance and preserve the project's design system and existing dependencies.
 
 Keep focused work in one PR. Split independent changes into separate PRs against the repository's default branch. For reviewable changes that depend on one another, use GitHub Stacks and the [official gh-stack guidance](https://github.com/github/gh-stack/blob/main/skills/gh-stack/SKILL.md). Check installed command help when using it.
 
@@ -46,6 +53,8 @@ New PRs start as drafts. Establish affected branches before stack mutations; sel
 ## Verify And Finish
 
 Exercise the changed behavior through the smallest relevant proof and repository-required checks. Reuse valid evidence until affected inputs change; avoid overlapping checks and repeated reviews. For failures, retain the causal diagnostic and investigate before retrying; stop after two consecutive attempts yield no new evidence. Report blocked or missing proof accurately.
+
+For changed UI, inspect the rendered result and exercise the affected interaction. Distinguish browser or emulation evidence from checks requiring real hardware.
 
 Inspect the complete final diff against the agreed outcome. Finish through the authorized delivery boundary, using repository readiness and CI gates. Before merging, establish the resulting effects and required authority; verify the actual merge and applicable post-merge results against the landed commit. Reconcile uncertain external actions before retrying them.
 
