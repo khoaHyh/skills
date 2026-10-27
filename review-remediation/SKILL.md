@@ -31,7 +31,9 @@ Before editing, record each item's stable ID or URL, author, surface, body, and 
 
 ## Establish Each Finding
 
-Compare each claim with the PR goal and current code; reproduce claimed behavior when useful. Treat diagnoses and suggested patches as hypotheses.
+Compare each claim with the PR goal and current code; reproduce claimed behavior when useful. Treat diagnoses and suggested patches as hypotheses, not product policy.
+
+Separate a concrete implementation defect from a proposed business rule. Before adopting a restriction, check explicit user intent and owning product requirements, starting with the closest existing context and following relevant linked business references only as needed. Bound lookup to the finding and existing authorized access. Honor explicit decisions; surface unresolved consequential product ambiguity as blocked rather than silently choosing policy or expanding into speculative future algorithm work.
 
 Classify every item:
 
