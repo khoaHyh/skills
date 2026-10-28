@@ -28,25 +28,26 @@ Use computer use for UI-only operations, requested UI verification, or an eviden
 
 Load only the guidance that changes this task's approach. Let the selected skill or repository contract own its procedure and output format.
 
-| Request | Route |
-| --- | --- |
-| Unsettled product behavior | `feature-grill` for decisions blocking this delivery; a single decision needs only a direct question. |
-| Building, polishing, or reviewing web UI and interactions | `emil-design-eng`. |
-| Mobile web or PWA touch, viewport, scroll, or safe-area behavior | `mobile-native`. |
-| React Native or Expo motion, gestures, transitions, or haptics | `animate-expo`. |
-| Finding places that would benefit from animation | `find-animation-opportunities` for read-only recommendations. |
-| Naming a described web motion effect | `animation-vocabulary`. |
-| Bug or performance regression | `diagnosing-bugs`; verify the original failing path after an authorized fix. |
-| Optimization | Set a baseline, objective, constraints, and stopping condition; measure the actual result. |
-| Simplification | `subtract`, or `scope-prune` for implementation drift. |
-| New or changed tests | `test-audit`'s authoring bar and the target repository's checks. |
-| PR-bound work or requested review | [Review](references/review.md) for reviewer selection and reuse. |
-| Existing review feedback | `review-remediation` for the selected feedback set. |
-| PR body | `pr-body` against the final diff. |
+| Request                                                          | Route                                                                                                 |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Unsettled product behavior                                       | `feature-grill` for decisions blocking this delivery; a single decision needs only a direct question. |
+| Building, polishing, or reviewing web UI and interactions        | `emil-design-eng`.                                                                                    |
+| Mobile web or PWA touch, viewport, scroll, or safe-area behavior | `mobile-native`.                                                                                      |
+| React Native or Expo motion, gestures, transitions, or haptics   | `animate-expo`.                                                                                       |
+| Finding places that would benefit from animation                 | `find-animation-opportunities` for read-only recommendations.                                         |
+| Naming a described web motion effect                             | `animation-vocabulary`.                                                                               |
+| Bug or performance regression                                    | `diagnosing-bugs`; verify the original failing path after an authorized fix.                          |
+| Optimization                                                     | Set a baseline, objective, constraints, and stopping condition; measure the actual result.            |
+| Simplification                                                   | `subtract`, or `scope-prune` for implementation drift.                                                |
+| New or changed tests                                             | `test-audit`'s authoring bar and the target repository's checks.                                      |
+| PR-bound work or requested review                                | [Review](references/review.md) for reviewer selection and reuse.                                      |
+| Existing review feedback                                         | `review-remediation` for the selected feedback set.                                                   |
+| PR body                                                          | `pr-body` against the final diff.                                                                     |
+| Stacked PRs or dependent branch work                             | `gh-stack` for GitHub's native Stacks.                                                                |
 
 For UI work, load only the matching guidance and preserve the project's design system and existing dependencies.
 
-Keep focused work in one PR. Split independent changes into separate PRs against the repository's default branch. For reviewable changes that depend on one another, use GitHub Stacks and the [official gh-stack guidance](https://github.com/github/gh-stack/blob/main/skills/gh-stack/SKILL.md). Check installed command help when using it.
+Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focused work in one PR. Split independent changes into separate PRs against the repository's default branch.
 
 ## Authority
 
@@ -56,7 +57,7 @@ Before writes, establish the task-owned checkout using `worktrees` and the repos
 
 Carry same-task grants through fixes and resumes. Other repositories need an existing or task-specific grant. Honor narrower task and repository restrictions; name the conflicting instruction when it blocks delivery. Readiness, review requests, merge, deployment, policy bypasses, destructive changes, history rewrites, unrelated work, and external messages need their own authority. Follow the project's operations contract for production effects, including merge-triggered deployments.
 
-New PRs start as drafts. Establish affected branches before stack mutations; selecting Stacks grants no stack-wide publication or history-rewrite permission.
+New PRs start as drafts. Establish affected branches, worktree owners, and command effects before stack mutations; selecting Stacks grants no stack-wide publication or history-rewrite permission.
 
 ## Verify And Finish
 
