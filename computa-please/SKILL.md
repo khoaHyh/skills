@@ -22,7 +22,7 @@ Prefer an existing authorized structured tool for external-service work. When th
 
 For example, use Executor's connected Tailscale integration for tailnet administration when it supports the requested operation; configuring or troubleshooting the local VPN client is a separate task.
 
-Use computer use for UI-only operations, requested UI verification, or an evidenced gap in structured tooling. If Executor is absent or lacks the operation, use another authorized existing path. Preserve the intended account and scope across fallbacks; report permission failures rather than routing around them. A connected tool establishes capability, not authority to change state.
+Use computer use for UI-only operations, UI verification, or an evidenced gap in structured tooling. If Executor is absent or lacks the operation, use another authorized existing path. Preserve the intended account and scope across fallbacks; report permission failures rather than routing around them. A connected tool establishes capability, not authority to change state.
 
 ## Routing
 
@@ -32,20 +32,22 @@ Load only the guidance that changes this task's approach. Let the selected skill
 | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | Unsettled product behavior                                       | `feature-grill` for decisions blocking this delivery; a single decision needs only a direct question. |
 | Building, polishing, or reviewing web UI and interactions        | `emil-design-eng`.                                                                                    |
+| Implementing user-visible UI or interaction changes               | `record-verification` before implementation.                                                         |
 | Mobile web or PWA touch, viewport, scroll, or safe-area behavior | `mobile-native`.                                                                                      |
 | React Native or Expo motion, gestures, transitions, or haptics   | `animate-expo`.                                                                                       |
 | Finding places that would benefit from animation                 | `find-animation-opportunities` for read-only recommendations.                                         |
 | Naming a described web motion effect                             | `animation-vocabulary`.                                                                               |
-| Bug or performance regression                                    | `diagnosing-bugs`; verify the original failing path after an authorized fix.                          |
+| Bug with unclear cause, unsuccessful fix, or performance regression | `diagnosing-bugs`.                                                                                    |
 | Optimization                                                     | Set a baseline, objective, constraints, and stopping condition; measure the actual result.            |
 | Simplification                                                   | `subtract`, or `scope-prune` for implementation drift.                                                |
-| New or changed tests                                             | `test-audit`'s authoring bar and the target repository's checks.                                      |
 | PR-bound work or requested review                                | [Review](references/review.md) for reviewer selection and reuse.                                      |
 | Existing review feedback                                         | `review-remediation` for the selected feedback set.                                                   |
 | PR body                                                          | `pr-body` against the final diff.                                                                     |
 | Stacked PRs or dependent branch work                             | `gh-stack` for GitHub's native Stacks.                                                                |
 
 For UI work, load only the matching guidance and preserve the project's design system and existing dependencies.
+
+For a straightforward bug with a clear cause, reproduce it, make the bounded fix, and recheck the original failing path.
 
 Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focused work in one PR. Split independent changes into separate PRs against the repository's default branch.
 
@@ -63,9 +65,11 @@ New PRs start as drafts. Establish affected branches, worktree owners, and comma
 
 Choose one risk-matched verification plan: smallest behavioral proof plus owning required gates, run once on the stable candidate. Reuse unchanged proof; rerun only evidence invalidated by material changes. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
 
+Extend existing behavioral coverage where possible; add tests only for meaningful gaps, not implementation mirrors.
+
 Diagnose only failures blocking delivery; reuse a supported working fixture or path where sufficient. Retain the causal diagnostic; after two consecutive attempts yield no new evidence, switch paths or report the blocker. Resume diagnosis only with new evidence.
 
-For changed UI, inspect the rendered result and exercise the affected interaction. Distinguish browser or emulation evidence from checks requiring real hardware.
+For changed UI, finish `record-verification` and deliver its evidence with the authorized handoff. Distinguish browser or emulation evidence from checks requiring real hardware.
 
 Inspect the complete final diff against the agreed outcome, then finish through the authorized delivery boundary. Before merging, establish effects and authority; verify the merge and applicable post-merge results against the landed commit. Reconcile uncertain external actions before retrying.
 
