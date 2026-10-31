@@ -28,22 +28,23 @@ Use computer use for UI-only operations, UI verification, or an evidenced gap in
 
 Load only the guidance that changes this task's approach. Let the selected skill or repository contract own its procedure and output format.
 
-| Request                                                          | Route                                                                                                 |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Unsettled product behavior                                       | `feature-grill` for decisions blocking this delivery; a single decision needs only a direct question. |
-| Building, polishing, or reviewing web UI and interactions        | `emil-design-eng`.                                                                                    |
-| Implementing user-visible UI or interaction changes               | `record-verification` before implementation.                                                         |
-| Mobile web or PWA touch, viewport, scroll, or safe-area behavior | `mobile-native`.                                                                                      |
-| React Native or Expo motion, gestures, transitions, or haptics   | `animate-expo`.                                                                                       |
-| Finding places that would benefit from animation                 | `find-animation-opportunities` for read-only recommendations.                                         |
-| Naming a described web motion effect                             | `animation-vocabulary`.                                                                               |
-| Bug with unclear cause, unsuccessful fix, or performance regression | `diagnosing-bugs`.                                                                                    |
-| Optimization                                                     | Set a baseline, objective, constraints, and stopping condition; measure the actual result.            |
-| Simplification                                                   | `subtract`, or `scope-prune` for implementation drift.                                                |
-| PR-bound work or requested review                                | [Review](references/review.md) for reviewer selection and reuse.                                      |
-| Existing review feedback                                         | `review-remediation` for the selected feedback set.                                                   |
-| PR body                                                          | `pr-body` against the final diff.                                                                     |
-| Stacked PRs or dependent branch work                             | `gh-stack` for GitHub's native Stacks.                                                                |
+| Request                                                             | Route                                                                                                                                                                                   |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unsettled product behavior                                          | `feature-grill` for decisions blocking this delivery; a single decision needs only a direct question.                                                                                   |
+| Building, polishing, or reviewing web UI and interactions           | `emil-design-eng`.                                                                                                                                                                      |
+| Implementing user-visible UI or interaction changes                 | `record-verification` before implementation.                                                                                                                                            |
+| Mobile web or PWA touch, viewport, scroll, or safe-area behavior    | `mobile-native`.                                                                                                                                                                        |
+| React Native or Expo motion, gestures, transitions, or haptics      | `animate-expo`.                                                                                                                                                                         |
+| Finding places that would benefit from animation                    | `find-animation-opportunities` for read-only recommendations.                                                                                                                           |
+| Naming a described web motion effect                                | `animation-vocabulary`.                                                                                                                                                                 |
+| Architecture, module seam, or pattern decision                      | Ground with `explore`, draft two structurally distinct whole designs, and send both with the grounding to `oracle` to judge. Settle a fork a run can answer with a `general` prototype. |
+| Bug with unclear cause, unsuccessful fix, or performance regression | `diagnosing-bugs`.                                                                                                                                                                      |
+| Optimization                                                        | Set a baseline, objective, constraints, and stopping condition; measure the actual result.                                                                                              |
+| Simplification                                                      | `subtract`, or `scope-prune` for implementation drift.                                                                                                                                  |
+| PR-bound work or requested review                                   | [Review](references/review.md) for reviewer selection and reuse.                                                                                                                        |
+| Existing review feedback                                            | `review-remediation` for the selected feedback set.                                                                                                                                     |
+| PR body                                                             | `pr-body` against the final diff.                                                                                                                                                       |
+| Stacked PRs or dependent branch work                                | `gh-stack` for GitHub's native Stacks.                                                                                                                                                  |
 
 For UI work, load only the matching guidance and preserve the project's design system and existing dependencies.
 
@@ -77,6 +78,8 @@ Once proven, finish rather than extending review, polling, or cleanup cycles. If
 
 ## Coordination
 
-Use delegation, extra review, or artifacts only to resolve a specific uncertainty blocking delivery or satisfy a request or requirement. Limit concurrent subagents to two unless requested otherwise. Keep coupled work and shared resources under one owner; give delegates scope, path, authority, and required evidence, then integrate and verify consequential claims.
+Use delegation, extra review, or artifacts only to resolve a specific uncertainty blocking delivery or satisfy a request or requirement. Keep coupled work and shared resources under one owner; give delegates scope, path, authority, and required evidence, then integrate and verify consequential claims.
+
+**Delegates.** Implementation delegates run as `general`, which loads this skill. A delegate's brief sets its scope, paths, authority, and required evidence; skill-level grants reach it only through the brief. A delegate returns decisions affecting behavior, scope, risk, or authority to the primary with a recommendation, and finishes with a report accounting for every changed file and every check it ran.
 
 Persist only for requested artifacts, recovery, or coordination. Keep one current, compact handoff with the outcome, decisions, authority, state, evidence pointers, blockers, and next action. On pickup, reconcile it with live checkout and provider state. Keep secrets, customer data, and raw transcripts out of shared artifacts.
