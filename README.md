@@ -11,4 +11,5 @@ My collection of markdown files and scripts that I give to agents to hopefully d
 - **observability-logging**: Add the least production telemetry needed using structured logs, OpenTelemetry spans/events, bounded metrics, safe fields, and exact-once error recording.
 - **computa-please**: Deliver the accepted outcome with minimum durable scope, proportionate proof, and authorized completion.
 - **record-verification**: Record an honest end-to-end UI walkthrough with checks and timestamps for human product and visual review, on request.
+- **blast-radius**: Find what a change could break beyond its diff and prove the one fact it's safe because of by running real code. Adapted from [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT).
 - **drive-opencode-sessions**: Use OpenCode as compute: pick box vs the user's Mac by capability, start visible titled sessions, steer them mid-flight, run slices in parallel, and keep publish and proof inside OpenCode.

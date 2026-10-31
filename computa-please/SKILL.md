@@ -12,7 +12,9 @@ Start with the next concrete useful outcome and closest existing working path, d
 
 Keep the requested outcome, explicit decisions, exclusions, proof, and authority in working context. Discussion and planning are read-only unless edits are authorized. A clear implementation request needs no separate interview or spec.
 
-Resolve remaining facts from repository instructions, canonical code, existing proof, and linked context. Choose routine details; ask through the question tool for decisions affecting behavior, scope, consequential risk, or authority, recommending an answer while continuing independent work.
+Open each task by restating the outcome and the smallest change you expect to meet it, then proceed. When evidence rules out the requested change, show it and stop. Carry the restatement into every delegate brief and the final report.
+
+Resolve remaining facts from repository instructions, canonical code, existing proof, and linked context. Choose routine details. Settle a fork a run can observe (behavior, output, timing, performance) with a prototype; ask through the question tool for remaining decisions affecting behavior, scope, consequential risk, or authority, recommending an answer while continuing independent work.
 
 Size complexity for the actual workload and concrete failure modes; synthetic valid bounds are boundary evidence, not expected scale. For each non-obvious addition, ask: **what concrete failure of the agreed outcome would removing this cause?** Preserve evidenced caller, data, security, and rollback obligations at their owning boundary. Surface necessary scope expansion before implementing it; splitting extra work into PRs does not justify it.
 
@@ -37,7 +39,10 @@ Load only the guidance that changes this task's approach. Let the selected skill
 | React Native or Expo motion, gestures, transitions, or haptics      | `animate-expo`.                                                                                                                                                                         |
 | Finding places that would benefit from animation                    | `find-animation-opportunities` for read-only recommendations.                                                                                                                           |
 | Naming a described web motion effect                                | `animation-vocabulary`.                                                                                                                                                                 |
-| Architecture, module seam, or pattern decision                      | Ground with `explore`, draft two structurally distinct whole designs, and send both with the grounding to `oracle` to judge. Settle a fork a run can answer with a `general` prototype. |
+| Architecture, module seam, or pattern decision                      | Ground with `explore`, draft two structurally distinct whole designs, and send both with the grounding to `oracle` to judge. |
+| Flow, protocol, retry, or lifecycle behavior to design or debug     | `statechart`. |
+| Small diff you don't trust, or what a change could break            | `blast-radius`. |
+| A mistake the user has corrected agents for more than once          | `correct`. |
 | Bug with unclear cause, unsuccessful fix, or performance regression | `diagnosing-bugs`.                                                                                                                                                                      |
 | Optimization                                                        | Set a baseline, objective, constraints, and stopping condition; measure the actual result.                                                                                              |
 | Simplification                                                      | `subtract`, or `scope-prune` for implementation drift.                                                                                                                                  |
@@ -64,7 +69,7 @@ New PRs start as drafts. Establish affected branches, worktree owners, and comma
 
 ## Verify And Finish
 
-Choose one risk-matched verification plan: smallest behavioral proof plus owning required gates, run once on the stable candidate. Reuse unchanged proof; rerun only evidence invalidated by material changes. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
+Name the proof before editing; when practical, watch it fail on the current code so its pass shows the change worked. Choose one risk-matched verification plan: smallest behavioral proof plus owning required gates, run once on the stable candidate. Reuse unchanged proof; rerun only evidence invalidated by material changes. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
 
 Extend existing behavioral coverage where possible; add tests only for meaningful gaps, not implementation mirrors.
 
@@ -78,7 +83,7 @@ Once proven, finish rather than extending review, polling, or cleanup cycles. If
 
 ## Coordination
 
-Use delegation, extra review, or artifacts only to resolve a specific uncertainty blocking delivery or satisfy a request or requirement. Keep coupled work and shared resources under one owner; give delegates scope, path, authority, and required evidence, then integrate and verify consequential claims.
+Delegate to resolve a specific uncertainty blocking delivery, to keep bulk reads, wide searches, and logs out of the primary's context, or to satisfy a request or requirement. Add extra review or artifacts only to resolve a blocking uncertainty or satisfy a request or requirement. Keep coupled work and shared resources under one owner; give delegates scope, path, authority, and required evidence, then integrate and verify consequential claims.
 
 **Delegates.** Implementation delegates run as `general`, which loads this skill. A delegate's brief sets its scope, paths, authority, and required evidence; skill-level grants reach it only through the brief. A delegate returns decisions affecting behavior, scope, risk, or authority to the primary with a recommendation, and finishes with a report accounting for every changed file and every check it ran.
 
