@@ -61,7 +61,7 @@ Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focuse
 
 Before writes, establish the task-owned checkout using `worktrees` and the repository's rules. Preserve unrelated work and stage only task-owned changes.
 
-**Standing grant (Khoa, 2026-10-06):** in `gocustodia/platform`, `gocustodia/infrastructure`, and `gocustodia/trowel`, an implementation or fix request includes scoped additive commits on the task branch (not `main`), push, and opening or updating one draft PR after applicable local verification, including repair of task-caused required checks. Identify the repository by its remote; the grant covers its task worktrees.
+**Standing grant (Khoa, 2026-10-06):** in `gocustodia/platform`, `gocustodia/infrastructure`, and `gocustodia/trowel`, an implementation or fix request includes scoped additive commits on the task branch (not `main`), push, and opening or updating one draft PR with its review evidence attached after applicable local verification, including repair of task-caused required checks. Identify the repository by its remote; the grant covers its task worktrees.
 
 Carry same-task grants through fixes and resumes. Other repositories need an existing or task-specific grant. Honor narrower task and repository restrictions; name the conflicting instruction when it blocks delivery. Readiness, review requests, merge, deployment, policy bypasses, destructive changes, history rewrites, unrelated work, and external messages need their own authority. Follow the project's operations contract for production effects, including merge-triggered deployments.
 
@@ -75,7 +75,7 @@ Extend existing behavioral coverage where possible; add tests only for meaningfu
 
 Diagnose only failures blocking delivery; reuse a supported working fixture or path where sufficient. Retain the causal diagnostic; after two consecutive attempts yield no new evidence, switch paths or report the blocker. Resume diagnosis only with new evidence.
 
-For changed UI, finish `record-verification` and deliver its evidence with the authorized handoff. Distinguish browser or emulation evidence from checks requiring real hardware.
+For changed UI, finish `record-verification` and attach its evidence to the authorized PR or other handoff. Distinguish browser or emulation evidence from checks requiring real hardware.
 
 Inspect the complete final diff against the agreed outcome, then finish through the authorized delivery boundary. Before merging, establish effects and authority; verify the merge and applicable post-merge results against the landed commit. Reconcile uncertain external actions before retrying.
 
