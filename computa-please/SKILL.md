@@ -39,7 +39,7 @@ Load only the guidance that changes this task's approach. Let the selected skill
 | React Native or Expo motion, gestures, transitions, or haptics      | `animate-expo`.                                                                                                                                                                         |
 | Finding places that would benefit from animation                    | `find-animation-opportunities` for read-only recommendations.                                                                                                                           |
 | Naming a described web motion effect                                | `animation-vocabulary`.                                                                                                                                                                 |
-| Architecture, module seam, or pattern decision                      | Ground with `explore`, draft two structurally distinct whole designs, and send both with the grounding to `oracle` to judge. |
+| Architecture, module seam, or pattern decision                      | [Design](references/design.md) when the decision is expensive to reverse; otherwise decide directly or prototype.                                                                       |
 | Flow, protocol, retry, or lifecycle behavior to design or debug     | `statechart`. |
 | Small diff you don't trust, or what a change could break            | `blast-radius`. |
 | A mistake the user has corrected agents for more than once          | `correct`. |
