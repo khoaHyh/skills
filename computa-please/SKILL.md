@@ -75,7 +75,7 @@ Extend existing behavioral coverage where possible; add tests only for meaningfu
 
 Diagnose only failures blocking delivery; reuse a supported working fixture or path where sufficient. Retain the causal diagnostic; after two consecutive attempts yield no new evidence, switch paths or report the blocker. Resume diagnosis only with new evidence.
 
-For changed UI, finish `record-verification` and deliver its evidence with the authorized handoff. Distinguish browser or emulation evidence from checks requiring real hardware.
+For changed UI, finish `record-verification` and attach its evidence to the authorized PR or other handoff. Distinguish browser or emulation evidence from checks requiring real hardware.
 
 Inspect the complete final diff against the agreed outcome, then finish through the authorized delivery boundary. Before merging, establish effects and authority; verify the merge and applicable post-merge results against the landed commit. Reconcile uncertain external actions before retrying.
 
