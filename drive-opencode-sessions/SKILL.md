@@ -30,28 +30,25 @@ OpenCode is client/server. The Grok chat is the coordinator; OpenCode sessions a
 - Never open URLs in Khoa's personal browser from his Mac (no `open <url>`, `gh ... --web`, `xdg-open`, or launching Zen/Chrome) in your own commands or worker prompts. Read GitHub with the `gh` CLI (`gh pr view`, `gh pr diff`, `gh api`) or connectors; other pages via fetch tools. Try the MCP/CLI path first; it's usually more useful. Browser on the Mac is allowed only when that can't do the job, for: QA of the web app (local or staging), sign-in/OAuth pages a CLI opens, and vendor dashboards Khoa must click in. Tell Khoa first which window/URL and why.
 - One task-owned worktree per independent accepted slice; workers on the same task share its checkout and ownership rules.
 
-## 3. Prompt like an owner
+## 3. Hand off through the ledger
 
-Preserve the user's outcome and explicit decisions, not every mechanism suggested during discussion. Use links to authoritative context rather than copying whole procedures:
+Write the user's outcome, accepted decisions, and authority, each with its source, into the work item first (`work-ledger`, on the Mac at `~/dev/ledger`). Then start the session with the pointer prompt; the worker loads computa-please and the item, so restating them only duplicates context that drifts:
 
 ```text
-Use computa-please in <repo/worktree>.
-Outcome: <accepted user result>.
-Context: <issue, accepted decisions, relevant links>.
-Scope: <complete delivery and important exclusions>.
-Proof: <observable result and owning verification recipe>.
-Authority: <standing repository grant, task-specific grant, or local-only>.
-Stop: <authorized delivery boundary; no implied merge/deploy>.
+Work item <KEY>, phase: <phase>.
+<Only what is new since the ledger was last written, if anything.>
 ```
+
+Preserve the user's outcome and explicit decisions, not every mechanism suggested during discussion. A one-session task with no work item gets a few lines instead: the outcome, the scope, the proof, and the authority.
 
 Resolve authority from the user and [computa-please's policy](../computa-please/SKILL.md#authority). Carry same-task grants across resumes; preserve explicit local-only constraints. Do not add an ask-before-publication pause where standing task-branch commit/push/draft permission applies. The coordinator cannot grant a new policy exception, operational action, or broader scope on the user's behalf.
 
-Have workers retrieve missing facts and choose routine engineering details. Return consequential product, risk, or authority decisions to the user. Carry explicit workflow and proof requests into the prompt. Spare worker capacity is not scope.
+Have workers retrieve missing facts and choose routine engineering details. Return consequential product, risk, or authority decisions to the user. Carry explicit workflow and proof requests into the work item, or into the prompt when there is no item. Spare worker capacity is not scope.
 
 ## 4. Steer mid-flight, in parallel
 
 - Split each ask into independent slices and launch them all right away.
-- Same task: prompt the existing session by id (`oc-worker steer <id>` mid-turn, `oc-worker queue <id>` after the turn) — supply inspected facts or the user's decision, redirect, and resume. Don't start a duplicate session for work already running.
+- Same task: prompt the existing session by id (`oc-worker steer <id>` mid-turn, `oc-worker queue <id>` after the turn) — supply inspected facts or the user's decision, redirect, and resume. Record a new user decision in the work item before steering, so it outlives the session. Don't start a duplicate session for work already running.
 - New independent accepted slice: start a sibling session + worktree. Never pause or back-burner an in-flight session to make room.
 - A gate on one slice pauses only that slice: prep its work up to the gate and keep the others moving. Never end a turn on "waiting" while any slice can still move.
 - "Server restarted" means the server auto-resumed the session, not that it died. Check the session's status before calling it dead; if it really died, resume or relaunch it in the same turn. Never do the worker's job yourself.
