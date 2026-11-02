@@ -12,6 +12,8 @@ Start with the next concrete useful outcome and closest existing working path, d
 
 Keep the requested outcome, explicit decisions, exclusions, proof, and authority in working context. Discussion and planning are read-only unless edits are authorized. A clear implementation request needs no separate interview or spec.
 
+When the task names a work item or continues multi-session work, load `work-ledger` first; its Decisions and Authority are accepted context.
+
 Open each task by restating the outcome and the smallest change you expect to meet it, then proceed. When evidence rules out the requested change, show it and stop. Carry the restatement into every delegate brief and the final report.
 
 Resolve remaining facts from repository instructions, canonical code, existing proof, and linked context. Choose routine details. Settle a fork a run can observe (behavior, output, timing, performance) with a prototype; ask through the question tool for remaining decisions affecting behavior, scope, consequential risk, or authority, recommending an answer while continuing independent work.
@@ -87,4 +89,4 @@ Delegate to resolve a specific uncertainty blocking delivery, to keep bulk reads
 
 **Delegates.** Implementation delegates run as `general`, which loads this skill. A delegate's brief sets its scope, paths, authority, and required evidence; skill-level grants reach it only through the brief. A delegate returns decisions affecting behavior, scope, risk, or authority to the primary with a recommendation, and finishes with a report accounting for every changed file and every check it ran.
 
-Persist only for requested artifacts, recovery, or coordination. Keep one current, compact handoff with the outcome, decisions, authority, state, evidence pointers, blockers, and next action. On pickup, reconcile it with live checkout and provider state. Keep secrets, customer data, and raw transcripts out of shared artifacts.
+Persist only for requested artifacts, recovery, or coordination. Work that spans sessions keeps its handoff in the work ledger through `work-ledger`, which owns the format, reconciliation on pickup, and phase-boundary updates. Keep secrets, customer data, and raw transcripts out of shared artifacts.
