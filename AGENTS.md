@@ -17,7 +17,7 @@ Never edit a synchronized copy under `~/.agents/skills`, `~/.claude/skills`, a d
 - Keep each skill in `<skill-name>/SKILL.md`; the frontmatter `name` must match the directory.
 - Publish this repository before syncing a changed skill into a consumer.
 - Sync through the consumer's established `npx skills` workflow so its lockfile and installed copy stay attributable to this repository.
-- Do not commit, push, publish, or sync unless the user explicitly requests that action.
+- Edit in `~/dev/skills` on `main`, with no worktree or PR. Commit and push to `main` once verification passes.
 
 ## Verification
 
