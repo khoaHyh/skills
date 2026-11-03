@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      /* A non-bundled display face needs @font-face to a file in assets/fonts:
+      @font-face { font-family: "Display"; src: url("assets/fonts/display.woff2") format("woff2"); font-weight: 100 900; } */
+      :root {
+        /* Placeholder palette: replace with the treatment's. */
+        --ground: #f3eee4;
+        --ink: #1f1b19;
+        --accent: #2f6fd6;
+        --alert: #e5484d;
+        --font-display: Inter, sans-serif;
+        --font-ui: Inter, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        font-family: var(--font-ui);
+        color: var(--ink);
+      }
+      .layer,
+      #world {
+        position: absolute;
+        inset: 0;
+      }
+      .abs {
+        position: absolute;
+        left: 0;
+        top: 0;
+        will-change: transform, opacity;
+      }
+      /* Explicit paint order for every layer; film.js may move a layer's z-index for a beat. */
+      #ground { z-index: 1; background: var(--ground); }
+      #stage { z-index: 10; }
+      #ringLayer { z-index: 20; }
+      #calmLayer { z-index: 30; }
+      #sweetLayer { z-index: 31; }
+      #slamLayer { z-index: 40; }
+      #flash { z-index: 50; background: #fffdf8; opacity: 0; }
+      .panel {
+        border: 5px solid var(--ink);
+        border-radius: 22px;
+        background: #fffdf8;
+        box-shadow: 9px 9px 0 var(--ink);
+      }
+      /* Slam text reads over chaos through a ground-coloured stroke painted under the fill. */
+      .slam {
+        font: 900 230px/0.9 var(--font-display);
+        letter-spacing: -0.045em;
+        white-space: nowrap;
+        -webkit-text-stroke: 26px var(--ground);
+        paint-order: stroke fill;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+      data-layout-allow-overlap
+      data-layout-allow-overflow
+    >
+      <svg width="0" height="0" style="position: absolute">
+        <filter id="boil" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence id="boilNoise" type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="1" />
+          <feDisplacementMap in="SourceGraphic" scale="5" />
+        </filter>
+      </svg>
+      <div id="world" data-layout-ignore>
+        <div id="ground" class="layer"></div>
+        <div id="stage" class="layer"></div>
+        <div id="ringLayer" class="layer"></div>
+        <div id="calmLayer" class="layer"></div>
+        <div id="sweetLayer" class="layer"></div>
+        <div id="slamLayer" class="layer"></div>
+      </div>
+      <div id="flash" class="layer" data-layout-ignore></div>
+      <audio id="mix" class="clip" src="assets/audio/mix.wav" data-start="0" data-duration="6" data-track-index="9" data-volume="1"></audio>
+    </div>
+
+    <script src="assets/cues.js"></script>
+    <script src="assets/engine.js"></script>
+    <script src="assets/film.js"></script>
+    <script>
+      // One clock. render(t) draws every pixel, so any frame seeks and renders alone.
+      const clock = { t: 0 };
+      const tl = gsap.timeline({ paused: true });
+      tl.to(clock, { t: window.CUES.T.duration, duration: window.CUES.T.duration, ease: "none", onUpdate: () => window.film.render(clock.t) }, 0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      window.film.render(0);
+      tl.seek(0);
+    </script>
+  </body>
+</html>
