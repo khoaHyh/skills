@@ -10,7 +10,7 @@ My collection of markdown files and scripts that I give to agents to hopefully d
 - **review-remediation**: Resolve a frozen set of PR feedback with evidence-backed root-cause fixes and version-matched research where needed.
 - **observability-logging**: Add the least production telemetry needed using structured logs, OpenTelemetry spans/events, bounded metrics, safe fields, and exact-once error recording.
 - **computa-please**: Deliver the accepted outcome with minimum durable scope, proportionate proof, and authorized completion.
-- **record-verification**: Record an honest end-to-end UI walkthrough with checks and timestamps for human product and visual review, on request.
+- **record-verification**: Record an honest before/after UI walkthrough with checks, then cut it into a review video that reads at PR size: evidence framed and marked, captions under the footage, every speed-up, cut and freeze labelled against the original take's clock.
 - **blast-radius**: Find what a change could break beyond its diff and prove the one fact it's safe because of by running real code. Adapted from [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT).
 - **impact-report**: Measure whether a shipped change moved a metric against a same-day baseline and a control, then render before/after chart PNGs and post them to Slack.
 - **work-ledger**: Keep one durable file per work item in `~/dev/ledger` (outcome, sourced decisions, authority, live state, evidence, next action) so any session or coordinator picks up where the last one stopped, and hand off with a one-line pointer.
