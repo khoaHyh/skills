@@ -12,7 +12,7 @@ Before any candidate exists, write 3–6 gradeable criteria for this decision. A
 
 ## Candidates
 
-Launch two writers in parallel with the same grounding and writer brief, in fresh contexts: `general` from the primary's model family and `architect` from the judge's. Neither sees the other's output. Do not assign opposing stances or constraints; diversity comes from independent contexts and model families, not forced disagreement.
+Launch two writers in parallel with the same grounding and writer brief, in fresh contexts: `computa` from the primary's model family and `architect` from the judge's. Neither sees the other's output. Do not assign opposing stances or constraints; diversity comes from independent contexts and model families, not forced disagreement.
 
 Writer brief, included verbatim after the decision and grounding:
 
