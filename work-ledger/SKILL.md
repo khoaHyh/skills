@@ -32,7 +32,7 @@ Phases are `research`, `plan`, `implement`, `verify`, and `rollout`. At the end 
 
 Keep the item under about 150 lines by tightening State and Evidence to pointers. Keep secrets, credentials, customer data, and raw transcripts out of it.
 
-Commit only the item: `git -C ~/dev/ledger add items/<file> && git -C ~/dev/ledger commit -m "<key>: <phase> <summary>"`.
+Commit and push only the item, so agents on other machines see it: `git -C ~/dev/ledger pull --rebase -q && git -C ~/dev/ledger add items/<file> && git -C ~/dev/ledger commit -m "<key>: <phase> <summary>" && git -C ~/dev/ledger push -q`.
 
 Done when the file alone tells a fresh session what is settled, what is true now, and what to do next.
 
