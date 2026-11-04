@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Worksheet</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --card: #fffefb; --ink: #1d2126; --muted: #67707a; --line: #dedad2;
+    --accent: #2f5d8a; --accent-ink: #fff; --focus: #2f5d8a55;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #15171a; --card: #1d2024; --ink: #e8e6e1; --muted: #9aa1a9; --line: #30343a; --accent: #7fb0e0; --accent-ink: #10161c; --focus: #7fb0e055; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 20px 140px; }
+  header p { color: var(--muted); margin: 6px 0 0; white-space: pre-wrap; }
+  h1 { font-size: 1.9rem; line-height: 1.15; letter-spacing: -0.02em; margin: 0; }
+  .meta { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; margin-top: 18px; }
+  .num { font-size: 0.8rem; font-weight: 700; color: var(--accent); letter-spacing: 0.06em; }
+  .prompt { margin: 4px 0 12px; white-space: pre-wrap; font-weight: 550; }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px; overflow-x: auto; font: 13.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  textarea, input[type=text] { width: 100%; font: inherit; color: inherit; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+  textarea { min-height: 96px; resize: vertical; }
+  textarea:focus, input[type=text]:focus { outline: 3px solid var(--focus); border-color: var(--accent); }
+  .choices label { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+  .choices label:hover { background: var(--bg); }
+  .choices input { margin-top: 5px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; font-size: 0.9rem; color: var(--muted); }
+  .chips { display: inline-flex; gap: 4px; }
+  .chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .chips span { display: inline-grid; place-items: center; min-width: 32px; height: 30px; padding: 0 8px; border: 1px solid var(--line); border-radius: 15px; cursor: pointer; color: var(--ink); }
+  .chips input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .chips input:focus-visible + span { outline: 3px solid var(--focus); }
+  .why { margin-top: 10px; }
+  .dk { margin-left: auto; display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  section.unknown .answer { opacity: 0.4; pointer-events: none; }
+  footer { position: fixed; inset: auto 0 0 0; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--line); }
+  footer div { max-width: 760px; margin: 0 auto; padding: 14px 20px; display: flex; gap: 10px; align-items: center; }
+  #progress { color: var(--muted); font-size: 0.9rem; margin-right: auto; }
+  button { font: inherit; font-weight: 600; border-radius: 8px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+  button.secondary { background: transparent; color: var(--accent); }
+  button:active { transform: scale(0.97); }
+  #status { font-size: 0.85rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="meta" id="meta"></div>
+    <h1 id="title"></h1>
+    <p id="intro"></p>
+  </header>
+  <div id="items"></div>
+</main>
+<footer><div>
+  <span id="progress"></span>
+  <span id="status" role="status"></span>
+  <button class="secondary" id="copy">Copy answers</button>
+  <button id="download">Download .md</button>
+</div></footer>
+<script id="spec" type="application/json">__WORKSHEET_SPEC__</script>
+<script>
+const spec = JSON.parse(document.getElementById("spec").textContent)
+const storageKey = `one-oh-one:${spec.course}:${spec.id}`
+const state = JSON.parse(localStorage.getItem(storageKey) || "{}")
+const items = spec.items.map((item) => ({ confidence: item.kind !== "scale", ...item }))
+
+document.title = spec.title
+document.getElementById("title").textContent = spec.title
+document.getElementById("meta").textContent = `${spec.course} · ${spec.id}`
+document.getElementById("intro").textContent = spec.intro || ""
+
+const el = (tag, props = {}, children = []) => {
+  const node = Object.assign(document.createElement(tag), props)
+  node.append(...children)
+  return node
+}
+
+function chips(name, values, selected, onPick) {
+  return el("span", { className: "chips" }, values.map((value) => {
+    const input = el("input", { type: "radio", name, value, checked: String(selected) === String(value) })
+    input.addEventListener("change", () => onPick(value))
+    return el("label", {}, [input, el("span", { textContent: value })])
+  }))
+}
+
+function save() {
+  localStorage.setItem(storageKey, JSON.stringify(state))
+  const done = items.filter(answered).length
+  document.getElementById("progress").textContent = `${done} of ${items.length} answered`
+}
+
+function answered(item) {
+  const s = state[item.id] || {}
+  if (s.unknown) return true
+  if (item.kind === "choice") return item.choices.includes(s.value)
+  if (item.kind === "scale") return s.value != null
+  if (item.kind === "diagram") return Boolean((s.file || "").trim() || (s.text || "").trim())
+  return Boolean((s.text || "").trim())
+}
+
+items.forEach((item, index) => {
+  const s = (state[item.id] ||= {})
+  const section = el("section", { className: s.unknown ? "unknown" : "" })
+  const answer = el("div", { className: "answer" })
+  section.append(el("div", { className: "num", textContent: `${index + 1}` }), el("div", { className: "prompt", textContent: item.prompt }))
+  if (item.code) section.append(el("pre", { textContent: item.code }))
+
+  const textarea = (key, placeholder) => {
+    const area = el("textarea", { value: s[key] || "", placeholder })
+    area.addEventListener("input", () => { s[key] = area.value; save() })
+    return area
+  }
+
+  if (item.kind === "choice") {
+    answer.append(el("div", { className: "choices" }, item.choices.map((choice) => {
+      const input = el("input", { type: "radio", name: `${item.id}-choice`, checked: s.value === choice })
+      input.addEventListener("change", () => { s.value = choice; save() })
+      return el("label", {}, [input, el("span", { textContent: choice })])
+    })))
+    if (item.why !== false) answer.append(el("div", { className: "why" }, [textarea("text", "Why? Your reasoning matters more than the pick.")]))
+  } else if (item.kind === "scale") {
+    const min = item.min ?? 1
+    const max = item.max ?? 7
+    const values = Array.from({ length: max - min + 1 }, (_, i) => min + i)
+    answer.append(el("div", { className: "row" }, [
+      el("span", { textContent: item.low || "" }),
+      chips(`${item.id}-scale`, values, s.value, (value) => { s.value = value; save() }),
+      el("span", { textContent: item.high || "" }),
+    ]))
+  } else if (item.kind === "diagram") {
+    const file = el("input", { type: "text", value: s.file || "", placeholder: "Path to your drawing: a saved file, export, screenshot, or photo" })
+    file.addEventListener("input", () => { s.file = file.value; save() })
+    answer.append(file, el("div", { className: "why" }, [textarea("text", "Anything the drawing doesn't show")]))
+  } else {
+    answer.append(textarea("text", item.placeholder || "From memory, in your own words"))
+  }
+  section.append(answer)
+
+  const row = el("div", { className: "row" })
+  if (item.confidence) {
+    row.append(el("span", { textContent: "How sure?" }), chips(`${item.id}-confidence`, [1, 2, 3, 4, 5], s.confidence, (value) => { s.confidence = value; save() }), el("span", { textContent: "1 guess · 5 certain" }))
+  }
+  if (item.kind !== "scale") {
+    const unknown = el("input", { type: "checkbox", checked: Boolean(s.unknown) })
+    unknown.addEventListener("change", () => { s.unknown = unknown.checked; section.classList.toggle("unknown", unknown.checked); save() })
+    row.append(el("label", { className: "dk" }, [unknown, el("span", { textContent: "I don't know" })]))
+  }
+  section.append(row)
+  document.getElementById("items").append(section)
+})
+save()
+
+function markdown() {
+  const lines = [`# ${spec.title}`, "", `course: ${spec.course} · worksheet: ${spec.id} · exported: ${new Date().toISOString()}`]
+  items.forEach((item, index) => {
+    const s = state[item.id] || {}
+    lines.push("", `## ${index + 1} · ${item.id}`, "", ...item.prompt.split("\n").map((line) => `> ${line}`), "")
+    if (item.code) lines.push("```", item.code, "```", "")
+    if (s.unknown) lines.push("(don't know)")
+    else if (item.kind === "choice") {
+      lines.push(`choice: ${item.choices.includes(s.value) ? s.value : "(none)"}`)
+      if ((s.text || "").trim()) lines.push(`why: ${s.text.trim()}`)
+    } else if (item.kind === "scale") lines.push(`rating: ${s.value ?? "(none)"} (scale ${item.min ?? 1}–${item.max ?? 7})`)
+    else if (item.kind === "diagram") {
+      lines.push(`file: ${(s.file || "").trim() || "(none)"}`)
+      if ((s.text || "").trim()) lines.push("", s.text.trim())
+    } else lines.push((s.text || "").trim() || "(blank)")
+    if (item.confidence && !s.unknown) lines.push("", `confidence: ${s.confidence ?? "?"}/5`)
+  })
+  return lines.join("\n") + "\n"
+}
+
+const status = (text) => {
+  const node = document.getElementById("status")
+  node.textContent = text
+  setTimeout(() => { if (node.textContent === text) node.textContent = "" }, 4000)
+}
+
+document.getElementById("copy").addEventListener("click", async () => {
+  const text = markdown()
+  try {
+    await navigator.clipboard.writeText(text)
+  } catch {
+    const area = el("textarea", { value: text })
+    document.body.append(area)
+    area.select()
+    document.execCommand("copy")
+    area.remove()
+  }
+  status("Copied. Paste it into the chat.")
+})
+
+document.getElementById("download").addEventListener("click", () => {
+  const name = `${spec.course}-${spec.id}.md`
+  const link = el("a", { href: URL.createObjectURL(new Blob([markdown()], { type: "text/markdown" })), download: name })
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000)
+  status(`Saved ${name} to Downloads.`)
+})
+</script>
+</body>
+</html>
