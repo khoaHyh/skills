@@ -25,7 +25,7 @@ Switching topics mid-thread is normal. Park the current item's state in the ledg
 
 ## Dispatch
 
-- Give each PR or slice exactly one writer: a background `general` worker in the item's worktree. Start it with the ledger pointer, `Work item <KEY>, phase: <phase>.`, plus only what's new.
+- Give each PR or slice exactly one writer: a fresh background `computa` worker in the item's worktree. Start it with the ledger pointer, `Work item <KEY>, phase: <phase>.`, plus only what's new.
 - Send follow-ups on a slice to its existing worker by sessionID. Start a new worker only for a new slice.
 - Run independent slices in parallel. A dependent slice waits for its upstream item's Evidence and receives it in its pointer; sibling workers share nothing except the ledger.
 - Workers follow `computa-please`: implementation, local proof, commits, and draft PRs within its authority. Check their work; don't redo it.
