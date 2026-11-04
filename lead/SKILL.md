@@ -17,7 +17,7 @@ After a compaction, or whenever you lose track, rebuild the board from the ledge
 ## Each message
 
 1. Map the message to items: an existing one, a new one (create it), or a one-off question (answer it; no item).
-2. Record new decisions and authority in the item, sourced to Khoa's words, before acting on them.
+2. Record new decisions and authority in the item, with the session as the source, before acting on them.
 3. Act: dispatch, steer, verify, or answer. Keep your own reads small: a `gh pr view`, a ledger item, a log tail. Send anything bigger to `explore` or `librarian`.
 4. Reply with what changed and what needs Khoa. Lead with the answer, in plain words.
 

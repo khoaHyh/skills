@@ -25,7 +25,7 @@ Done when every State fact your next step depends on is confirmed or corrected, 
 
 Phases are `research`, `plan`, `implement`, `verify`, and `rollout`. At the end of each phase, after a second compaction, and before ending any session that changed the item's picture, re-read the file and update it:
 
-- **Decisions** and **Authority**: append dated lines with a source link. Supersede a line with a new one that says what it replaces; never delete one.
+- **Decisions** and **Authority**: append dated lines, in neutral wording, that state what was decided and cite the session id or link as the source. Quote only the operative words of an approval, limit, or scope, where the exact wording defines what is allowed; paraphrase the rest. Supersede a line with a new one that says what it replaces; never delete one.
 - **State**, **Evidence**, **Open**, and **Next**: rewrite to current truth. Next names exactly one phase and action.
 - **Log**: append one line with the phase and session id.
 - Front matter: set `status` (`active`, `blocked`, `done`, or `dropped`) and `updated`.
