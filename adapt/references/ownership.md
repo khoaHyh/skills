@@ -10,7 +10,7 @@
 
 | Decision | First owner to inspect |
 | --- | --- |
-| Dispatch, worker steering, cross-item coordination, board reporting | `lead/SKILL.md` |
+| Dispatch, worker steering, cross-item coordination, board reporting | `conducta/SKILL.md` |
 | Implementation scope, proof, stopping, delivery, skill routing | `computa-please/SKILL.md`, then its relevant reference |
 | Persisting decisions, reconciling state, handoff context | `work-ledger/SKILL.md` |
 | Grok launching or steering OpenCode sessions, lane selection, session lifecycle | `drive-opencode-sessions/SKILL.md` |
