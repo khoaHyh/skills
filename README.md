@@ -4,6 +4,7 @@ My collection of markdown files and scripts that I give to agents to hopefully d
 
 ## Catalog
 
+- **adapt**: Turn session feedback into a targeted improvement to an owned skill, agent prompt, or workflow tool; resolve its canonical source, check the behavioral change, then publish and sync.
 - **feature-grill**: Settle only the product decisions blocking a selected feature delivery, then resume the authorized task.
 - **subtract**: Survey a codebase for removable complexity or simplify unstaged, staged, uncommitted, and committed changes while preserving required behavior.
 - **scope-prune**: Cut a completed implementation back to the minimum durable change for its agreed problem.
