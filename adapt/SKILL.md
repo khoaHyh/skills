@@ -32,7 +32,7 @@ Done when you can name the canonical file, why it owns the evidenced failed deci
 
 Load `writing-for-agents` before changing instructions. Prefer replacing, clarifying, or deleting existing wording. Put a procedure in its owning reference instead of expanding an always-loaded prompt. Use a deterministic check or tooling fix when it can enforce the behavior more reliably than prose.
 
-Preserve existing authority and repository boundaries. An adaptation does not grant new operational permissions. If acting as lead, dispatch the edit to a computa worker with the relevant feedback, the failure trace and its evidence pointers, canonical owner, scope, and proof; keep the lead's write restriction intact. Follow each owning repository's checkout and publication rules.
+Preserve existing authority and repository boundaries. An adaptation does not grant new operational permissions. If acting as conducta, dispatch the edit to a computa worker with the relevant feedback, the failure trace and its evidence pointers, canonical owner, scope, and proof; keep conducta's write restriction intact. Follow each owning repository's checkout and publication rules.
 
 Application-code mistake classes belong to `correct`; suggest that route rather than widening this instruction-maintenance task into an application refactor. For an upstream skill, change an owned caller only when the caller caused the problem; otherwise report the upstream finding.
 
