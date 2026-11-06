@@ -1,0 +1,223 @@
+#!/usr/bin/env -S python3 -I
+"""Check a PR before reporting it delivered: at most one Greptile review, every review
+thread answered and resolved, and a body that follows the pr-body skill.
+
+  pr-ready-check <pr-number-or-url> [--repo owner/name]
+
+Read-only: every request is a `gh` read with the caller's auth.
+Exit 0 when all checks pass, 1 when any fails, 2 on usage or access errors.
+"""
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+
+GREPTILE = "greptile-apps"
+REQUEST = re.compile(r"@greptile(?:ai)?\b[^\n]*\breview\b", re.I)
+SUMMARY = "<!-- greptile_summary -->"
+EXCLUDED = "excluded authors list"
+
+THREADS = """
+query($owner: String!, $name: String!, $number: Int!, $after: String) {
+  repository(owner: $owner, name: $name) {
+    pullRequest(number: $number) {
+      reviewThreads(first: 100, after: $after) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          isResolved path line originalLine
+          comments(first: 100) { nodes { author { login } url } }
+        }
+      }
+    }
+  }
+}
+"""
+
+# pr-body sections, in order. Demos is optional and must come last.
+SECTIONS = ["Why the change", "What changed", "Demos"]
+# Text the pr-body skill excludes: claims of having run tests, and intermediate PR history.
+FORBIDDEN = [
+    ("test/validation claim", r"\b(?:i|we) (?:re-?)?ran\b"),
+    ("test/validation claim", r"\b(?:ran|re-?ran|running) (?:the |all )?(?:(?:unit|integration|e2e|full|local|existing) )?(?:tests?|test suite|checks|lint|typecheck)\b"),
+    ("test/validation claim", r"\b(?:tests?|checks?|ci) (?:all )?(?:pass|passed|passing|(?:is |are )?green)\b"),
+    ("test/validation claim", r"\bverified (?:locally|manually|by running)\b"),
+    ("test/validation claim", r"^\W*(?:validation|verification|testing|test plan)\W*:"),
+    ("intermediate PR detail", r"\b(?:previous|earlier|prior|last) (?:revision|iteration|commit|push|review round)\b"),
+    ("intermediate PR detail", r"\bsince (?:the )?(?:last|previous|first) (?:review|revision|commit|push)\b"),
+    ("intermediate PR detail", r"\b(?:force-?push(?:ed)?|rebased|squashed)\b"),
+    ("intermediate PR detail", r"\breduced (?:the )?(?:pr|diff)\b|\b(?:pr|diff) size\b|[+-]\d+(?:\.\d+)?k? lines\b"),
+    ("intermediate PR detail", r"\b(?:addressed|per) (?:the )?(?:review|reviewer|greptile|codex)(?:'s)? (?:feedback|comments?|findings?)\b"),
+    ("meta-commentary", r"^\W*(?:update|edit)\s*\d*\W*:"),
+]
+
+
+class AccessError(Exception):
+    pass
+
+
+def gh(*args):
+    run = subprocess.run(["gh", *args], capture_output=True, text=True)
+    if run.returncode:
+        raise AccessError(f"gh {' '.join(args[:3])}: {run.stderr.strip() or 'failed'}")
+    return run.stdout
+
+
+def gh_json(*args):
+    return json.loads(gh(*args))
+
+
+def pages(path):
+    # --slurp keeps each page's array, so flatten them.
+    return [item for page in gh_json("api", path, "--paginate", "--slurp") for item in page]
+
+
+def strip_code(text):
+    return re.sub(r"`[^`\n]*`", "", re.sub(r"^\s*(```|~~~).*?^\s*\1", "", text, flags=re.M | re.S))
+
+
+def check_greptile(slug, number, head):
+    comments = pages(f"repos/{slug}/issues/{number}/comments")
+    reviews = pages(f"repos/{slug}/pulls/{number}/reviews")
+    requests = [c["user"]["login"] for c in comments
+                if c["user"]["type"] != "Bot" and REQUEST.search(strip_code(c["body"] or ""))]
+    bot = [c["body"] or "" for c in comments if c["user"]["login"].startswith(GREPTILE)]
+    summaries = [b for b in bot if SUMMARY in b]
+    reviewed = {r["commit_id"] for r in reviews if r["user"]["login"].startswith(GREPTILE)}
+    passes = len(reviewed)
+    for body in summaries:
+        if m := re.search(r"Reviews \((\d+)\)", body):
+            passes = max(passes, int(m.group(1)))
+        reviewed.update(re.findall(r"Last reviewed commit:.*?/commit/([0-9a-f]{40})", body))
+    passes = max(passes, 1 if summaries else 0)
+
+    facts = [f"{len(requests)} request(s)" + (f" by {', '.join(requests)}" if requests else ""),
+             f"{passes} review pass(es)"]
+    if reviewed:
+        shas = ", ".join(sorted(s[:9] for s in reviewed))
+        facts.append(f"reviewed {shas}; head {head[:9]}" + ("" if head in reviewed else " (new SHA alone needs no re-review)"))
+    problems, warnings = [], []
+    if passes == 0:
+        if requests:
+            problems.append("requested but Greptile has not posted a review or summary yet")
+        else:
+            excluded = any(EXCLUDED in b for b in bot)
+            warnings.append("no Greptile review; fine only if review.md's None was chosen for a lower-risk change, "
+                            "so say so in the report"
+                            + (" (the excluded-authors notice is not a review)" if excluded else ""))
+    if len(requests) > 1:
+        problems.append(f"{len(requests)} requests: a re-review needs Khoa's explicit approval")
+    if passes > 1:
+        problems.append(f"{passes} Greptile passes: a re-review needs Khoa's explicit approval")
+    return not problems, "; ".join(facts), problems, warnings
+
+
+def check_threads(slug, number, author):
+    owner, name = slug.split("/")
+    threads, after = [], None
+    while True:
+        args = ["api", "graphql", "-f", f"query={THREADS}", "-F", f"owner={owner}",
+                "-F", f"name={name}", "-F", f"number={number}"]
+        if after:
+            args += ["-f", f"after={after}"]
+        page = gh_json(*args)["data"]["repository"]["pullRequest"]["reviewThreads"]
+        threads += page["nodes"]
+        if not page["pageInfo"]["hasNextPage"]:
+            break
+        after = page["pageInfo"]["endCursor"]
+
+    def describe(t):
+        first = t["comments"]["nodes"][0]
+        login = (first["author"] or {}).get("login", "ghost")
+        return f"{login} {t['path']}:{t['line'] or t['originalLine']} {first['url']}"
+
+    unresolved = [t for t in threads if not t["isResolved"]]
+    unanswered = [t for t in threads if t["isResolved"]
+                  and not any((c["author"] or {}).get("login") == author for c in t["comments"]["nodes"])]
+    problems = [f"unresolved: {describe(t)}" for t in unresolved]
+    problems += [f"resolved without a reply from {author}: {describe(t)}" for t in unanswered]
+    summary = f"{len(threads)} thread(s), {len(unresolved)} unresolved, {len(unanswered)} resolved without an author reply"
+    return not problems, summary, problems, []
+
+
+def check_body(body):
+    # Drop bot-injected blocks such as <!-- codesmith:footer --> ... <!-- /codesmith:footer -->.
+    body = re.sub(r"<!--\s*([\w:.-]+)\s*-->.*?<!--\s*/\1\s*-->", "", body or "", flags=re.S)
+    body = re.sub(r"<!--.*?-->", "", body, flags=re.S).replace("\r\n", "\n")
+    prose = strip_code(body)
+    headings = [(m.group(1).strip(), m.start(), m.end()) for m in re.finditer(r"^##\s+(.+?)\s*#*$", prose, re.M)]
+    text = {}
+    for i, (title, _, end) in enumerate(headings):
+        stop = headings[i + 1][1] if i + 1 < len(headings) else len(prose)
+        text.setdefault(title, prose[end:stop].strip())
+    titles = [t for t, _, _ in headings]
+
+    problems = []
+    for title in SECTIONS[:2]:
+        if title not in text:
+            problems.append(f"missing `## {title}`")
+        elif not text[title]:
+            problems.append(f"`## {title}` is empty")
+    for title in titles:
+        if title not in SECTIONS:
+            problems.append(f"unexpected section `## {title}` (pr-body has only {', '.join(SECTIONS)})")
+    for title in set(titles):
+        if titles.count(title) > 1:
+            problems.append(f"`## {title}` appears {titles.count(title)} times")
+    known = [t for t in titles if t in SECTIONS]
+    if known != sorted(known, key=SECTIONS.index):
+        problems.append(f"sections out of order: {', '.join(known)}")
+    if "Demos" in text:
+        if titles[-1] != "Demos":
+            problems.append("`## Demos` must be the last section")
+        if not text["Demos"]:
+            problems.append("`## Demos` is empty: omit it when there are no demos")
+    why = text.get("Why the change", "")
+    if re.search(r"\{[^{}\n]*\}", why):
+        problems.append("`## Why the change` still has template placeholder text")
+    if why:
+        flat = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", " ".join(why.split()))
+        flat = re.sub(r"\b(?:e\.g|i\.e|etc|vs|cf|approx)\.", "", flat, flags=re.I)
+        sentences = [s for s in re.split(r"(?<=[.!?])\s+(?=\S)", flat) if s.strip()]
+        if len(sentences) != 1:
+            problems.append(f"`## Why the change` has {len(sentences)} sentences; pr-body requires exactly one")
+
+    for line in prose.split("\n"):
+        for label in dict.fromkeys(label for label, pattern in FORBIDDEN if re.search(pattern, line, re.I)):
+            problems.append(f"{label}: \"{line.strip()[:120]}\"")
+    if re.search(r"\bbenchmark", prose, re.I) and not re.search(r"^\s*\|?\s*:?-{3,}", body, re.M):
+        problems.append("mentions a benchmark but has no before/after table")
+    return not problems, f"sections: {', '.join(titles) or 'none'}", problems, []
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("pr", help="PR number or URL")
+    parser.add_argument("--repo", help="owner/name (default: the current directory's gh repo)")
+    args = parser.parse_args()
+
+    try:
+        view = ["pr", "view", args.pr, "--json", "number,url,headRefOid,body,author"]
+        pr = gh_json(*view, *(["--repo", args.repo] if args.repo else []))
+        slug = "/".join(pr["url"].split("/")[3:5])
+        number, head, author = pr["number"], pr["headRefOid"], pr["author"]["login"]
+        print(f"{slug}#{number} @ {head[:9]} by {author}")
+        results = [("greptile", *check_greptile(slug, number, head)),
+                   ("threads", *check_threads(slug, number, author)),
+                   ("body", *check_body(pr["body"]))]
+    except (AccessError, KeyError, TypeError, ValueError) as error:
+        print(f"ERROR {error}", file=sys.stderr)
+        return 2
+
+    for name, ok, summary, problems, warnings in results:
+        print(f"{'FAIL' if not ok else 'WARN' if warnings else 'PASS'} {name}: {summary}")
+        for problem in problems + warnings:
+            print(f"  - {problem}")
+    failed = [name for name, ok, _, _, _ in results if not ok]
+    print(f"FAIL: {', '.join(failed)}" if failed else "PASS: ready to report delivered")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
