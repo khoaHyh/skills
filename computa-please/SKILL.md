@@ -81,7 +81,7 @@ Diagnose only failures blocking delivery; reuse a supported working fixture or p
 
 For changed UI, finish `record-verification` and attach its evidence to the authorized PR or other handoff. Distinguish browser or emulation evidence from checks requiring real hardware.
 
-Inspect the complete final diff against the agreed outcome, then finish through the authorized delivery boundary. Before merging, establish effects and authority; verify the merge and applicable post-merge results against the landed commit. Reconcile uncertain external actions before retrying.
+Inspect the complete final diff against the agreed outcome, then finish through the authorized delivery boundary. Before reporting a PR delivered, run [`scripts/pr-ready-check <pr>`](scripts/pr-ready-check) and fix every FAIL (Greptile passes, unanswered or unresolved threads, `pr-body` rules); explain any WARN in the report. Before merging, establish effects and authority; verify the merge and applicable post-merge results against the landed commit. Reconcile uncertain external actions before retrying.
 
 Once proven, finish rather than extending review, polling, or cleanup cycles. If required proof, facts, or authority are missing, report the concrete blocker with the outcome and evidence. A pending action is not completed delivery.
 
