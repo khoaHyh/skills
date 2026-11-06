@@ -75,6 +75,8 @@ Name the proof before editing; when practical, watch it fail on the current code
 
 Extend existing behavioral coverage where possible; add tests only for meaningful gaps, not implementation mirrors.
 
+Run heavy local work (full test suites, builds, installs, Docker stacks, simulators, emulators, recordings) through `python3 -I ~/.config/opencode/scripts/cpu-share.py -- <cmd>` with a shell timeout of at least 50 minutes. It waits in the call for one of two machine-wide slots; keep waiting rather than retrying, and report a blocker if it exits 75. Before asking Khoa to stop stale resources, list them with `--inventory`.
+
 Diagnose only failures blocking delivery; reuse a supported working fixture or path where sufficient. Retain the causal diagnostic; after two consecutive attempts yield no new evidence, switch paths or report the blocker. Resume diagnosis only with new evidence.
 
 For changed UI, finish `record-verification` and attach its evidence to the authorized PR or other handoff. Distinguish browser or emulation evidence from checks requiring real hardware.

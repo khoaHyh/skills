@@ -10,7 +10,7 @@ Consume one frozen set of existing PR feedback, establish the truth of every fin
 ## Boundaries
 
 - Address only the selected existing feedback. Later feedback belongs to another run; do not request, trigger, or wait for a new review.
-- A remediation request includes investigation, fixes, and verification. Resolve commit, push, and publication authority from existing task/repository grants; for `computa-please`, use its [authority policy](../computa-please/SKILL.md#authority). External replies and provider state changes retain their separate authority. Carry same-task grants through the repair instead of asking again.
+- A remediation request includes investigation, fixes, and verification. Resolve commit, push, and publication authority from existing task/repository grants; for `computa-please`, use its [authority policy](../computa-please/SKILL.md#authority). Replies and thread resolution on the selected items need a standing or task grant (computa-please's covers PRs Khoa authored); other provider state changes retain their separate authority. Carry same-task grants through the repair instead of asking again.
 - Continue authorized fixes through verification and repair of attributable failures. Keep blocked items visible while completing independent work.
 
 Inputs may identify a PR, exact review/comment/check/thread/run IDs or URLs, a reviewer, an expected SHA or time window, or a fixed set supplied by a supervising loop. Detect the PR from the current branch only when it is omitted.
@@ -63,6 +63,6 @@ Run each focused reproduction or regression test, then only the broader format, 
 
 When provider access is available, re-fetch selected items by stable ID before closing. Each response gives the disposition and evidence: the root-cause fix and verification, conflicting evidence for a rejection, a direct answer, or the blocker and what would resolve it.
 
-When explicitly authorized, send replies through the provider's native thread and update addressed/resolved state. Otherwise prepare the exact responses inline and finish all authorized local work.
+When a grant covers it, send replies through the provider's native thread and update addressed/resolved state. Otherwise prepare the exact responses inline and finish all authorized local work.
 
 Done when every frozen item is accounted for, all risk-matched verification passes or has a reported blocker, and authorized replies or prepared responses are complete. Report the PR and head SHA, item count and dispositions, fixes, external sources used where applicable, verification, external actions, and unresolved items.
