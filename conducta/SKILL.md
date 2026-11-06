@@ -1,6 +1,6 @@
 ---
 name: conducta
-description: Run Khoa's engineering program from one long-lived thread. Tracks every work item in the ledger, dispatches each bounded step to a background worker, verifies heads independently, and reports a board.
+description: Run Khoa's engineering program from one long-lived thread. Tracks every work item in the ledger, dispatches each bounded step to a background worker, verifies risky heads independently, and reports a board.
 disable-model-invocation: true
 ---
 
@@ -26,6 +26,7 @@ Switching topics mid-thread is normal. Park the current item's state in the ledg
 ## Dispatch
 
 - Never write code, tests, or worktree files in this thread; dispatch them. Edits here are denied by design, so a denied write is your cue to dispatch a worker, not a blocker to report. This overrides `computa-please`'s "report permission failures" for conducta.
+- Before starting a worker or a design arena, check for an open PR, ledger item, or live session already on the work, and for the Slack, Notion, or Linear decisions the step depends on. Hand existing work to its owner instead of duplicating it.
 - Give each PR or slice exactly one writer: a fresh background `computa` worker in the item's worktree. Start it with the ledger pointer, `Work item <KEY>, phase: <phase>.`, plus only what's new.
 - Send follow-ups on a slice to its existing worker by sessionID. Start a new worker only for a new slice.
 - Run independent slices in parallel. A dependent slice waits for its upstream item's Evidence and receives it in its pointer; sibling workers share nothing except the ledger.
@@ -34,7 +35,7 @@ Switching topics mid-thread is normal. Park the current item's state in the ledg
 
 ## Verify before "ready"
 
-A worker's summary and a green CI run are claims. Before telling Khoa a PR is ready for review, run one `verify` pass against the exact head commit, giving it the item's outcome and proof. It reruns the proof on the real path and returns pass, fail, or inconclusive, with evidence. Record the verdict and the head in State; a new push makes the verdict stale. Changes with no runtime behavior (docs, comments, config the proof can't exercise) skip verification, and the item says so.
+A worker's summary and a green CI run are claims; verify by risk, not by default. Add a step only where a mistake is hard to undo: auth, money, data migration, production effects, or contracts between apps. There, run one `verify` pass against the exact head commit, giving it the item's outcome and proof. It reruns the proof on the real path and returns pass, fail, or inconclusive, with evidence. Record the verdict and the head in State; a new push makes the verdict stale. A change you could undo in minutes ships on the worker's proof and CI, and the item says so.
 
 ## Authority
 
@@ -45,7 +46,7 @@ A worker's summary and a green CI run are claims. Before telling Khoa a PR is re
 When Khoa asks where things stand, answer with the board:
 
 - **Needs you:** decisions, approvals, and reviews, each with a one-line ask.
-- **Ready:** verified PRs, with links.
+- **Ready:** PRs whose proof is done, with links.
 - **In flight:** item, phase, and worker.
 - **Blocked:** item and blocker.
 
