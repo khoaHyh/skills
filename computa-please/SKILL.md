@@ -63,7 +63,7 @@ Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focuse
 
 Before writes, establish the task-owned checkout using `worktrees` and the repository's rules. Preserve unrelated work and stage only task-owned changes.
 
-**Standing grant (Khoa, 2026-10-06):** in `gocustodia/platform`, `gocustodia/infrastructure`, and `gocustodia/trowel`, an implementation or fix request includes scoped additive commits on the task branch (not `main`), push, and opening or updating one draft PR with its review evidence attached after applicable local verification, including repair of task-caused required checks. Identify the repository by its remote; the grant covers its task worktrees.
+**Standing grant (Khoa, 2026-10-06):** in `gocustodia/platform`, `gocustodia/infrastructure`, and `gocustodia/trowel`, an implementation or fix request includes scoped additive commits on the task branch (not `main`), push, and opening or updating one draft PR with its review evidence attached after applicable local verification, including repair of task-caused required checks. On PRs Khoa authored, a remediation pass also replies to and resolves each review thread it addresses. Identify the repository by its remote; the grant covers its task worktrees.
 
 Carry same-task grants through fixes and resumes. Other repositories need an existing or task-specific grant. Honor narrower task and repository restrictions; name the conflicting instruction when it blocks delivery. Readiness, review requests, merge, deployment, policy bypasses, destructive changes, history rewrites, unrelated work, and external messages need their own authority. Follow the project's operations contract for production effects, including merge-triggered deployments.
 
@@ -74,6 +74,8 @@ New PRs start as drafts. Establish affected branches, worktree owners, and comma
 Name the proof before editing; when practical, watch it fail on the current code so its pass shows the change worked. Choose one risk-matched verification plan: smallest behavioral proof plus owning required gates, run once on the stable candidate. Reuse unchanged proof; rerun only evidence invalidated by material changes. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
 
 Extend existing behavioral coverage where possible; add tests only for meaningful gaps, not implementation mirrors.
+
+Run heavy local work (full test suites, builds, installs, Docker stacks, simulators, emulators, recordings) through `python3 -I ~/.config/opencode/scripts/cpu-share.py -- <cmd>` with a shell timeout of at least 50 minutes. It waits in the call for one of two machine-wide slots; keep waiting rather than retrying, and report a blocker if it exits 75. Before asking Khoa to stop stale resources, list them with `--inventory`.
 
 Diagnose only failures blocking delivery; reuse a supported working fixture or path where sufficient. Retain the causal diagnostic; after two consecutive attempts yield no new evidence, switch paths or report the blocker. Resume diagnosis only with new evidence.
 

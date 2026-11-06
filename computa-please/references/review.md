@@ -13,6 +13,8 @@ Inspect the complete candidate, requirements, existing proof, and review coverag
 | Codex Security | Changes affect authentication, authorization, isolation, secrets, webhooks, injection, or CI trust boundaries. |
 | Base + Security | Both reviews close distinct gaps. |
 
+For PRs in Khoa's repositories, Greptile Base is the usual choice; None fits lower-risk changes, and the report says it was chosen. A PR gets at most one Greptile pass.
+
 Above-Base Greptile requests require Khoa's approval, including when concrete configuration shows the normal trigger would use a premium or Auto tier. Recommend them only for a specific high-impact gap cheaper review cannot cover. Use the question tool with the reason and known credit impact; a declined proposal is not a new gate. An unknown tier alone does not justify a pricing investigation or block the normal route.
 
 ## Run
