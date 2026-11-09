@@ -34,7 +34,7 @@ Rehearse navigation, authentication, test data, and state-based waits before the
 
 Use the repository's owning browser or native driver for interaction. Select the recorder that actually covers the review surface:
 
-- For a contained web page, the existing Playwright/browser recorder may suffice. Check whether it captures the cursor, browser chrome, dialogs, and final state you need.
+- For a contained web page driven by `browse`, prefer its recording tool, which can draw the cursor. Otherwise, the driver's own recorder may suffice. Check whether it captures the cursor, browser chrome, dialogs, and final state you need.
 - For desktop, native dialogs, cross-app or cross-surface behavior, or when visible input materially improves review, prefer **Cap as the screen recorder** when available. Discover current commands with `cap guide --json`; target an exact, non-sensitive window or display and use intentional virtual input. Cap records the driver; it does not replace the repo's verification harness.
 - For mobile, use the owning simulator/device capture helper where available. Check that it records the same device the agent drives.
 
