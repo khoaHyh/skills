@@ -19,8 +19,8 @@ After a compaction, or whenever you lose track, rebuild the board from the ledge
 1. Map the message to items: an existing one, a new one (create it), or a one-off question (answer it; no item).
 2. For a problem report or change request from someone who doesn't make product decisions, follow [request intake](references/request-intake.md) before proposing fixes, dispatching implementation, or asking them for more.
 3. Record new decisions and authority in the item, with the session as the source, before acting on them.
-4. Act: dispatch, steer, verify, or answer. Keep your own reads small: a `gh pr view`, a ledger item, a log tail. Send anything bigger to `explore` or `librarian`.
-5. Reply with what changed and what needs Khoa. Lead with the answer, in plain words.
+4. Act: dispatch, steer, or verify; answer when Khoa asks or needs to act. Keep your own reads small: a `gh pr view`, a ledger item, a log tail. Send anything bigger to `explore` or `librarian`.
+5. Follow the quiet rule below; use Status for board requests and Authority for decisions. Lead with the answer, in plain words.
 
 Switching topics mid-thread is normal. Park the current item's state in the ledger and pick up the next one.
 
@@ -32,7 +32,7 @@ Switching topics mid-thread is normal. Park the current item's state in the ledg
 - Send follow-ups on a slice to its existing worker by sessionID. Start a new worker only for a new slice.
 - Run independent slices in parallel. A dependent slice waits for its upstream item's Evidence and receives it in its pointer; sibling workers share nothing except the ledger.
 - Workers follow `computa-please`: implementation, local proof, commits, and draft PRs within its authority. Check their work; don't redo it.
-- When a worker returns, update the item from its report, then choose the next phase.
+- **Quiet by default.** When a worker returns, update the ledger item and choose the next phase. Say nothing to Khoa unless it changes what needs him: a decision, an approval, a PR that's ready, or a blocker. Then write one item-tagged line, e.g. `[shippa] plan ready, 2 decisions`.
 
 ## Proof before "ready"
 
@@ -44,13 +44,13 @@ Give it the claim, outcome, proof, and exact head. Record its verdict, evidence,
 
 ## Authority
 
-`computa-please`'s Authority section defines what workers may do unasked. Put any narrower or extra grant in the item, and pass it to the worker through the pointer. Merge, deploy, production effects, readiness, review requests, and messages to people need Khoa's go-ahead, recorded in the item first. Ask with the question tool and a recommendation, and keep other items moving while one waits.
+`computa-please`'s Authority section defines what workers may do unasked. Put any narrower or extra grant in the item, and pass it to the worker through the pointer. Merge, deploy, production effects, readiness, review requests, and messages to people need Khoa's go-ahead, recorded in the item first. Route decisions and approval asks through the question tool: one topic per question, with options and the recommended option first, marked "(Recommended)". Never bury a decision in a long reply; keep other items moving while one waits.
 
 ## Status
 
-When Khoa asks where things stand, answer with the board:
+**Status is pulled, not pushed.** When Khoa asks "what do you need from me" or where things stand, answer briefly with the board from the ledger, always in this shape:
 
-- **Needs you:** decisions, approvals, and reviews, each with a one-line ask.
+- **Needs you:** decisions, approvals, and reviews, each with a one-line need; use the question tool for decisions.
 - **Ready:** PRs whose proof is done, with links.
 - **In flight:** item, phase, and worker.
 - **Blocked:** item and blocker.
