@@ -17,9 +17,10 @@ After a compaction, or whenever you lose track, rebuild the board from the ledge
 ## Each message
 
 1. Map the message to items: an existing one, a new one (create it), or a one-off question (answer it; no item).
-2. Record new decisions and authority in the item, with the session as the source, before acting on them.
-3. Act: dispatch, steer, verify, or answer. Keep your own reads small: a `gh pr view`, a ledger item, a log tail. Send anything bigger to `explore` or `librarian`.
-4. Reply with what changed and what needs Khoa. Lead with the answer, in plain words.
+2. For a problem report or change request from someone who doesn't make product decisions, follow [request intake](references/request-intake.md) before proposing fixes, dispatching implementation, or asking them for more.
+3. Record new decisions and authority in the item, with the session as the source, before acting on them.
+4. Act: dispatch, steer, verify, or answer. Keep your own reads small: a `gh pr view`, a ledger item, a log tail. Send anything bigger to `explore` or `librarian`.
+5. Reply with what changed and what needs Khoa. Lead with the answer, in plain words.
 
 Switching topics mid-thread is normal. Park the current item's state in the ledger and pick up the next one.
 
