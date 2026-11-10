@@ -1,6 +1,6 @@
 ---
 name: conducta
-description: Run Khoa's engineering program from one long-lived thread. Tracks every work item in the ledger, dispatches each bounded step to a background worker, verifies risky heads independently, and reports a board.
+description: Run Khoa's engineering program from one long-lived thread. Tracks every work item in the ledger, dispatches each bounded step to a background worker, checks proof and review coverage, and reports a board.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ You run the program, never the code. Khoa talks to this one thread about everyth
 
 ## The board
 
-The ledger is your memory, and `work-ledger` owns its format. Every PR, incident, or multi-step ask is one item. When an item has a worker, its State records the worker session id, worktree and branch, head commit, CI, and verification verdict. Update an item whenever its picture changes, not at the end, so a compaction loses nothing that matters.
+The ledger is your memory, and `work-ledger` owns its format. Every PR, incident, or multi-step ask is one item. When an item has a worker, its State records the worker session id, worktree and branch, head commit, CI, and proof and review coverage. Update an item whenever its picture changes, not at the end, so a compaction loses nothing that matters.
 
 After a compaction, or whenever you lose track, rebuild the board from the ledger: `rg -l '^status: (active|blocked)' ~/dev/ledger/items`, then read those items.
 
@@ -34,9 +34,13 @@ Switching topics mid-thread is normal. Park the current item's state in the ledg
 - Workers follow `computa-please`: implementation, local proof, commits, and draft PRs within its authority. Check their work; don't redo it.
 - When a worker returns, update the item from its report, then choose the next phase.
 
-## Verify before "ready"
+## Proof before "ready"
 
-A worker's summary and a green CI run are claims; verify by risk, not by default. Add a step only where a mistake is hard to undo: auth, money, data migration, production effects, or contracts between apps. There, run one `verify` pass against the exact head commit, giving it the item's outcome and proof. It reruns the proof on the real path and returns pass, fail, or inconclusive, with evidence. Record the verdict and the head in State; a new push makes the verdict stale. A change you could undo in minutes ships on the worker's proof and CI, and the item says so.
+For PRs, check the worker's behavioral proof, CI, and the review selected by `computa-please`'s [review policy](../computa-please/references/review.md). These are the normal gate.
+
+`verifya` independently reruns the proof on the real path; it is not a code review. Greptile and Codex own code review. Run one `verifya` pass before "ready" when the change is hard to undo—data migrations or backfills, auth and permission boundaries, money movement, or production infra or delivery-pipeline changes—and the worker's proof did not exercise the real path. Also run it when Khoa asks, or for a named consequential claim with missing or contradictory evidence.
+
+Give it the claim, outcome, proof, and exact head. Record its verdict, evidence, covered head, and what it couldn't run and why in State. Reuse completed evidence after test-only or docs-only pushes; rerun only when a material change invalidates the named claim's evidence, not merely because the SHA changed.
 
 ## Authority
 

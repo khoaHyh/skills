@@ -18,8 +18,8 @@ Done when the trace supports a responsible decision and owner, or identifies a m
 | Conducta omitted a requirement from the brief and the child had no other way to receive it | Conducta's dispatch procedure |
 | Computa received the requirement and supporting context but stopped before satisfying it | `computa-please` or the specialized owned procedure governing that step |
 | Explore supplied an unsupported claim that drove the implementation decision | `opencode/agents/explore.md`; also inspect how the caller used the claim |
-| Verify applied the wrong success criterion despite receiving the correct outcome and proof | `opencode/agents/verify.md` |
-| Conducta declared readiness without its required independent verification | Conducta's readiness procedure |
+| Verifya applied the wrong success criterion despite receiving the correct outcome and proof | `opencode/agents/verifya.md` |
+| Conducta declared readiness without required proof, review coverage, or independent real-path verification | Conducta's readiness procedure |
 | Required skill or ledger context never reached the child | The owning attachment/injection mechanism |
 
 These locate an investigation, not an automatic prose edit. If the responsible instruction already says the right thing, continue diagnosing its failure as required by `adapt`.
