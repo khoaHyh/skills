@@ -13,7 +13,7 @@ Identify the changed user-visible behavior, its entry point, expected result, an
 
 Plan the comparison before implementation. For a UI bug, reproduce and capture it in the unchanged running app before editing. For other UI changes, capture the existing experience when it provides a meaningful baseline. Use the capture steps below for the baseline, then repeat the same meaningful actions after the change with comparable fixtures, viewport, and environment; identify both revisions. If a safe baseline is unavailable or the bug cannot be reproduced, state that limit and provide after-only evidence without implying an observed before/after comparison.
 
-Present a flow's before and after in one review video with clearly labeled **Before** and **After** sections. Separate takes can be joined; leave implementation time out of the recording. Static-only changes may use labeled screenshot pairs unless a video was requested.
+Present a flow's before and after side by side in one review video: **Before** on the left, **After** on the right, synchronized beat by beat, with each pane labeled by revision. After-only evidence stays single-pane. Leave implementation time out of the recording. Static-only changes may use labeled, side-by-side screenshot pairs unless a video was requested.
 
 Choose a small number of scenarios that cover the changed risk. Write the review plan:
 
@@ -50,27 +50,27 @@ Retain the original recording unchanged, including every original `.cap` project
 
 Build the review cut from the original takes, following [references/review-cut.md](references/review-cut.md):
 
-1. Write an edit decision list of beats.
+1. Write an edit decision list pairing each beat's Before and After source ranges and measured result frames (After alone when no baseline exists).
 2. Run `scripts/build-cut.mjs`.
 3. Render with HyperFrames.
 
-The cut keeps the full captured UI surface in the same static framing across beats and Before/After, puts the caption in a strip under the footage, and marks the evidence. The reference defines the opt-in static crop for otherwise unreadable evidence. It labels every crop, speed change, cut and freeze on screen beside the original take's clock.
+The cut plays paired takes simultaneously, aligning each beat's action and result, with one caption under both panes. Each pane keeps the full captured UI surface in matching static framing and has its own revision label, source clock, marks, and chips for every crop, speed change, cut and freeze. The reference defines synchronization, first-finisher freezes, and the opt-in static crop for otherwise unreadable evidence.
 
-Trim setup, searching, agent/tool latency, and uneventful dead air. Speed up ordinary waits, and return to 1× for meaningful actions and results. Keep product latency, failures, and causal transitions visible or explicitly called out; never edit them into an apparent pass. Disclose omitted steps, recreated state, and separate takes on the section cards and in the packet. Prefer a fresh take to an edit that could misrepresent causality.
+Trim setup, searching, agent/tool latency, and uneventful dead air. Speed up ordinary waits; the builder discloses each pane's synchronization retiming. Judge latency from source clocks and the unchanged takes, not the synchronized playback duration. Keep failures and causal transitions visible or explicitly called out; never edit them into an apparent pass. Disclose omitted steps, recreated state, and separate takes on the title card and in the packet. Prefer a fresh take to an edit that could misrepresent causality.
 
 Time every caption, mark, and stated duration from the source itself. Probe the evidence region's pixels for the frame where the state changes, because contact sheets and freeze detection miss small changes.
 
-A take that already reads at PR size and needs no retiming may ship as-is, with its beats in the PR body.
+An after-only take that already reads at PR size and needs no retiming may ship as-is, with its beats in the PR body.
 
 Done when the builder's pacing table shows no warnings, every timing claim matches a source probe, and `npx hyperframes check` reports nothing beyond the expected silence findings.
 
 ## 6. Inspect and hand off
 
-Inspect the finished artifacts, not just the live app or command output. For screenshot pairs, inspect both images at their expected viewing size for legibility, comparable framing, accurate labels, and private content.
+Inspect the finished artifacts, not just the live app or command output. For screenshot pairs, inspect the labeled images side by side at their expected viewing size for legibility, comparable framing, and private content.
 
-For video, stop and finalize the recorder, then **watch the final review file at 1× at about 900 px wide**, the size a PR plays it. At every planned beat, confirm that the target, action, and result can be identified without pausing or rewinding. Marks and captions direct attention; stable, comparable framing preserves layout, spacing, alignment, hierarchy, layout shifts, and side effects. Inspect any disclosed static crop against the reference's readability exception.
+For video, stop and finalize the recorder, then **watch the final review file at 1× at about 900 px wide**, the size a PR plays it. At every planned beat, confirm that both panes' targets, actions, and results are readable simultaneously, their action/result anchors align, and each source clock and retiming/freeze chip matches that pane. After-only cuts have one pane. Marks and the shared caption direct attention; stable, comparable framing preserves layout, spacing, alignment, hierarchy, layout shifts, and side effects. Inspect any disclosed static crop against the reference's readability exception; desktop comparisons stay two-up under that rule too.
 
-At each sped-up beat and each state change, extract a frame from the rendered file. Confirm the picture shows the state the caption claims, at the take time the clock shows. Inspect the beginning and end, and scan the whole video for secrets or unrelated private content. Use `ffprobe` or the available media inspector for duration, dimensions, and frame rate. If capture failed, report it rather than claiming video proof.
+At each retimed beat and each state change, extract a frame from the rendered file. Confirm each pane shows the state the caption claims, at the take time its clock shows, including the side held while its partner finishes. Inspect the beginning and end, and scan the whole video for secrets or unrelated private content. Use `ffprobe` or the available media inspector for duration, dimensions, and frame rate. If capture failed, report it rather than claiming video proof.
 
 For an authorized PR create/update, attach sanitized, task-owned review evidence to that PR with `gh pr create|edit|comment --attach <file>` (`gh` 2.99+; `gh pr edit --help` has the details); use `pr-body` for placement. Reference each file by its local path in the `--body-file` Markdown (paths resolve from that file's directory) and pass the same files to `--attach`: `gh` rewrites each reference to the uploaded URL. A video renders as a player only when its `![](clip.mp4)` reference is the whole paragraph, so attach the MP4 review cut rather than a raw `.webm` link. Uploads accept OAuth and personal access tokens, not GitHub App tokens, and cap video at 100 MB on paid plans. Read the PR body back and confirm every reference became a `user-attachments` URL. Other uploads or sharing require separate authorization. If publication is unauthorized or `--attach` fails, return local artifact paths and the exact error.
 

@@ -9,20 +9,20 @@ Nothing covers the footage. From top to bottom, through time:
 | Part | What it carries |
 |---|---|
 | Title card (poster frame, ≤ 4.5 s) | The PR, what changed, and **Watch for:** the one sentence the reviewer judges |
-| Section card per take | `Before · main @<sha>` or `After · <branch> @<sha>` |
-| Top bar, always on | The section label; the take clock (the original take's timestamp); a chip for every retiming: `⏩ N× · real S s`, `✂ cut S s`, `⏸ freeze S s`; `static crop` during an explicit framing override |
-| Footage | The full captured UI surface, statically framed, with orange marks on the evidence |
-| Caption strip, under the footage | `n / N` and one line of what the beat shows |
+| Per-pane top bar, always on | `Before · main @<sha>` / `After · <branch> @<sha>`; that pane's original take clock; chips for each retiming (`N× · real S s`), `✂ cut S s`, `⏸ freeze S s`, and any `static crop` |
+| Footage | Before on the left and After on the right, playing simultaneously; each full captured UI surface is statically framed, with orange evidence marks. After-only evidence uses one full-width pane |
+| Shared caption strip, under both panes | `n / N` and one line of what the beat shows |
 | Results card | Each claim marked `✓ seen`, `✗ failed`, or `? your call` |
 
 ## Beats
 
-Each beat is one action and its result, in one or more continuous stretches of a take.
+Each beat pairs the same action and result from both takes. Both panes enter and leave the beat together.
 
 - **Caption:** what the beat shows, in the words a user would use, present tense, about 12 words at most, with numbers copied from the screen. It stays up at least 0.5 s plus 0.3 s a word (1.5 s minimum).
-- **Framing:** keep the full captured UI surface in the same framing throughout the cut. Marks and captions direct attention while the reviewer can judge layout, spacing, alignment, hierarchy, layout shifts, and side effects. Only when specific evidence text is unreadable at about 900 px wide, opt into a static `focus` crop that retains the surrounding layout. State what was unreadable and why the crop is needed on the section card and in the review packet; the builder labels it `static crop`. Camera position and scale stay fixed within each beat, including overrides.
+- **Framing:** keep the full captured UI surface in matching static framing in each pane throughout the cut. Marks and captions direct attention while the reviewer can judge layout, spacing, alignment, hierarchy, layout shifts, and side effects. Check each pane at about 900 px for the whole player, not 900 px per pane. Desktop takes also stay side by side at reduced width. If specific evidence text is unreadable, use a static `focus` crop that retains the surrounding layout, matching it across Before/After; this is the readability fallback, rather than vertical stacking. State what was unreadable and why the crop is needed on the title card and in the review packet; the builder labels it `static crop`. Camera position and scale stay fixed within each beat, including overrides.
 - **Marks:** one box per piece of evidence, appearing at the source time the state changes. Orange to direct attention, red for a failure. Mark only what the caption names.
-- **Before and After:** run the same beats, in the same order, with identical framing, including any exceptional crop, so the reviewer compares like with like.
+- **Synchronization:** set each side's `from` at the same meaningful action and probe its `resultAt` in the source. The builder aligns both starts and both result frames by retiming each action→result span to the longer span's declared playback duration. Each pane shows its actual rate and source duration. Post-result footage (`resultAt`→`to`) plays at that side's declared `rate`; the side that finishes first freezes until the shared beat ends. `hold` adds a shared result hold. The next beat starts both sides together.
+- **Before and After:** pair the same beats, in the same order, with identical framing, including any exceptional crop. Judge latency using source-clock differences and the unchanged takes, not the synchronized cut's display duration; synchronization can slow one side down. If a baseline is unavailable, omit Before rather than fabricating a comparison.
 
 ## Retiming
 
@@ -30,8 +30,9 @@ Each beat is one action and its result, in one or more continuous stretches of a
 |---|---|
 | Waits the change doesn't own (loading, matching, navigation) | 2–4×, chip with the real duration |
 | Nothing changes on screen | Cut; the chip shows the cut length |
-| A result shorter than its read time | Freeze its last frame; the chip shows the freeze |
-| The action, the frame where state changes, errors, flicker, layout shift, latency under review | 1× |
+| A result shorter than its read time, or one side finishing first | Freeze its endpoint; that pane's chip shows the freeze |
+| Paired action→result spans | Align starts/results; each pane's chip shows any synchronization retiming |
+| Errors, flicker, layout shift, latency under review | Preserve the source evidence; inspect the unchanged 1× take for timing judgments |
 
 ## Timing claims
 
@@ -42,11 +43,11 @@ for s in $(seq 15.4 0.04 18.5); do printf "%s " $s; ffmpeg -v error -ss $s -i ta
   -vf "crop=60:18:1310:381,scale=1:1" -f rawvideo -pix_fmt rgb24 - | xxd -p; done | uniq -f1
 ```
 
-Use the measured times for `markAt`, for each beat's `from`/`to`, and for any duration a caption or result states ("about 2.5 s after Book").
+Probe both takes. Use the measured times for each side's `resultAt`, `markAt`, `from`/`to`, and for any duration a caption or result states ("about 2.5 s after Book").
 
 ## The edit decision list
 
-`scripts/build-cut.mjs` reads `edl.json`; paths resolve from its directory, and coordinates are source pixels. `source` is the takes' size in pixels, and every take in one cut shares it: record Before and After at the same viewport. The canvas is 1920×1080, so a portrait phone take plays pillarboxed with the whole phone surface visible.
+`scripts/build-cut.mjs` reads `edl.json`; paths resolve from its directory, and coordinates are source pixels. `source` is the takes' shared size in pixels: capture Before and After at the same viewport. The canvas is 1920×1080; each source fits fully inside its pane, including portrait phone takes. This schema replaces sequential `sections`: pair corresponding source ranges in shared `beats`.
 
 ```json
 {
@@ -54,21 +55,34 @@ Use the measured times for `markAt`, for each beat's `from`/`to`, and for any du
   "ref": "PR #123 · <branch>",
   "watch": "the one thing to judge",
   "source": [1440, 900],
-  "sections": [
-    { "label": "Before · main @abc1234", "src": "takes/before.webm", "beats": [
-      { "from": 1.0, "to": 5.9, "caption": "…", "mark": [x, y, w, h], "markAt": 2.0 },
-      { "from": 5.9, "to": 10.3, "rate": 2.5, "caption": "…" },
-      { "from": 14.6, "to": 16.3, "caption": "…", "mark": [[x, y, w, h], [x, y, w, h]], "tone": "fail", "hold": 1.0 }
-    ] }
+  "takes": {
+    "before": { "label": "Before · main @abc1234", "src": "takes/before.webm" },
+    "after": { "label": "After · task @def5678", "src": "takes/after.webm" }
+  },
+  "beats": [
+    {
+      "caption": "Status changes",
+      "before": { "from": 1, "resultAt": 5, "to": 7, "mark": [1310, 381, 60, 18] },
+      "after": { "from": 2, "resultAt": 4, "to": 4, "mark": [1310, 381, 60, 18] }
+    },
+    {
+      "caption": "Result remains visible",
+      "before": { "from": 8, "to": 10 },
+      "after": { "from": 6, "to": 8 },
+      "hold": 1
+    }
   ],
   "results": [["claim the video shows", "pass"], ["what the reviewer decides", "judge"]]
 }
 ```
 
-- **Beat fields:** `rate` defaults to 1. Omit `focus` for full frame. For the readability exception above, `focus: [x, y, w, h]` is a static override for that beat only; a section's optional `focus` supplies the same static override to all its beats unless a beat overrides it. Framing changes take effect immediately, without camera motion. `mark` is one rect or a list of up to three. `markAt` defaults to 1.5 s before `to`. `hold` freezes the last frame for that many seconds. A gap between one beat's `to` and the next beat's `from` becomes a labelled cut.
+- **Takes:** `after` is required. Omit `takes.before` and every beat's `before` for an after-only single-pane cut. Each present take needs a label and source file; each beat needs a range for each present take.
+- **Source ranges:** `from` starts the action; `resultAt` is the measured result frame, defaulting to `to` when no post-result footage is needed. Use `0 <= from < resultAt <= to`, with `to` a valid frame inside the take (also used for freezes). Each side's `rate` defaults to 1; its action span may play more slowly to align with its partner. In the example, Before's action plays at 1×, After's at 0.5×; both results land after four output seconds, then After freezes for two seconds while Before finishes its post-result footage.
+- **Shared beat fields:** `caption` is below both panes. `hold` adds that many seconds of freeze to both sides after the longer side finishes; it defaults to 0.
+- **Per-side evidence:** omit `focus` for full frame. For the readability exception above, `focus: [x, y, w, h]` is static for that side of that beat only; a take's optional `focus` supplies its default override. Match crop rects across paired takes. Framing changes take effect immediately, without camera motion. `mark` is one rect or a list of up to three; `markAt` defaults to `resultAt`. `tone: "fail"` makes marks red. A gap between that side's previous `to` and next `from` becomes its own labelled cut.
 - **Result verdicts:** `pass`, `fail` or `judge`.
 
-The builder prints a pacing table, flagging beats shorter than their read time and long 1× beats with nothing marked. It writes `chapters.md`, the timestamped beat list for the PR body, from the same clock as the video.
+The builder prints a pacing table, flagging beats shorter than their read time and long 1× beats with nothing marked. It writes `chapters.md` from the shared output clock, with per-side source ranges, result anchors, rates, crops, cuts, and freezes.
 
 ## Build and render
 
@@ -81,3 +95,5 @@ npx hyperframes render --quality delivery --output renders/review.mp4
 ```
 
 `check` reports `film_silent` and `audio_none` on every review cut, since review cuts carry no sound; fix any other finding. A one-minute cut renders in under a minute.
+
+For builder maintenance, run `node --test <skill-dir>/scripts/build-cut.test.mjs` (requires `ffmpeg`); it builds paired and after-only cuts from a generated fixture and checks synchronization, freeze extraction, pane labels/clocks/chips, and static framing.
