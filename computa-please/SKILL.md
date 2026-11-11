@@ -59,7 +59,7 @@ Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focuse
 
 Before writes, establish the task-owned checkout using `worktrees` and the repository's rules. Preserve unrelated work and stage only task-owned changes.
 
-Resolve authority from local or private instructions and the work item.
+Follow the authority established in local or private instructions and in the work item.
 
 Carry same-task grants through fixes and resumes. Other repositories need an existing or task-specific grant. Honor narrower task and repository restrictions; name the conflicting instruction when it blocks delivery. Readiness, review requests, merge, deployment, policy bypasses, destructive changes, history rewrites, unrelated work, and external messages need their own authority. Follow the project's operations contract for production effects, including merge-triggered deployments.
 

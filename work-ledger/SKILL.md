@@ -1,6 +1,6 @@
 ---
 name: work-ledger
-description: Read and update the durable work ledger in ~/dev/ledger for work that spans sessions. Use when a task names a work item (a Linear key such as TASK-617, a PR such as platform#1369, or "work item <key>"), when picking up, handing off, or delegating multi-session work, or when a phase ends.
+description: Read and update the durable work ledger in ~/dev/ledger for work that spans sessions. Use when a task names a work item (a tracker key such as TASK-123, a PR such as owner/repo#123, or "work item <key>"), when picking up, handing off, or delegating multi-session work, or when a phase ends.
 ---
 
 # Work ledger

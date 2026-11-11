@@ -10,7 +10,7 @@ Consume one frozen set of existing PR feedback, establish the truth of every fin
 ## Boundaries
 
 - Address only the selected existing feedback. Later feedback belongs to another run; do not request, trigger, or wait for a new review.
-- A remediation request includes investigation, fixes, and verification. Resolve commit, push, and publication authority from existing task/repository grants; for `computa-please`, use its [authority policy](../computa-please/SKILL.md#authority). Replies and thread resolution on the selected items need a standing or task grant (computa-please's covers PRs Khoa authored); other provider state changes retain their separate authority. Carry same-task grants through the repair instead of asking again.
+- A remediation request includes investigation, fixes, and verification. Resolve commit, push, and publication authority from existing task/repository grants; for `computa-please`, use its [authority policy](../computa-please/SKILL.md#authority). Replies and thread resolution on the selected items need a standing or task grant established in local or private instructions or the work item; other provider state changes retain their separate authority. Carry same-task grants through the repair instead of asking again.
 - Continue authorized fixes through verification and repair of attributable failures. Keep blocked items visible while completing independent work.
 
 Inputs may identify a PR, exact review/comment/check/thread/run IDs or URLs, a reviewer, an expected SHA or time window, or a fixed set supplied by a supervising loop. Detect the PR from the current branch only when it is omitted.
