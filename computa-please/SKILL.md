@@ -22,11 +22,7 @@ Size complexity for the actual workload and concrete failure modes; synthetic va
 
 ## Tools And Access
 
-Prefer an existing authorized structured tool for external-service work. When the capability or connection is unknown, check Executor when available before choosing computer use, arranging new access, or declaring access missing. Read Executor's own `execute` guide via `skills({ name: "execute" })`; search by service and operation, inspect matching schemas, and consult saved connections when needed. Reuse a known suitable path without repeating discovery.
-
-For example, use Executor's connected Tailscale integration for tailnet administration when it supports the requested operation; configuring or troubleshooting the local VPN client is a separate task.
-
-Use computer use for UI-only operations, UI verification, or an evidenced gap in structured tooling. If Executor is absent or lacks the operation, use another authorized existing path. Preserve the intended account and scope across fallbacks; report permission failures rather than routing around them. A connected tool establishes capability, not authority to change state.
+Follow the [global external-service rules](~/dev/macOS-dots/opencode/AGENTS.md#external-services) for service access. Use computer use for UI-only operations or UI verification.
 
 ## Routing
 
