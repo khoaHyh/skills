@@ -16,6 +16,7 @@ const H = 1080;
 const BAR = 72; // section label and take timecode
 const STRIP = 160; // caption strip under the footage, never over it
 const VIEW = { w: W, h: H - BAR - STRIP };
+const fullFrame = [0, 0, ...edl.source];
 // A line a viewer must read stays up 0.5 s plus 0.3 s a word (HyperFrames' floor).
 const words = (s) => String(s).split(/\s+/).filter(Boolean).length;
 const readTime = (s) => Math.max(1.5, 0.5 + 0.3 * words(s));
@@ -40,14 +41,13 @@ const sections = edl.sections.map((sec, si) => {
   const card = readTime(sec.label);
   t += card;
   let prevTo = null;
-  let focus = sec.focus ?? [0, 0, edl.source[0], edl.source[1]];
   for (const [bi, b] of sec.beats.entries()) {
     const rate = b.rate ?? 1;
     const d = (b.to - b.from) / rate;
     const cut = prevTo !== null && b.from - prevTo > 0.1 ? b.from - prevTo : 0;
-    const from = focus;
-    focus = b.focus ?? focus;
-    const beat = { si, bi, start: t, d, rate, cut, srcFrom: b.from, srcTo: b.to, caption: b.caption, focusFrom: from, focus, mark: b.mark, markAt: b.markAt ?? Math.max(b.from, b.to - 1.5), tone: b.tone ?? "look", hold: b.hold ?? 0, take: sec.take ?? si + 1 };
+    const focus = b.focus ?? sec.focus ?? fullFrame;
+    const cropped = focus.some((v, i) => v !== fullFrame[i]);
+    const beat = { si, bi, start: t, d, rate, cut, srcFrom: b.from, srcTo: b.to, caption: b.caption, focus, cropped, mark: b.mark, markAt: b.markAt ?? Math.max(b.from, b.to - 1.5), tone: b.tone ?? "look", hold: b.hold ?? 0, take: sec.take ?? si + 1 };
     clips.push(`<video id="v${si}-${bi}" class="clip" src="assets/takes/${name}" data-start="${t.toFixed(3)}" data-duration="${d.toFixed(3)}" data-media-start="${b.from.toFixed(3)}" data-playback-rate="${rate}" data-track-index="1" muted playsinline></video>`);
     t += d;
     if (beat.hold > 0) {
@@ -79,7 +79,7 @@ console.log(`total ${total.toFixed(1)} s`);
 // Chapters for the PR body, from the same clock as the video.
 const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 const chapters = sections
-  .map((s, si) => [`- **${s.label} (${mmss(s.cardAt)})**`, ...beats.filter((b) => b.si === si).map((b) => `  - ${mmss(b.start)} ${b.caption}${b.rate !== 1 ? ` (${b.rate}×)` : ""}${b.cut ? ` (after a ${b.cut.toFixed(1)} s cut)` : ""}${b.hold ? ` (${b.hold.toFixed(1)} s freeze)` : ""}`)].join("\n"))
+  .map((s, si) => [`- **${s.label} (${mmss(s.cardAt)})**`, ...beats.filter((b) => b.si === si).map((b) => `  - ${mmss(b.start)} ${b.caption}${b.cropped ? " (static crop)" : ""}${b.rate !== 1 ? ` (${b.rate}×)` : ""}${b.cut ? ` (after a ${b.cut.toFixed(1)} s cut)` : ""}${b.hold ? ` (${b.hold.toFixed(1)} s freeze)` : ""}`)].join("\n"))
   .join("\n");
 writeFileSync(`${dir}/chapters.md`, `${chapters}\n`);
 console.log(`\n${chapters}`);
@@ -121,7 +121,7 @@ html, body { width: ${W}px; height: ${H}px; overflow: hidden; background: #111; 
 </head>
 <body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="${total.toFixed(3)}" data-width="${W}" data-height="${H}" data-layout-allow-overlap data-layout-allow-overflow>
-  <div id="bar"><span id="label"></span><div id="chips"><span id="speed" class="chip"></span><span id="cut" class="chip"></span><span id="held" class="chip"></span></div><span id="clock"></span></div>
+  <div id="bar"><span id="label"></span><div id="chips"><span id="framing" class="chip">static crop</span><span id="speed" class="chip"></span><span id="cut" class="chip"></span><span id="held" class="chip"></span></div><span id="clock"></span></div>
   <div id="view"><div id="cam">
     ${clips.join("\n    ")}
     <div class="mark"></div><div class="mark"></div><div class="mark"></div>
@@ -137,13 +137,11 @@ html, body { width: ${W}px; height: ${H}px; overflow: hidden; background: #111; 
 const D = ${JSON.stringify(data)};
 const $ = (id) => document.getElementById(id);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-const ease = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
 const fmt = (s) => Math.floor(s / 60) + ":" + (s % 60).toFixed(1).padStart(4, "0");
 function camFor([x, y, w, h]) {
-  const s = Math.min(D.VIEW.w / (w * 1.06), D.VIEW.h / (h * 1.06));
+  const s = Math.min(D.VIEW.w / w, D.VIEW.h / h);
   return { s, x: D.VIEW.w / 2 - (x + w / 2) * s, y: D.VIEW.h / 2 - (y + h / 2) * s };
 }
-const lerpRect = (a, b, u) => a.map((v, i) => v + (b[i] - v) * u);
 const show = (el, on, display = "flex") => (el.style.display = on ? display : "none");
 function render(t) {
   show($("title"), t < D.TITLE);
@@ -155,13 +153,13 @@ function render(t) {
   if (!b || t >= D.endAt) return;
   const age = t - b.start;
   const inHold = age >= b.d;
-  // The camera glides to a new focus inside continuous footage and cuts with the footage at a cut.
-  const u = b.cut ? 1 : ease(clamp(age / 0.6));
-  const c = camFor(lerpRect(b.focusFrom, b.focus, u));
+  // Full frame by default; an explicit readability crop is static too.
+  const c = camFor(b.focus);
   $("cam").style.transform = "translate(" + c.x.toFixed(2) + "px," + c.y.toFixed(2) + "px) scale(" + c.s.toFixed(4) + ")";
   const src = inHold ? b.srcTo : b.srcFrom + age * b.rate;
   $("label").textContent = D.sections[b.si].label;
   $("clock").textContent = "take " + b.take + " · " + fmt(src);
+  show($("framing"), b.cropped, "inline-block");
   show($("speed"), b.rate !== 1 && !inHold, "inline-block");
   $("speed").textContent = "⏩ " + b.rate + "× · real " + (b.srcTo - b.srcFrom).toFixed(1) + " s";
   show($("cut"), b.cut > 0 && age < 1.6, "inline-block");
@@ -171,7 +169,7 @@ function render(t) {
   const n = D.beats.filter((x) => x.si === b.si).length;
   $("step").textContent = (b.bi + 1) + " / " + n;
   $("caption").textContent = b.caption;
-  // Marks frame the evidence: one box per rect, in source pixels, so they zoom with the footage.
+  // Marks frame the evidence: one box per rect, in source pixels, sharing the footage's framing.
   const rects = !b.mark ? [] : Array.isArray(b.mark[0]) ? b.mark : [b.mark];
   const markT = b.start + (b.markAt - b.srcFrom) / b.rate;
   document.querySelectorAll(".mark").forEach((m, i) => {

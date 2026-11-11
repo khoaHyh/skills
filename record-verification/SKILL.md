@@ -54,7 +54,7 @@ Build the review cut from the original takes, following [references/review-cut.m
 2. Run `scripts/build-cut.mjs`.
 3. Render with HyperFrames.
 
-The cut frames each beat on its evidence region, puts the caption in a strip under the footage, and marks the evidence. It labels every speed change, cut and freeze on screen beside the original take's clock.
+The cut keeps the full captured UI surface in the same static framing across beats and Before/After, puts the caption in a strip under the footage, and marks the evidence. The reference defines the opt-in static crop for otherwise unreadable evidence. It labels every crop, speed change, cut and freeze on screen beside the original take's clock.
 
 Trim setup, searching, agent/tool latency, and uneventful dead air. Speed up ordinary waits, and return to 1× for meaningful actions and results. Keep product latency, failures, and causal transitions visible or explicitly called out; never edit them into an apparent pass. Disclose omitted steps, recreated state, and separate takes on the section cards and in the packet. Prefer a fresh take to an edit that could misrepresent causality.
 
@@ -68,7 +68,7 @@ Done when the builder's pacing table shows no warnings, every timing claim match
 
 Inspect the finished artifacts, not just the live app or command output. For screenshot pairs, inspect both images at their expected viewing size for legibility, comparable framing, accurate labels, and private content.
 
-For video, stop and finalize the recorder, then **watch the final review file at 1× at about 900 px wide**, the size a PR plays it. At every planned beat, confirm that the target, action, and result can be identified without pausing or rewinding, and that marks and framing direct attention without hiding context.
+For video, stop and finalize the recorder, then **watch the final review file at 1× at about 900 px wide**, the size a PR plays it. At every planned beat, confirm that the target, action, and result can be identified without pausing or rewinding. Marks and captions direct attention; stable, comparable framing preserves layout, spacing, alignment, hierarchy, layout shifts, and side effects. Inspect any disclosed static crop against the reference's readability exception.
 
 At each sped-up beat and each state change, extract a frame from the rendered file. Confirm the picture shows the state the caption claims, at the take time the clock shows. Inspect the beginning and end, and scan the whole video for secrets or unrelated private content. Use `ffprobe` or the available media inspector for duration, dimensions, and frame rate. If capture failed, report it rather than claiming video proof.
 
