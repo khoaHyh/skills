@@ -17,13 +17,13 @@ Done when you are holding the item, or have decided the task needs none.
 
 ## 2. Reconcile before acting
 
-Treat the item's Decisions and Authority as accepted context: they are what Khoa already settled, with sources. Treat State as a dated claim. Before acting on it, re-check each fact you depend on against live sources (`git fetch` and `git log`, `gh pr view`, the deployed ref) and correct State in the file.
+Treat the item's Decisions and Authority as accepted context: they are what Khoa already settled, with sources. Treat State as a dated claim. Before acting on it, re-check each fact you depend on against live sources (`git fetch` and `git log`, `gh pr view`, the deployed ref); carry corrections into the next step 3 checkpoint.
 
-Done when every State fact your next step depends on is confirmed or corrected, with a new `Checked` time.
+Done when every State fact your next step depends on is confirmed or corrected; date the checkpoint with a new `Checked` time.
 
 ## 3. Write at phase boundaries
 
-Phases are `research`, `plan`, `implement`, `verify`, and `rollout`. At the end of each phase, after a second compaction, and before ending any session that changed the item's picture, re-read the file and update it:
+Phases are `research`, `plan`, `implement`, `verify`, and `rollout`. Write Decisions and Authority before acting on them; write State, Evidence and Next at phase ends, handoffs, and worker loss—not per step or poll. Re-read the file at each write:
 
 - **Decisions** and **Authority**: append dated lines, in neutral wording, that state what was decided and cite the session id or link as the source. Quote only the operative words of an approval, limit, or scope, where the exact wording defines what is allowed; paraphrase the rest. Supersede a line with a new one that says what it replaces; never delete one.
 - **State**, **Evidence**, **Open**, and **Next**: rewrite to current truth. Next names exactly one phase and action.
@@ -32,19 +32,19 @@ Phases are `research`, `plan`, `implement`, `verify`, and `rollout`. At the end 
 
 Keep the item under about 150 lines by tightening State and Evidence to pointers. Keep secrets, credentials, customer data, and raw transcripts out of it.
 
-Commit and push only the item, so agents on other machines see it: `git -C ~/dev/ledger add items/<file> && git -C ~/dev/ledger commit -m "<key>: <phase> <summary>" && { git -C ~/dev/ledger push -q || { git -C ~/dev/ledger pull --rebase --autostash -q && git -C ~/dev/ledger push -q; }; }`. Other sessions share this checkout, so leave their uncommitted edits alone; the push needs a pull only when another machine pushed first.
+Skip no-change commits. Stage and commit only the changed item (never `git add -A`): `git -C ~/dev/ledger add items/<file> && git -C ~/dev/ledger commit --only items/<file> -m "<key>: <phase> <summary>" && { git -C ~/dev/ledger push -q || { git -C ~/dev/ledger pull --rebase --autostash -q && git -C ~/dev/ledger push -q; }; }`. Other sessions share this checkout; leave their edits alone. Pull only when another machine pushed first.
 
 Done when the file alone tells a fresh session what is settled, what is true now, and what to do next.
 
 ## 4. Hand off with a pointer
 
-When a phase ends or the session has compacted twice, finish step 3 and recommend a fresh session with the pointer prompt below rather than continuing in the long thread.
+For workers and handoffs, recommend a fresh session after a phase or two compactions, checkpointing through step 3 first. This does not apply to Khoa's long-lived conductor, which rebuilds from the ledger after compaction.
 
-Coordinators (Grok Bot, a primary delegating to a sibling session) write or update the item first, then start the session with a pointer instead of a re-brief:
+Coordinators write the item before dispatch. Fresh workers get the pointer plus scope/authority deltas and the exact proof target, retaining needed authority and security boundaries; resumed workers get only changed facts:
 
 ```text
 Work item <KEY>, phase: <phase>.
-<Only what is new since the ledger was last written, if anything.>
+<Scope/authority deltas and exact proof target; only changed facts on resume.>
 ```
 
 Done when the receiving session needs nothing beyond the pointer and the item to start.
