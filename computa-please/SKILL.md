@@ -67,6 +67,8 @@ Resolve authority from local or private instructions and the work item.
 
 Carry same-task grants through fixes and resumes. Other repositories need an existing or task-specific grant. Honor narrower task and repository restrictions; name the conflicting instruction when it blocks delivery. Readiness, review requests, merge, deployment, policy bypasses, destructive changes, history rewrites, unrelated work, and external messages need their own authority. Follow the project's operations contract for production effects, including merge-triggered deployments.
 
+Treat a one-message or one-action grant as an execution limit. Compose the whole payload through a proven non-submitting path, verify the full unsent text, submit once, then verify receipt. If typing submits partially or the result is uncertain, stop and report what was sent; do not resend the remainder or retry before reconciling.
+
 New PRs start as drafts. Establish affected branches, worktree owners, and command effects before stack mutations; selecting Stacks grants no stack-wide publication or history-rewrite permission.
 
 ## Verify And Finish
