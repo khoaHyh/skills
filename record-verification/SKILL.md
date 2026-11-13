@@ -27,6 +27,7 @@ Done when the watch-for sentence and every beat's caption and evidence region ar
 ## 2. Prove and rehearse
 
 For the candidate, run or reuse the owning readiness check and relevant automated verification. Exercise the real user controls and assert the resulting state, not just successful clicks or a loading shell. Inspect applicable console, network, logs, or persistence evidence when the behavior depends on them. A passing video cannot override a failed check, and a passing test cannot replace seeing the UI.
+When comparing against a provided design (Figma, Paper), load `build-design` for its comparison steps only; verification grants no implementation authority.
 
 Rehearse navigation, authentication, test data, and state-based waits before the take. Plan how to drive the recorded path without leaving model reasoning or slow tool-call gaps on screen: use an existing deterministic UI drive when appropriate, or capture short continuous sections and assemble a review copy. Keep credentials, setup shortcuts, and test-only controls out of the visible user path; disclose any setup that affects interpretation. If the flow fails, diagnose or report the failure. A reproducible failure can be recorded as failure evidence; do not present a later take as if the failure never occurred.
 

@@ -14,6 +14,7 @@ Follow the harness's external-service/access rules; use computer use for UI-only
 ## Routing
 
 Load only guidance that changes this task's approach; the selected skill or repository contract owns its procedure and output format.
+When implementing a provided design (Figma, Paper), load `build-design`.
 
 | Request | Route |
 | --- | --- |
