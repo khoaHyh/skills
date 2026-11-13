@@ -29,23 +29,25 @@ After a compaction, or whenever you lose track, rebuild the board from the ledge
 - Before starting a worker or a design arena, check for an open PR, ledger item, or live session already on the work, and for the Slack, Notion, or Linear decisions the step depends on. Hand existing work to its owner instead of duplicating it.
 - One writer owns the PR and worktree: a fresh background `computa` worker. Before transferring ownership, get the old owner's stopped/idle acknowledgment, name the new owner and held actions, and re-read live PR state/head. A queued pause or proposed split is not a completed transfer. Give the writer `Work item <KEY>, phase: <phase>.`, scope and authority deltas, and the exact proof target. Retain its authority and security boundaries.
 - Send follow-ups to the existing worker by sessionID with only changed facts. Start a new worker only for a new slice.
-- `computa` runs on its configured model. Escalate a slice to `claude-agent/opus#high` through the subagent `model` parameter only after the configured model fails that same slice twice, or when Khoa names the slice. Record the escalation in the item before dispatch.
+- For UI/UX, visual design, and design-sketch slices (including Paper/Figma mockups and frontend UI redesigns), run `computa` with subagent `model: "claude-agent/opus#medium"`; other slices use its configured model. Escalate a slice to `claude-agent/opus#high` through the subagent `model` parameter only after its starting model fails that same slice twice, or when Khoa names the slice. Record the escalation in the item before dispatch.
 - Run independent slices in parallel. A dependent slice waits for its upstream item's Evidence and receives it in its pointer; sibling workers share nothing except the ledger.
 - Workers follow `computa-please` within their authority and return head, changed paths, commands and results, an artifact pointer, gaps, and the next decision needed. Check their diff and evidence; don't redo their work.
 - **Quiet by default.** When a worker returns, update the ledger item and choose the next phase. Say nothing to Khoa unless it changes what needs him: a decision, an approval, a PR that's ready, or a blocker. Then write one item-tagged line, e.g. `[shippa] plan ready, 2 decisions`.
 - A successful observer tick is not a complete scan; never report healthy or quiet from stale or incomplete data.
 
-## Proof before "ready"
+## Proof before "merge-ready"
 
-For PRs, check the worker's behavioral proof, CI, and the review selected by `computa-please`'s [review policy](../computa-please/references/review.md). These are the normal gate.
+Before calling a PR merge-ready, check the builder's behavioral proof, CI, and `review-policy` coverage. On landing-enabled repos, the builder marking its PR ready is only the observer handoff, not a merge-ready verdict.
 
-`verifya` independently reruns the proof on the real path; it is not a code review. Greptile and Codex own code review. Run one `verifya` pass before "ready" when the change is hard to undo—data migrations or backfills, auth and permission boundaries, money movement, or production infra or delivery-pipeline changes—and the worker's proof did not exercise the real path. Also run it when Khoa asks, or for a named consequential claim with missing or contradictory evidence.
+`verifya` independently reruns the proof on the real path; it is not a code review. Greptile and Codex own code review. Run one `verifya` pass before "merge-ready" when the change is hard to undo—data migrations or backfills, auth and permission boundaries, money movement, or production infra or delivery-pipeline changes—and the worker's proof did not exercise the real path. Also run it when Khoa asks, or for a named consequential claim with missing or contradictory evidence.
 
 Give it the claim, outcome, proof, and exact head. Record its verdict, evidence, covered head, and what it couldn't run and why in State. Reuse completed evidence after test-only or docs-only pushes; rerun only when a material change invalidates the named claim's evidence, not merely because the SHA changed.
 
 ## Authority
 
-`computa-please`'s Authority section defines what workers may do unasked. Put any narrower or extra grant in the item, and pass it to the worker through the pointer. Merge, deploy, production effects, readiness, review requests, and messages to people need Khoa's go-ahead, recorded in the item first. Route decisions and approval asks through the question tool: one topic per question, with options and the recommended option first, marked "(Recommended)". Never bury a decision in a long reply; keep other items moving while one waits.
+`ground-rules` defines shared authority. Put narrower or extra grants in the item and pass them through the worker pointer. `/shippa N` is merge approval for the presented exact ready head; relay it to the lane, never merge directly. The lane handles bypass through per-repo config, without a bypass flag; Codex waivers stay explicit. Post-merge failures belong to failure routing. Route decisions and approval asks through the question tool: one topic per question, with the recommended option first, marked "(Recommended)"; keep other items moving while one waits.
+
+Conducta never posts review requests itself; follow `review-policy` for request ownership and reuse.
 
 ## Status
 

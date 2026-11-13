@@ -11,9 +11,11 @@
 | Decision | First owner to inspect |
 | --- | --- |
 | Dispatch, worker steering, cross-item coordination, board reporting | `conducta/SKILL.md` |
-| Implementation scope, proof, stopping, delivery, skill routing | `computa-please/SKILL.md`, then its relevant reference |
+| Shared scope, authority, proof, stopping | `ground-rules` |
+| Builder implementation, delivery, skill routing | `computa-please/SKILL.md`, then its relevant reference |
+| Reviewer selection, request ownership, review reuse | `review-policy` |
+| This Mac's compute placement and native cloud checks | Private `local-compute` skill in macOS-dots |
 | Persisting decisions, reconciling state, handoff context | `work-ledger/SKILL.md` |
-| Grok launching or steering OpenCode sessions, lane selection, session lifecycle | `drive-opencode-sessions/SKILL.md` |
 | Agent identity, startup contract, permissions | The matching `opencode/agents/*.md` or owning configuration |
 | Skill attachment or ledger injection did not happen | The matching `opencode/plugins/` implementation |
 | A specialized owned workflow failed | That skill's body or owning reference |

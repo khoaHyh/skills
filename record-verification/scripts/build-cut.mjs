@@ -17,6 +17,25 @@ const STRIP = 160; // shared caption strip, never over footage
 const takes = ["before", "after"].filter((id) => edl.takes[id]).map((id) => ({ id, ...edl.takes[id] }));
 const VIEW = { w: W / takes.length, h: H - BAR - STRIP };
 const fullFrame = [0, 0, ...edl.source];
+// Reject crop-driven walkthroughs before copying takes or extracting freezes.
+const framingErrors = [];
+for (const take of takes) {
+  const focuses = edl.beats.map((beat) => beat[take.id]?.focus ?? take.focus ?? fullFrame);
+  const cropped = focuses.map((focus) => focus.some((v, i) => v !== fullFrame[i]));
+  const count = cropped.filter(Boolean).length;
+  // A single-result detail clip can use the readability exception.
+  if (edl.beats.length > 1 && count > edl.beats.length / 2) {
+    framingErrors.push(`${take.id}: ${count}/${edl.beats.length} beats use static crops`);
+  }
+  for (let i = 1; i < focuses.length; i++) {
+    if (cropped[i - 1] && cropped[i] && focuses[i].some((v, j) => v !== focuses[i - 1][j])) {
+      framingErrors.push(`${take.id}: crop region changes between beats ${i} and ${i + 1}`);
+    }
+  }
+}
+if (framingErrors.length) {
+  throw new Error(`Unstable review framing:\n${framingErrors.join("\n")}\nKeep the whole page stable; recapture at a readable viewport/scale and reserve crops for isolated unreadable results (see review-cut.md).`);
+}
 const words = (s) => String(s).split(/\s+/).filter(Boolean).length;
 const readTime = (s) => Math.max(1.5, 0.5 + 0.3 * words(s));
 // Poster and end cards can also be read while the player is stopped.

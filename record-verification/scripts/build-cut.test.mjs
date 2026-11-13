@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,7 +25,7 @@ function build(name, overrides = {}) {
   const edlPath = join(root, `${name}.json`);
   const out = join(root, name);
   writeFileSync(edlPath, JSON.stringify(edl));
-  execFileSync(process.execPath, [builder, edlPath, out]);
+  execFileSync(process.execPath, [builder, edlPath, out], { stdio: "pipe" });
   const html = readFileSync(join(out, "index.html"), "utf8");
   const script = html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
   const elements = new Map();
@@ -119,4 +119,43 @@ test("after-only cuts have one full-width pane and preserve declared speed and h
   cut.render(beat.start + 2.5);
   assert.equal(cut.element("held-after").style.display, "inline-block");
   assert.deepEqual(beat.sides.after.focus, [0, 0, 160, 100]);
+});
+
+test("crop-heavy cuts fail before writing assets, including inherited take crops", () => {
+  const crop = [20, 10, 100, 70];
+  for (const inherited of [false, true]) {
+    const name = `crop-heavy-${inherited}`;
+    assert.throws(() => build(name, {
+      takes: { after: { label: "After", src: take, ...(inherited ? { focus: crop } : {}) } },
+      beats: Array.from({ length: 6 }, (_, i) => ({
+        caption: "Result appears",
+        after: { from: i, to: i + 1, ...(inherited ? {} : { focus: crop }) },
+      })),
+    }), /after: 6\/6 beats use static crops/);
+    assert.equal(existsSync(join(root, name)), false);
+  }
+});
+
+test("consecutive cropped beats cannot jump between regions even without a crop majority", () => {
+  assert.throws(() => build("crop-jumps", {
+    takes: { after: { label: "After", src: take } },
+    beats: [
+      { caption: "First detail", after: { from: 0, to: 1, focus: [10, 10, 100, 70] } },
+      { caption: "Second detail", after: { from: 1, to: 2, focus: [20, 20, 100, 70] } },
+      { caption: "Whole page", after: { from: 2, to: 3 } },
+      { caption: "Whole page remains", after: { from: 3, to: 4 } },
+    ],
+  }), /after: crop region changes between beats 1 and 2/);
+  assert.equal(existsSync(join(root, "crop-jumps")), false);
+});
+
+test("a focused single-result clip can use one justified crop", () => {
+  const crop = [20, 10, 100, 70];
+  const cut = build("single-detail", {
+    takes: { after: { label: "After", src: take } },
+    beats: [{ caption: "Tiny status changes", after: { from: 0, to: 2, focus: crop } }],
+  });
+  assert.deepEqual(cut.data.beats[0].sides.after.focus, crop);
+  cut.render(cut.data.beats[0].start + 1);
+  assert.equal(cut.element("framing-after").style.display, "inline-block");
 });

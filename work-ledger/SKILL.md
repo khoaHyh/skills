@@ -17,7 +17,7 @@ Done when you are holding the item, or have decided the task needs none.
 
 ## 2. Reconcile before acting
 
-Treat the item's Decisions and Authority as accepted context: they are what Khoa already settled, with sources. Treat State as a dated claim. Before acting on it, re-check each fact you depend on against live sources (`git fetch` and `git log`, `gh pr view`, the deployed ref); carry corrections into the next step 3 checkpoint.
+Treat the item's Decisions and Authority as accepted context: they are what Khoa already settled, with sources. Treat State as a dated claim. Before acting on it, re-check each fact you depend on against live sources (`git fetch` and `git log`, `gh pr view`, the deployed ref); carry corrections into the next step 3 checkpoint. When an item copies a shared time-sensitive restriction or grant from another item, check that source item's latest Decisions and Authority before relying on the copy; reconcile a superseding decision without widening unrelated authority.
 
 Done when every State fact your next step depends on is confirmed or corrected; date the checkpoint with a new `Checked` time.
 

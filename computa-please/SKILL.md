@@ -1,92 +1,52 @@
 ---
 name: computa-please
-description: Deliver scoped engineering outcomes with proportionate proof and authorized completion.
+description: Builder procedure for scoped implementation, proportionate proof, and authorized handoff.
 disable-model-invocation: true
 ---
 
 # Computa Please
 
-Start with the next concrete useful outcome and closest existing working path, data, and connection. Inspect source inputs and captures before arranging fresh access or tooling.
-
-## Scope
-
-Keep the requested outcome, explicit decisions, exclusions, proof, and authority in working context. Discussion and planning are read-only unless edits are authorized. A clear implementation request needs no separate interview or spec.
-
-When the task names a work item or continues multi-session work, load `work-ledger` first; its Decisions and Authority are accepted context.
-
-Open each task by restating the outcome and the smallest change you expect to meet it, then proceed. When evidence rules out the requested change, show it and stop. Carry the restatement into every delegate brief and the final report.
-
-Resolve remaining facts from repository instructions, canonical code, existing proof, and linked context. Choose routine details. Settle a fork a run can observe (behavior, output, timing, performance) with a prototype; ask through the question tool for remaining decisions affecting behavior, scope, consequential risk, or authority, recommending an answer while continuing independent work.
-
-Size complexity for the actual workload and concrete failure modes; synthetic valid bounds are boundary evidence, not expected scale. For each non-obvious addition, ask: **what concrete failure of the agreed outcome would removing this cause?** Preserve evidenced caller, data, security, and rollback obligations at their owning boundary. Surface necessary scope expansion before implementing it; splitting extra work into PRs does not justify it.
-
-## Tools And Access
-
-Follow the [global external-service rules](~/dev/macOS-dots/opencode/AGENTS.md#external-services) for service access. Use computer use for UI-only operations or UI verification.
+Follow `ground-rules` for scope, authority, proof, and coordination. This skill owns builder procedure, not universal policy.
+For named work items or multi-session work, load `work-ledger` first; its Decisions and Authority are accepted context. It owns ledger format, reconciliation, and phase-boundary handoffs.
+Before writes, establish the task-owned checkout through `worktrees` and repository rules; preserve unrelated work and stage only task-owned changes. A clear implementation request needs no separate interview or spec.
+Follow the harness's external-service/access rules; use computer use for UI-only work or verification. This Mac's compute placement is owned by `local-compute`.
 
 ## Routing
 
-Load only the guidance that changes this task's approach. Let the selected skill or repository contract own its procedure and output format.
+Load only guidance that changes this task's approach; the selected skill or repository contract owns its procedure and output format.
 
-| Request                                                             | Route                                                                                                                                                                                   |
-| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unsettled product behavior                                          | `feature-grill` for decisions blocking this delivery; a single decision needs only a direct question.                                                                                   |
-| Building, polishing, or reviewing web UI and interactions           | `emil-design-eng`.                                                                                                                                                                      |
-| Implementing user-visible UI or interaction changes                 | `record-verification` before implementation.                                                                                                                                            |
-| Mobile web or PWA touch, viewport, scroll, or safe-area behavior    | `mobile-native`.                                                                                                                                                                        |
-| React Native or Expo motion, gestures, transitions, or haptics      | `animate-expo`.                                                                                                                                                                         |
-| Finding places that would benefit from animation                    | `find-animation-opportunities` for read-only recommendations.                                                                                                                           |
-| Naming a described web motion effect                                | `animation-vocabulary`.                                                                                                                                                                 |
-| Architecture, module seam, or pattern decision                      | [Design](references/design.md) when the decision is expensive to reverse; otherwise decide directly or prototype.                                                                       |
-| Flow, protocol, retry, or lifecycle behavior to design or debug     | `statechart`. |
-| Small diff you don't trust, or what a change could break            | `blast-radius`. |
-| A mistake the user has corrected agents for more than once          | `correct`. |
-| Bug with unclear cause, unsuccessful fix, or performance regression | `diagnosing-bugs`.                                                                                                                                                                      |
-| Optimization                                                        | Set a baseline, objective, constraints, and stopping condition; measure the actual result.                                                                                              |
-| Simplification                                                      | `subtract`, or `scope-prune` for implementation drift.                                                                                                                                  |
-| PR-bound work or requested review                                   | [Review](references/review.md) for reviewer selection and reuse.                                                                                                                        |
-| Existing review feedback                                            | `review-remediation` for the selected feedback set.                                                                                                                                     |
-| PR body                                                             | `pr-body` against the final diff.                                                                                                                                                       |
-| Stacked PRs or dependent branch work                                | `gh-stack` for GitHub's native Stacks.                                                                                                                                                  |
+| Request | Route |
+| --- | --- |
+| Unsettled product behavior | `feature-grill`; one decision needs only a direct question. |
+| Web UI and interactions | `emil-design-eng`; preserve the design system and dependencies. |
+| User-visible UI or interaction changes | `record-verification` before implementation. |
+| Mobile web/PWA touch, viewport, scroll, safe area | `mobile-native`. |
+| React Native/Expo motion, gestures, transitions, haptics | `animate-expo`. |
+| Animation opportunities / naming a described effect | `find-animation-opportunities` / `animation-vocabulary`. |
+| Expensive architecture, seam, or pattern decision | [Design](references/design.md); otherwise decide directly or prototype. |
+| Flow, protocol, retry, or lifecycle | `statechart`. |
+| Small untrusted diff or what it could break | `blast-radius`. |
+| Repeated user correction | `correct`. |
+| Unclear bug, failed fix, performance regression | `diagnosing-bugs`. |
+| Optimization | Set baseline, objective, constraints, stopping condition; measure the result. |
+| Simplification / implementation drift | `subtract` / `scope-prune`. |
+| PR-bound work or requested review | `review-policy` owns selection, request ownership, deduplication, and reuse. |
+| Existing feedback | `review-remediation`. |
+| PR body | `pr-body` against the final diff. |
+| Stacked PRs or dependent branches | `gh-stack`. |
 
-For UI work, load only the matching guidance and preserve the project's design system and existing dependencies.
+## Implement And Prove
 
 For a straightforward bug with a clear cause, reproduce it, make the bounded fix, and recheck the original failing path.
+Extend existing behavioral coverage for meaningful gaps, not implementation mirrors. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
+Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focused work in one PR; independent changes get separate PRs against the default branch.
+Implementation delegates run as `computa` with this skill; grants reach them only through the brief. Return decisions to the owner with a recommendation, and account for every changed file and check.
 
-Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focused work in one PR. Split independent changes into separate PRs against the repository's default branch.
+## Handoff And Finish
 
-## Authority
-
-Before writes, establish the task-owned checkout using `worktrees` and the repository's rules. Preserve unrelated work and stage only task-owned changes.
-
-Follow the authority established in local or private instructions and in the work item.
-
-Carry same-task grants through fixes and resumes. Other repositories need an existing or task-specific grant. Honor narrower task and repository restrictions; name the conflicting instruction when it blocks delivery. Readiness, review requests, merge, deployment, policy bypasses, destructive changes, history rewrites, unrelated work, and external messages need their own authority. Follow the project's operations contract for production effects, including merge-triggered deployments.
-
-Treat a one-message or one-action grant as an execution limit. Compose the whole payload through a proven non-submitting path, verify the full unsent text, submit once, then verify receipt. If typing submits partially or the result is uncertain, stop and report what was sent; do not resend the remainder or retry before reconciling.
-
-New PRs start as drafts. Establish affected branches, worktree owners, and command effects before stack mutations; selecting Stacks grants no stack-wide publication or history-rewrite permission.
-
-## Verify And Finish
-
-Name the proof before editing; when practical, watch it fail on the current code so its pass shows the change worked. Choose one risk-matched verification plan: smallest behavioral proof plus owning required gates, run once on the stable candidate. Reuse unchanged proof; rerun only evidence invalidated by material changes. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
-
-Extend existing behavioral coverage where possible; add tests only for meaningful gaps, not implementation mirrors.
-
-Run heavy local work (full test suites, builds, installs, Docker stacks, simulators, emulators, recordings) through `python3 -I ~/.config/opencode/scripts/cpu-share.py -- <cmd>` with a shell timeout of at least 50 minutes. It waits in the call for one of two machine-wide slots; keep waiting rather than retrying, and report a blocker if it exits 75. Before asking Khoa to stop stale resources, list them with `--inventory`.
-
-Diagnose only failures blocking delivery; reuse a supported working fixture or path where sufficient. Retain the causal diagnostic; after two consecutive attempts yield no new evidence, switch paths or report the blocker. Resume diagnosis only with new evidence.
-
-For changed UI, finish `record-verification` and attach its evidence to the authorized PR or other handoff. Distinguish browser or emulation evidence from checks requiring real hardware.
-
-Inspect the complete final diff against the agreed outcome, then finish through the authorized delivery boundary. Before reporting a PR delivered, run [`scripts/pr-ready-check <pr>`](scripts/pr-ready-check) and fix every FAIL (Greptile passes, unanswered or unresolved threads, `pr-body` rules); explain any WARN in the report. Before merging, establish effects and authority; verify the merge and applicable post-merge results against the landed commit. Reconcile uncertain external actions before retrying.
-
-Once proven, finish rather than extending review, polling, or cleanup cycles. If required proof, facts, or authority are missing, report the concrete blocker with the outcome and evidence. A pending action is not completed delivery.
-
-## Coordination
-
-Delegate to resolve a specific uncertainty blocking delivery, to keep bulk reads, wide searches, and logs out of the primary's context, or to satisfy a request or requirement. Add extra review or artifacts only to resolve a blocking uncertainty or satisfy a request or requirement. Keep coupled work and shared resources under one owner; give delegates scope, path, authority, and required evidence, then integrate and verify consequential claims.
-
-**Delegates.** Implementation delegates run as `computa`, which loads this skill. A delegate's brief sets its scope, paths, authority, and required evidence; skill-level grants reach it only through the brief. A delegate returns decisions affecting behavior, scope, risk, or authority to the primary with a recommendation, and finishes with a report accounting for every changed file and every check it ran.
-
-Persist only for requested artifacts, recovery, or coordination. Work that spans sessions keeps its handoff in the work ledger through `work-ledger`, which owns the format, reconciliation on pickup, and phase-boundary updates. Keep secrets, customer data, and raw transcripts out of shared artifacts.
+New PRs start as drafts. Before stack mutations, establish affected branches, worktree owners, and command effects; selecting Stacks grants no stack-wide publication or history-rewrite permission.
+The builder owns review fixes for its PR, including on landing-enabled repos. Finish proof and the PR body, mark your PR ready where landing is enabled, then go idle; never poll reviews or CI. The landing observer wakes the owning builder with findings when reviews finish or CI goes red. Fix the findings, verify affected proof, reply and resolve authorized threads, push additively, then return to idle. The observer requests Greptile; the builder never does.
+Merges go only through shippa and the lane; conducta relays `/shippa N` with the approved ready head. Builders neither merge nor enqueue by hand. Repos without landing enabled retain their review/readiness authority and stop at authorized handoff.
+For changed UI, finish `record-verification` and attach evidence to the authorized PR or handoff; distinguish browser/emulation proof from real-hardware checks.
+Inspect the complete final diff against the agreed outcome. On landing-enabled repos, the observer owns the full [readiness check](scripts/pr-ready-check) and reports ready once reviews are dispositioned and CI is green; the lane owns exact-head landing and delivery observation. Post-merge failures belong to failure routing.
+Elsewhere, before reporting a PR delivered, run `scripts/pr-ready-check <pr>`, fix every FAIL, explain WARNs, and stop at handoff. Missing required proof or authority is a blocker, not delivered work.

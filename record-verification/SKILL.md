@@ -38,7 +38,9 @@ Use the repository's owning browser or native driver for interaction. Select the
 - For desktop, native dialogs, cross-app or cross-surface behavior, or when visible input materially improves review, prefer **Cap as the screen recorder** when available. Discover current commands with `cap guide --json`; target an exact, non-sensitive window or display and use intentional virtual input. Cap records the driver; it does not replace the repo's verification harness.
 - For mobile, use the owning simulator/device capture helper where available. Check that it records the same device the agent drives.
 
-Before recording, state the selected scenario, window/device, account or fixture, capture area, resolution/frame rate when configurable, cursor and audio choices, and any privacy risk. An explicit recording request or an engineering workflow selecting this skill authorizes bounded capture of that flow, not an unrelated desktop or sensitive account. If the available target would expose private or unrelated material, choose an isolated target or ask before capture.
+Before recording, test a still through the intended single-pane or two-up review layout at about 900 px player width, including its bars and caption strip. Choose a viewport and fixed app/browser scale that keep the whole captured page and changed result readable there; rehearse scrolling results into view while retaining page context. If it does not read, adjust capture and rehearse again rather than planning a series of crops. Use the [review-cut framing exception](references/review-cut.md#beats) only for an isolated result that remains unreadable.
+
+State the selected scenario, window/device, account or fixture, capture area, resolution/frame rate when configurable, cursor and audio choices, and any privacy risk. An explicit recording request or an engineering workflow selecting this skill authorizes bounded capture of that flow, not an unrelated desktop or sensitive account. If the available target would expose private or unrelated material, choose an isolated target or ask before capture.
 
 ## 4. Capture honestly
 
