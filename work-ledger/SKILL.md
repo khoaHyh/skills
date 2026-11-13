@@ -29,6 +29,7 @@ Phases are `research`, `plan`, `implement`, `verify`, and `rollout`. Write Decis
 - **State**, **Evidence**, **Open**, and **Next**: rewrite to current truth. Next names exactly one phase and action.
 - **Log**: append one line with the phase and session id.
 - Front matter: set `status` (`active`, `blocked`, `done`, or `dropped`) and `updated`.
+- Optional front matter: `ask: "<Verb>: <what the owner must do> — <url>"`. Workers and coordinators set it immediately when blocked on a concrete human-owner action. Use Review, Decide, Approve, Run, Schedule or Share; the URL and its separator are optional. Remove the line when answered. Dashboards show only ledger items with an `ask:` line as "Needs you".
 
 Keep the item under about 150 lines by tightening State and Evidence to pointers. Keep secrets, credentials, customer data, and raw transcripts out of it.
 

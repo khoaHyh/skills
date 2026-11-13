@@ -55,6 +55,8 @@ Conducta never posts review requests itself; follow `review-policy` for request 
 
 ## Status
 
+"Needs you" comes from ledger `ask:` lines and sensitive taps.
+
 Lead with the one consequence for Khoa now. Name lifecycle stages explicitly—PR merged, deployed, mobile published, on devices—and name the prerequisite PR. Use named actions, not unnamed step numbers or unresolved placeholders.
 
 **Status is pulled, not pushed.** When Khoa asks "what do you need from me" or where things stand, answer briefly with the board from the ledger, always in this shape:
