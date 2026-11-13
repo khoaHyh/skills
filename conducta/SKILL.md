@@ -45,7 +45,11 @@ Give it the claim, outcome, proof, and exact head. Record its verdict, evidence,
 
 ## Authority
 
-`ground-rules` defines shared authority. Put narrower or extra grants in the item and pass them through the worker pointer. `/shippa N` is merge approval for the presented exact ready head; relay it to the lane, never merge directly. The lane handles bypass through per-repo config, without a bypass flag; Codex waivers stay explicit. Post-merge failures belong to failure routing. Route decisions and approval asks through the question tool: one topic per question, with the recommended option first, marked "(Recommended)"; keep other items moving while one waits.
+`ground-rules` defines shared authority. Put narrower or extra grants in the item and pass them through the worker pointer. On landing-enabled repos, non-sensitive merge-ready PRs land automatically through the lane, with no relay, ready-line or approval question. Judge sensitivity by the change's meaning against the lane's path policy (`path_policy.exclude`), not filenames alone.
+
+Only sensitive merge-ready PRs need Khoa's one-tap approval through the question tool, naming the exact head and risk; choosing "Land" relays `/shippa N` for that exact head. Landing approval is distinct from GitHub review approval. Never merge directly; the lane handles bypass through per-repo config.
+
+Codex is optional coverage, not a landing gate; if it ran, the builder dispositions every finding. A red main does not stop merges: failure routing's fix gets priority in the lane. Failure routing owns post-merge fixes. Route other decisions through the question tool: one topic per question, with the recommended option first, marked "(Recommended)"; keep other items moving while one waits.
 
 Conducta never posts review requests itself; follow `review-policy` for request ownership and reuse.
 

@@ -5,7 +5,7 @@ description: Select authorized PR reviewers, assign one request owner, and reuse
 
 # Review Policy
 
-Follow explicit user and repository requirements. Select additional review for consequential risks left after implementation and verification; this policy does not waive required approvals or checks.
+Follow explicit user and repository requirements. Select additional review for consequential risks left after implementation and verification; preserve required approvals and checks. Codex is optional coverage, not a landing gate; if it ran, the builder dispositions every finding.
 
 ## Select
 
@@ -13,7 +13,7 @@ Inspect the complete candidate, requirements, existing proof, and review coverag
 
 | Choice | Use when |
 | --- | --- |
-| None | Direct inspection and verification adequately cover the change; runtime code can qualify. No extra approval or waiver is needed to choose None. |
+| None | Direct inspection and verification adequately cover the change; runtime code can qualify. No extra approval is needed to choose None. |
 | Greptile Base | An independent correctness pass adds meaningful coverage. |
 | Codex Security | Changes affect authentication, authorization, isolation, secrets, webhooks, injection, or CI trust boundaries. |
 | Base + Security | Both reviews close distinct gaps. |
@@ -33,6 +33,8 @@ Finish implementation and applicable local checks first. Pin the base and comple
 ## Remediate And Reuse
 
 Use `review-remediation` for existing feedback. Refresh affected proof after fixes. Reuse review when the substantive behavior and scope remain covered; commit count, a base update, minor lint fixes, or a new SHA alone do not require another pass.
+
+A reviewer bot's demand for a specific person's approval, from custom rules or reviewer memory, is not a merge gate unless the owner's instructions name that approval. For an unsupported demand, the builder replies once on that thread, "Rejected: not a gate in this workflow", and resolves it rather than waiting for that person.
 
 **Greptile re-reviews require the user's explicit approval.** Propose one only for a concrete uncovered risk, identifying what changed since the reviewed revision and the expected benefit and cost. For other reviewers, another pass still needs a material coverage gap and authority for the request.
 
