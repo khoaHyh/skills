@@ -33,7 +33,7 @@ After a compaction, or whenever you lose track, rebuild the board from the ledge
 - Run independent slices in parallel. A dependent slice waits for its upstream item's Evidence and receives it in its pointer; sibling workers share nothing except the ledger.
 - Workers follow `computa-please` within their authority and return head, changed paths, commands and results, an artifact pointer, gaps, and the next decision needed. Check their diff and evidence; don't redo their work.
 - **Quiet by default.** When a worker returns, update the ledger item and choose the next phase. Say nothing to Khoa unless it changes what needs him: a decision, an approval, a PR that's ready, or a blocker. Then write one item-tagged line, e.g. `[shippa] plan ready, 2 decisions`.
-- A successful observer tick is not a complete scan; never report healthy or quiet from stale or incomplete data.
+- **Verify the handoff.** After handing work to an observer, bot, or lane, confirm its expected first effect before calling it pending or going quiet. For a ready PR, inspect an actual `@greptileai review` request/review or a matching PR/head lane ready/queue record (`shippa-lane status`); report an observer's blocked record as blocked. A bot comment count or excluded-author notice is not a request; a successful tick alone is not a complete scan. Missing effects or stale/incomplete observations mean stalled or unknown: name the gap and route it through the question tool with a recommendation, preserving request ownership. Before ending a turn that leaves Khoa waiting, name the verified wake source/event; if none is verified, say so and route that gap instead of implying progress.
 
 ## Proof before "merge-ready"
 
