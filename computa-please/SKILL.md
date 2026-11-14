@@ -38,6 +38,7 @@ When implementing a provided design (Figma, Paper), load `build-design`.
 
 ## Implement And Prove
 
+Before building auth, testing, CI or integration machinery, use `find-docs` to check and follow the vendor's current documented testing or idiomatic path unless the brief's outcome requires more; name the document in the proof.
 For a straightforward bug with a clear cause, reproduce it, make the bounded fix, and recheck the original failing path.
 Extend existing behavioral coverage for meaningful gaps, not implementation mirrors. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
 Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focused work in one PR; independent changes get separate PRs against the default branch.
