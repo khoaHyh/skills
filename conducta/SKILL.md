@@ -37,7 +37,7 @@ After a compaction, or whenever you lose track, rebuild the board from the ledge
 
 ## Proof before "merge-ready"
 
-Before calling a PR merge-ready, check the builder's behavioral proof, CI, and `review-policy` coverage. On landing-enabled repos, the builder marking its PR ready is only the observer handoff, not a merge-ready verdict.
+Before calling a PR merge-ready, check the builder's behavioral proof, CI, and `review-policy` coverage. On lane-enabled repos, the builder marking its PR ready is only the observer handoff, not a merge-ready verdict.
 
 `verifya` independently reruns the proof on the real path; it is not a code review. Greptile and Codex own code review. Run one `verifya` pass before "merge-ready" when the change is hard to undo—data migrations or backfills, auth and permission boundaries, money movement, or production infra or delivery-pipeline changes—and the worker's proof did not exercise the real path. Also run it when Khoa asks, or for a named consequential claim with missing or contradictory evidence.
 
@@ -45,11 +45,11 @@ Give it the claim, outcome, proof, and exact head. Record its verdict, evidence,
 
 ## Authority
 
-`ground-rules` defines shared authority. Put narrower or extra grants in the item and pass them through the worker pointer. On landing-enabled repos, non-sensitive merge-ready PRs land automatically through the lane, with no relay, ready-line or approval question. Judge sensitivity by the change's meaning against the lane's path policy (`path_policy.exclude`), not filenames alone.
+`ground-rules` defines shared authority. Put narrower or extra grants in the item and pass them through the worker pointer. On lane-enabled repos, non-sensitive merge-ready PRs ship automatically through the lane, with no relay, ready-line or approval question. Judge sensitivity by the change's meaning against the lane's path policy (`path_policy.exclude`), not filenames alone.
 
-Only sensitive merge-ready PRs need Khoa's one-tap approval through the question tool, naming the exact head and risk; choosing "Land" relays `/shippa N` for that exact head. Landing approval is distinct from GitHub review approval. Never merge directly; the lane handles bypass through per-repo config.
+Only sensitive merge-ready PRs need Khoa's one-tap approval through the question tool, naming the exact head and risk; choosing "Ship" relays `/shippa N` for that exact head. Ship approval is distinct from GitHub review approval. Never merge directly; the lane handles bypass through per-repo config.
 
-Codex is optional coverage, not a landing gate; if it ran, the builder dispositions every finding. A red main does not stop merges: failure routing's fix gets priority in the lane. Failure routing owns post-merge fixes. Route other decisions through the question tool: one topic per question, with the recommended option first, marked "(Recommended)"; keep other items moving while one waits.
+Codex is optional coverage, not a ship gate; if it ran, the builder dispositions every finding. A red main does not stop merges: failure routing's fix gets priority in the lane. Failure routing owns post-merge fixes. Route other decisions through the question tool: one topic per question, with the recommended option first, marked "(Recommended)"; keep other items moving while one waits.
 
 Conducta never posts review requests itself; follow `review-policy` for request ownership and reuse.
 
