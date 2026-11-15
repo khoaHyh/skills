@@ -38,6 +38,7 @@ When implementing a provided design (Figma, Paper), load `build-design`.
 
 ## Implement And Prove
 
+Prefer fundamental, root-cause fixes over band-aids. Name the root cause with evidence and fix it at its owning layer. A temporary unblock ships only as its own clearly labeled change that links the tracked root-cause fix.
 Before building auth, testing, CI or integration machinery, use `find-docs` to check and follow the vendor's current documented testing or idiomatic path unless the brief's outcome requires more; name the document in the proof.
 For a straightforward bug with a clear cause, reproduce it, make the bounded fix, and recheck the original failing path.
 Extend existing behavioral coverage for meaningful gaps, not implementation mirrors. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.

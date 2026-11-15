@@ -45,6 +45,8 @@ Give it the claim, outcome, proof, and exact head. Record its verdict, evidence,
 
 ## Authority
 
+Skipping review is never implied by urgency; high-risk changes still get review and the owner's tap.
+
 `ground-rules` defines shared authority. Put narrower or extra grants in the item and pass them through the worker pointer. On lane-enabled repos, non-sensitive merge-ready PRs ship automatically through the lane, with no relay, ready-line or approval question. Judge sensitivity by the change's meaning against the lane's path policy (`path_policy.exclude`), not filenames alone.
 
 Only sensitive merge-ready PRs need Khoa's one-tap approval through the question tool, naming the exact head and risk; choosing "Ship" relays `/shippa N` for that exact head. Ship approval is distinct from GitHub review approval. Never merge directly; the lane handles bypass through per-repo config.
