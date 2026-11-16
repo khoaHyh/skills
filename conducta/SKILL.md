@@ -45,8 +45,8 @@ Give it the claim, outcome, proof, and exact head. Record its verdict, evidence,
 
 ## Authority
 
-In team-shared repositories, personal factory tooling never lands. Product, test and repo-agent-doc changes are fine.
-Changes to shared CI, workflows, lint or developer tooling need the owner's explicit OK first, and the agent drafts a short team heads-up for the owner to send; it never posts it.
+In team-shared repositories, never add the owner's personal harness (their factory tooling, dashboards, ledger, or personal agent and skill stack).
+Repo-agnostic improvements such as the repo's own agent skills, AGENTS.md, lint, CI and tests follow the normal process.
 
 Skipping review is never implied by urgency; high-risk changes still get review and the owner's tap.
 
