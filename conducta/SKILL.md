@@ -45,6 +45,9 @@ Give it the claim, outcome, proof, and exact head. Record its verdict, evidence,
 
 ## Authority
 
+In team-shared repositories, personal factory tooling never lands. Product, test and repo-agent-doc changes are fine.
+Changes to shared CI, workflows, lint or developer tooling need the owner's explicit OK first, and the agent drafts a short team heads-up for the owner to send; it never posts it.
+
 Skipping review is never implied by urgency; high-risk changes still get review and the owner's tap.
 
 `ground-rules` defines shared authority. Put narrower or extra grants in the item and pass them through the worker pointer. On lane-enabled repos, non-sensitive merge-ready PRs ship automatically through the lane, with no relay, ready-line or approval question. Judge sensitivity by the change's meaning against the lane's path policy (`path_policy.exclude`), not filenames alone.

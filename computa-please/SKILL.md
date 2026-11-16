@@ -38,6 +38,9 @@ When implementing a provided design (Figma, Paper), load `build-design`.
 
 ## Implement And Prove
 
+In team-shared repositories, personal factory tooling never lands. Product, test and repo-agent-doc changes are fine.
+Changes to shared CI, workflows, lint or developer tooling need the owner's explicit OK first, and the agent drafts a short team heads-up for the owner to send; it never posts it.
+
 Prefer fundamental, root-cause fixes over band-aids. Name the root cause with evidence and fix it at its owning layer. A temporary unblock ships only as its own clearly labeled change that links the tracked root-cause fix.
 Before building auth, testing, CI or integration machinery, use `find-docs` to check and follow the vendor's current documented testing or idiomatic path unless the brief's outcome requires more; name the document in the proof.
 For a straightforward bug with a clear cause, reproduce it, make the bounded fix, and recheck the original failing path.
