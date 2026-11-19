@@ -20,7 +20,7 @@ When implementing a provided design (Figma, Paper), load `build-design`.
 | --- | --- |
 | Unsettled product behavior | `feature-grill`; one decision needs only a direct question. |
 | Web UI and interactions | `emil-design-eng`; preserve the design system and dependencies. |
-| User-visible UI or interaction changes | `record-verification` before implementation. |
+| Visual or timing changes needing human judgment | `record-verification` before implementation; never default recordings. |
 | Mobile web/PWA touch, viewport, scroll, safe area | `mobile-native`. |
 | React Native/Expo motion, gestures, transitions, haptics | `animate-expo`. |
 | Animation opportunities / naming a described effect | `find-animation-opportunities` / `animation-vocabulary`. |
@@ -43,16 +43,18 @@ Repo-agnostic improvements such as the repo's own agent skills, AGENTS.md, lint,
 
 Prefer fundamental, root-cause fixes over band-aids. Name the root cause with evidence and fix it at its owning layer. A temporary unblock ships only as its own clearly labeled change that links the tracked root-cause fix.
 Before building auth, testing, CI or integration machinery, use `find-docs` to check and follow the vendor's current documented testing or idiomatic path unless the brief's outcome requires more; name the document in the proof.
+Proof is the exact-head CI result plus the one behavioral assertion that matters, cited once in the PR or item. Reuse CI-run suites instead of a second local run; run only the missing assertion if CI does not cover it. No separate evidence packet or proof doc.
 For a straightforward bug with a clear cause, reproduce it, make the bounded fix, and recheck the original failing path.
-Extend existing behavioral coverage for meaningful gaps, not implementation mirrors. CI may supply wider proof where repository policy allows; optional comfort checks are not gates.
+Extend existing behavioral coverage for meaningful gaps, not implementation mirrors; optional comfort checks are not gates.
 Use Git for repository state and commits, and `gh` for ordinary PRs. Keep focused work in one PR; independent changes get separate PRs against the default branch.
 Implementation delegates run as `computa` with this skill; grants reach them only through the brief. Return decisions to the owner with a recommendation, and account for every changed file and check.
 
 ## Handoff And Finish
 
 New PRs start as drafts. Before stack mutations, establish affected branches, worktree owners, and command effects; selecting Stacks grants no stack-wide publication or history-rewrite permission.
-The builder owns review fixes for its PR, including on lane-enabled repos. Codex is optional coverage, not a ship gate; if it ran, disposition every finding. Finish proof and the PR body, mark your PR ready where the lane is enabled, then go idle; never poll reviews or CI. The lane observer wakes the owning builder with findings when reviews finish or CI goes red. Fix the findings, verify affected proof, reply and resolve authorized threads, push additively, then return to idle. The observer requests Greptile; the builder never does.
+Immediately after opening a PR, checkpoint its owning ledger item if dirty, then run `sous own pr <repo>#<n> --session "$OPENCODE_SESSION_ID" --item <key> --worktree <task-worktree>` to publish your builder ownership.
+The builder owns review fixes for its PR, including on lane-enabled repos. Codex is optional coverage, not a ship gate; if it ran, disposition every finding. Finish proof and the PR body, mark your PR ready where the lane is enabled, then go idle; never poll reviews or CI. The lane observer wakes the owning builder with findings when reviews finish or CI goes red. Fix the findings, verify affected proof, reply with what changed and resolve authorized threads, push additively, then stop. Only the lane requests AI reviews; builders never request or re-request them.
 Merges go only through the lane: non-sensitive merge-ready PRs ship automatically; sensitive PRs follow conducta's exact-head approval flow. Builders neither merge nor enqueue by hand. Repos without the lane enabled retain their review/readiness authority and stop at authorized handoff.
-For changed UI, finish `record-verification` and attach evidence to the authorized PR or handoff; distinguish browser/emulation proof from real-hardware checks.
+Only for visual or timing changes a human must judge, use `record-verification` and link the media in the authorized PR or item; distinguish browser/emulation proof from real-hardware checks.
 Inspect the complete final diff against the agreed outcome. On lane-enabled repos, the observer owns the full [readiness check](scripts/pr-ready-check) and reports ready once reviews are dispositioned and CI is green; the lane owns exact-head shipping and delivery observation. Post-merge failures belong to failure routing.
 Elsewhere, before reporting a PR delivered, run `scripts/pr-ready-check <pr>`, fix every FAIL, explain WARNs, and stop at handoff. Missing required proof or authority is a blocker, not delivered work.
