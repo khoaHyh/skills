@@ -13,10 +13,10 @@ Edit the canonical source first; synchronize installed copies only through the a
 
 ## Publishing And Syncing
 
-- Add and revise custom skills in this repository.
+- Edit first-party skills only in `~/dev/skills`, then publish to `khoaHyh/skills` and sync with `npx skills update`. Never edit the installed copies in macOS-dots.
 - Keep each skill in `<skill-name>/SKILL.md`; the frontmatter `name` must match the directory.
 - Edit in `~/dev/skills` on `main`, with no worktree or PR.
-- Current local-review hold: leave changes uncommitted and unpublished; sync by local copy for review, without `npx` or changing published provenance hashes.
+- Until explicit publication approval, leave changes uncommitted and unpublished in this source checkout; do not overwrite installed copies for review.
 - Only after explicit publication approval, commit/push and sync through the consumer's established `npx skills` workflow, preserving lockfile attribution.
 
 ## Verification
