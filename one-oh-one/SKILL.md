@@ -1,5 +1,6 @@
 ---
 name: one-oh-one
+disable-model-invocation: true
 description: Run a bounded 101 course in any field that leaves the learner holding a mental model they can extend alone. A placement grill finds what they already know; short sessions have them build predictions, traces, drawings, designs and teach-backs that reality grades; spaced reviews and a measurable final decide when it ends. Use when someone wants to learn, study or deeply understand a subject, asks for a 101, asks to be taught or quizzed, or resumes a course.
 ---
 
