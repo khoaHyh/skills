@@ -1,11 +1,13 @@
 ---
 name: record-verification
-description: Capture before/after proof of a changed UI flow and cut it into a review video a human can judge at PR size. Use before implementation when an engineering workflow requires UI evidence, or when the user requests a recording, video proof, or recorded verification; not for release or hype films.
+description: Capture before/after media only for visual or timing changes a human must judge. Use before implementation when that judgment needs a recording; never for routine proof or release films.
 ---
 
 # Record Verification
 
 Make the changed user path inspectable by a human. The video is evidence of what happened in the running app, not a substitute for assertions and not a release film. The reviewer decides whether the behavior, appearance, and direction are right. The review cut exists so they can see the change at the size a PR plays it, know what to look at, and trace every frame back to the original take.
+
+Record only visual or timing changes requiring human judgment, never by default. Proof remains the exact-head CI result plus the one relevant behavioral assertion, cited once in the PR or item; media supports that judgment, not a separate proof packet.
 
 ## 1. Define the proof
 
@@ -15,7 +17,7 @@ Plan the comparison before implementation. For a UI bug, reproduce and capture i
 
 Present a flow's before and after side by side in one review video: **Before** on the left, **After** on the right, synchronized beat by beat, with each pane labeled by revision. After-only evidence stays single-pane. Leave implementation time out of the recording. Static-only changes may use labeled, side-by-side screenshot pairs unless a video was requested.
 
-Choose a small number of scenarios that cover the changed risk. Write the review plan:
+Choose a small number of scenarios that cover the changed risk. Keep the review plan in the PR or item:
 
 - the **watch-for** sentence: the one thing the reviewer judges
 - per beat, the action → result, its caption, and its **evidence region**, the part of the screen where the result appears
@@ -26,7 +28,7 @@ Done when the watch-for sentence and every beat's caption and evidence region ar
 
 ## 2. Prove and rehearse
 
-For the candidate, run or reuse the owning readiness check and relevant automated verification. Exercise the real user controls and assert the resulting state, not just successful clicks or a loading shell. Inspect applicable console, network, logs, or persistence evidence when the behavior depends on them. A passing video cannot override a failed check, and a passing test cannot replace seeing the UI.
+Reuse the exact-head CI result; do not rerun a suite CI already runs. Exercise the real user controls for the one relevant behavioral assertion if CI does not cover it, not just successful clicks or a loading shell. Inspect applicable console, network, logs, or persistence evidence when the behavior depends on them. A passing video cannot override a failed check, and a passing test cannot replace the selected human visual or timing judgment.
 When comparing against a provided design (Figma, Paper), load `build-design` for its comparison steps only; verification grants no implementation authority.
 
 Rehearse navigation, authentication, test data, and state-based waits before the take. Plan how to drive the recorded path without leaving model reasoning or slow tool-call gaps on screen: use an existing deterministic UI drive when appropriate, or capture short continuous sections and assemble a review copy. Keep credentials, setup shortcuts, and test-only controls out of the visible user path; disclose any setup that affects interpretation. If the flow fails, diagnose or report the failure. A reproducible failure can be recorded as failure evidence; do not present a later take as if the failure never occurred.
@@ -59,7 +61,7 @@ Build the review cut from the original takes, following [references/review-cut.m
 
 The cut plays paired takes simultaneously, aligning each beat's action and result, with one caption under both panes. Each pane keeps the full captured UI surface in matching static framing and has its own revision label, source clock, marks, and chips for every crop, speed change, cut and freeze. The reference defines synchronization, first-finisher freezes, and the opt-in static crop for otherwise unreadable evidence.
 
-Trim setup, searching, agent/tool latency, and uneventful dead air. Speed up ordinary waits; the builder discloses each pane's synchronization retiming. Judge latency from source clocks and the unchanged takes, not the synchronized playback duration. Keep failures and causal transitions visible or explicitly called out; never edit them into an apparent pass. Disclose omitted steps, recreated state, and separate takes on the title card and in the packet. Prefer a fresh take to an edit that could misrepresent causality.
+Trim setup, searching, agent/tool latency, and uneventful dead air. Speed up ordinary waits; the builder discloses each pane's synchronization retiming. Judge latency from source clocks and the unchanged takes, not the synchronized playback duration. Keep failures and causal transitions visible or explicitly called out; never edit them into an apparent pass. Disclose omitted steps, recreated state, and separate takes on the title card and in the PR or item. Prefer a fresh take to an edit that could misrepresent causality.
 
 Time every caption, mark, and stated duration from the source itself. Probe the evidence region's pixels for the frame where the state changes, because contact sheets and freeze detection miss small changes.
 
@@ -77,11 +79,6 @@ At each retimed beat and each state change, extract a frame from the rendered fi
 
 For an authorized PR create/update, attach sanitized, task-owned review evidence to that PR with `gh pr create|edit|comment --attach <file>` (`gh` 2.99+; `gh pr edit --help` has the details); use `pr-body` for placement. Reference each file by its local path in the `--body-file` Markdown (paths resolve from that file's directory) and pass the same files to `--attach`: `gh` rewrites each reference to the uploaded URL. A video renders as a player only when its `![](clip.mp4)` reference is the whole paragraph, so attach the MP4 review cut rather than a raw `.webm` link. Uploads accept OAuth and personal access tokens, not GitHub App tokens, and cap video at 100 MB on paid plans. Read the PR body back and confirm every reference became a `user-attachments` URL. Other uploads or sharing require separate authorization. If publication is unauthorized or `--attach` fails, return local artifact paths and the exact error.
 
-Return a compact review packet:
-
-- Original capture paths, the review cut path, and its `edl.json` (the exact edits). Keep these local unless sharing was authorized.
-- The builder's `chapters.md`: timestamped beats mapping each visible action to its result, with expected versus observed behavior.
-- Exact checks run and their results; relevant screenshots, trace, or log evidence; unrun checks and coverage limits.
-- Failures, surprising behavior, and concrete product or visual questions for the reviewer. Leave the human verdict open even when the checks pass.
+Link the review media alongside the single CI/behavioral citation in the PR or item, with coverage limits and the visual or timing question for the reviewer. No separate evidence packet or proof doc. Leave the human verdict open even when the checks pass.
 
 Finish when the reviewer can inspect the changed flow and distinguish what was verified from what still needs their judgment. If the app, account, recorder, or safe capture target is unavailable, name the blocker and provide the strongest alternative evidence obtained; never invent a successful take.
