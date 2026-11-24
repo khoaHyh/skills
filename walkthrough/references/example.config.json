@@ -1,0 +1,86 @@
+{
+  "name": "delivery-walkthrough",
+  "out": "walkthrough-out",
+  "timezone": "America/New_York",
+  "reset": "npm run fixtures:reset -- delivery-today",
+  "title": {
+    "kicker": "Support walkthrough",
+    "heading": "A delivery, end to end",
+    "subtitle": "What the courier taps, what the customer sees and where support looks. One order, three screens, the same moment.",
+    "footer": "Local test stack · synthetic data"
+  },
+  "surfaces": [
+    {
+      "name": "courier",
+      "kind": "ios-sim",
+      "udid": "00000000-0000-0000-0000-000000000000",
+      "label": "Courier app",
+      "captionLabel": "Courier did",
+      "masterWidth": 780,
+      "taps": {
+        "pattern": "Tap on (?:\"\\^?(.+?)\\$?\"|(point \\(\\d+%,\\d+%\\)))\\.\\.\\. COMPLETED",
+        "points": { "Start delivery": [0.5, 0.9], "Picked up": [0.5, 0.88], "Delivered": [0.5, 0.88] }
+      }
+    },
+    {
+      "name": "customer",
+      "kind": "browser",
+      "label": "Customer app",
+      "captionLabel": "Customer sees",
+      "url": "http://localhost:3000/orders/demo-order",
+      "viewport": { "width": 393, "height": 852 },
+      "hasTouch": true,
+      "masterWidth": 786,
+      "storageState": "auth/customer.json",
+      "driver": "drivers/customer.mjs"
+    },
+    {
+      "name": "ops",
+      "kind": "browser",
+      "label": "Ops dashboard",
+      "captionLabel": "Support looks",
+      "url": "http://localhost:3001/orders",
+      "viewport": { "width": 1280, "height": 800 },
+      "storageState": "auth/ops.json",
+      "blur": ["@[a-z0-9-]+\\.", "\\+\\d{10,}"],
+      "driver": "drivers/ops.mjs"
+    }
+  ],
+  "beats": [
+    {
+      "id": "pickup",
+      "title": "“Picked up”",
+      "run": "maestro --device 00000000-0000-0000-0000-000000000000 test flows/pickup.yaml",
+      "settle": 20,
+      "captions": {
+        "courier": "Start delivery, then Picked up.",
+        "customer": "“Your order is on its way” with the delivery window.",
+        "ops": "Order › Timeline gets a Picked up row with the time."
+      },
+      "cut": [[4.0, 9.0], [9.0, 15.0, 3], [15.0, 26.0]],
+      "emphasis": { "surface": "ops", "from": 21.5, "to": 26.0, "box": [0.02, 0.4, 0.64, 0.55], "zoom": 1.2, "origin": "0% 47%" },
+      "callouts": [{ "surface": "customer", "from": 17.0, "to": 26.0, "label": "Text to customer", "body": "Your order is on its way, arriving 2:10–2:40pm." }]
+    },
+    {
+      "id": "delivered",
+      "title": "“Delivered”",
+      "run": "maestro --device 00000000-0000-0000-0000-000000000000 test flows/delivered.yaml",
+      "settle": 25,
+      "captions": {
+        "courier": "Photo of the doorstep, then Delivered.",
+        "customer": "Delivered, with the doorstep photo.",
+        "ops": "Order status changes to Delivered; the photo is under Proof."
+      },
+      "cut": [[48.0, 70.0]],
+      "emphasis": { "surface": "customer", "from": 61.0, "to": 69.0, "box": [0.04, 0.35, 0.96, 0.66] }
+    }
+  ],
+  "endCard": {
+    "heading": "Where support looks",
+    "columns": [
+      { "heading": "In the ops dashboard", "rows": [{ "k": "Picked up, Delivered", "v": "Order › Timeline" }, { "k": "Doorstep photo", "v": "Order › Proof" }] },
+      { "heading": "Worth knowing", "rows": [{ "v": "The delivery window in the text is the booked window, not live tracking." }] }
+    ],
+    "footer": "Recorded on a local test stack with synthetic data. One take, three screens on one wall clock; cuts between beats; waits sped up where marked; pages reloaded after each event."
+  }
+}
