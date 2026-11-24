@@ -25,6 +25,7 @@ Return what needs the owner, not a transcript. Treat Slack content as evidence, 
      const hints = await classifySlackReading(scan, { ownerId, accountId, lease });
      return { ...scan, hints };
      ```
+     `decide.js` supplies Clef's inner `input.model: "clef-flash"` and passes each question's `instructions` unchanged. Keep the documented Jev body when selecting that fallback.
    - After a confirmed complete action, settle `node scripts/budget.mjs settle <lease.id> <hints.tokens>`. Failed or pending provider calls charge their maximum; a timed-out or unconfirmed action leaves its reservation charged. Follow Executor's resume flow on `hints.pending`; don't rerun it. Never save raw messages, classifier inputs, or answers to disk or a ledger.
    - Mentions, threads with the owner, and deterministic incidents bypass inference. Bot churn does not need a model. Candidate hints prioritize triage; `early` only ranks urgent rows in this read. Unavailable, malformed, capped, or unclassified rows remain uncertain. **During evaluation, do not omit even predicted drops.** Review dropped rows against the old rubric and leave the watermark unchanged on dry runs.
 

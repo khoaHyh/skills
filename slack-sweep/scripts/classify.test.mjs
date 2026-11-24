@@ -32,6 +32,8 @@ test("deterministic messages bypass Clef; lease caps calls and output contains n
   const result = await classify(async ({ calls }) => {
     assert.equal(calls.path, 'tools["cloudflare-mcp"].ai_run');
     assert.equal(calls.input.input.body.model, "@cf/cloudflare/clef-flash");
+    assert.equal(calls.input.input.body.input.model, "clef-flash");
+    assert.match(calls.input.input.body.input.questions.ask.instructions, /ask an engineer/);
     assert.equal(JSON.parse(calls.input.input.body.input.state).newestMessage, retained);
     return { status: "completed", execution: { ok: true, value: { ok: true, value: { content: [{ type: "text", text: JSON.stringify(fixture) }] } } } };
   });
@@ -44,6 +46,8 @@ test("deterministic messages bypass Clef; lease caps calls and output contains n
 test("Jev selection uses the same wrapper; failure charges its reservation and leaves rows uncertain", async () => {
   const result = await classify(async ({ calls }) => {
     assert.equal(calls.input.input.body.model, "typesafe/jev");
+    assert.equal(calls.input.input.body.input.model, undefined);
+    assert.match(calls.input.input.body.input.questions.urgent.instructions, /incident/);
     return { status: "completed", execution: { ok: true, value: { ok: false } } };
   }, { ...lease, calls: 2, maxTokens: 32000, model: "jev" });
   assert.equal(result.attempts, 1);

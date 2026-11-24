@@ -10,3 +10,5 @@ description: Call a decision model via an existing Executor Cloudflare MCP accou
 3. Keep only the necessary scores or aggregate counts. The model can rank evidence, not authorize sensitive actions, taps, approvals, command gating, or writes. Do not send private inputs without authority for that account and service.
 
 See the Cloudflare model contracts for [Clef-flash](https://developers.cloudflare.com/workers-ai/models/clef-flash/) and [Jev](https://developers.cloudflare.com/ai/models/typesafe/jev/).
+
+The `ai_run` body uses outer `model: "@cf/cloudflare/clef-flash"` and inner `input: { model: "clef-flash", state, questions }`. For Jev, use `model: "typesafe/jev"` and `input: { state, questions }`, as in its REST example. Each question uses `instructions`, for example `{ ask: { type: "noul", instructions: "Is there a request?" } }`.

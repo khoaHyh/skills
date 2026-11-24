@@ -5,12 +5,16 @@ async function decideViaCloudflare({ accountId, state, questions, model = "clef-
   if (JSON.stringify(state).length > 24000 || Object.keys(questions).length < 1 || Object.keys(questions).length > 16 || JSON.stringify(questions).length > 4000) {
     throw Error("Decision input exceeds the client limits");
   }
+  if (!Object.values(questions).every(q => q && typeof q.instructions === "string" && q.instructions.trim())) throw Error("Each question needs instructions");
+  // Clef requires its own selector inside input; the Jev REST example
+  // specifies the selector only in the outer model field.
+  const input = model === "clef-flash" ? { model, state, questions } : { state, questions };
   let outcome;
   try {
     outcome = await tools.executor_v2.call({
       calls: {
         path: 'tools["cloudflare-mcp"].ai_run',
-        input: { accountId, input: { body: { model: models[model], input: { state, questions } } } },
+        input: { accountId, input: { body: { model: models[model], input } } },
       },
     });
   } catch { return { status: "uncertain" }; }
