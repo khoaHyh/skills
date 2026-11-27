@@ -14,6 +14,7 @@ from html import escape
 from pathlib import Path
 
 W = 1072  # panel content width in px
+SECONDS_PER_MINUTE = 60
 
 
 def main():
@@ -51,10 +52,12 @@ class Renderer:
                        for k in ('before', 'after') if k in specs)
         sample = f'<div class="n">{escape(b["sample"])}</div>' if b.get('sample') else ''
         tone = 'good' if self.is_good(d) else 'bad'
+        word = unit_word(b['unit'])
+        suffix = f' {word}' if word else ''
         return f'''<div class="hero-grid">
   <div class="big reveal"><div class="big-num {tone}">{signed(d)}</div>
     <div class="big-cap">{escape(b["caption"])}</div>
-    <div class="big-sub"><span class="from">{num(b["before"], b["unit"])} {unit_word(b["unit"])}</span><span class="arrow">→</span><span class="to">{num(b["after"], b["unit"])} {unit_word(b["unit"])}</span></div></div>
+    <div class="big-sub"><span class="from">{num(b["before"], b["unit"])}{suffix}</span><span class="arrow">→</span><span class="to">{num(b["after"], b["unit"])}{suffix}</span></div></div>
   <div class="stats">{stats}</div></div>
 <div class="spec">{spec}{sample}</div>'''
 
@@ -63,14 +66,13 @@ class Renderer:
         H, L, R, T, B = 330, 44, 8, 16, 46
         cols = b['columns']
         vmax = b.get('max') or nice_max(max(v for c in cols for v in c['values']), b['unit'])
-        step = vmax / 4
         cw = (W - L - R) / len(cols)
         sy = lambda v: T + (H - T - B) * (1 - min(v, vmax) / vmax)
         p = []
-        for i in range(5):
-            y = sy(step * i)
+        for v in axis_values(vmax, b['unit'], 4):
+            y = sy(v)
             p.append(f'<line x1="{L}" x2="{W - R}" y1="{y:.1f}" y2="{y:.1f}" class="grid"/>'
-                     f'<text x="{L - 10}" y="{y + 4:.1f}" class="axis" text-anchor="end">{num(step * i, b["unit"], axis=True)}</text>')
+                     f'<text x="{L - 10}" y="{y + 4:.1f}" class="axis" text-anchor="end">{num(v, b["unit"], axis=True)}</text>')
         for i, c in enumerate(cols):
             kind, vals = c.get('kind', 'before'), c['values']
             cx = L + cw * i + cw / 2
@@ -118,14 +120,13 @@ class Renderer:
         rowh, L, R = 50, 250, 110
         rows = b['rows']
         vmax = b.get('max') or nice_max(max(max(r['before'], r['after']) for r in rows), b['unit'])
-        ticks = 6
         sx = lambda v: L + (W - L - R) * v / vmax
         H = rowh * len(rows) + 34
         p = []
-        for i in range(ticks + 1):
-            x = sx(vmax / ticks * i)
+        for v in axis_values(vmax, b['unit'], 6):
+            x = sx(v)
             p.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="4" y2="{H - 26}" class="grid"/>'
-                     f'<text x="{x:.1f}" y="{H - 8}" class="axis" text-anchor="middle">{num(vmax / ticks * i, b["unit"], axis=True)}</text>')
+                     f'<text x="{x:.1f}" y="{H - 8}" class="axis" text-anchor="middle">{num(v, b["unit"], axis=True)}</text>')
         for i, r in enumerate(rows):
             y, bv, av = 26 + i * rowh, r['before'], r['after']
             d = pct(bv, av)
@@ -199,6 +200,14 @@ def median(xs):
 
 
 def num(v, unit, axis=False):
+    if unit == 'dur':
+        if axis:
+            return f'{v / SECONDS_PER_MINUTE:.0f}m' if v else '0'
+        minutes, seconds = divmod(round(v), SECONDS_PER_MINUTE)
+        if minutes >= SECONDS_PER_MINUTE:
+            hours, minutes = divmod(minutes, SECONDS_PER_MINUTE)
+            return f'{hours}h {minutes:02d}m'
+        return f'{minutes}m {seconds:02d}s' if minutes else f'{seconds}s'
     if unit == 'min':
         return f'{v / 60:.0f}m' if axis else f'{v / 60:.1f}'
     if unit == 's':
@@ -224,8 +233,17 @@ def unit_suffix(unit):
 
 def nice_max(v, unit):
     """Round an axis maximum up so ticks land on whole minutes / tens of seconds."""
-    base = 60 * 4 if unit == 'min' else 40 if unit == 's' else 1
+    if unit == 'dur':
+        return max(1, math.ceil(v * 1.05 / SECONDS_PER_MINUTE)) * SECONDS_PER_MINUTE
+    base = SECONDS_PER_MINUTE * 4 if unit == 'min' else 40 if unit == 's' else 1
     return math.ceil(v * 1.05 / base) * base
+
+
+def axis_values(vmax, unit, ticks):
+    if unit == 'dur':
+        step = max(1, math.ceil(vmax / (SECONDS_PER_MINUTE * ticks))) * SECONDS_PER_MINUTE
+        return range(0, math.floor(vmax) + 1, step)
+    return (vmax / ticks * i for i in range(ticks + 1))
 
 
 def accent(title):

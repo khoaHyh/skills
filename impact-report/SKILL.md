@@ -43,7 +43,7 @@ Top level: `title`, `labels {before, after}`, `better` (`lower`|`higher`), `nois
 | `callout` | `title, text` | The new bottleneck or the main caveat |
 | `subhead` · `legend` | `text` · `note?` | Section label · before/after key |
 
-Values: `min` and `s` take seconds, `usd` takes dollars, `pct` takes fractions. `kind` is `before` or `after`; `tone` is one of `before`, `after`, `mid`, `neutral`, `warn`.
+Values: `dur`, `min` and `s` take seconds, `usd` takes dollars, `pct` takes fractions. Prefer `dur` for durations people read (e.g. `49s`, `5m 39s`, `1h 05m`). `kind` is `before` or `after`; `tone` is one of `before`, `after`, `mid`, `neutral`, `warn`.
 
 Done when every panel title states a finding and every chart shows n.
 
